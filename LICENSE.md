@@ -15,7 +15,8 @@ Use:
 
 Distribution:
 
-    You are not allowed to distribute the Binaries and/or Source Code or XML Files of XUiComponents in exchange for payment.
+    You are not allowed to distribute the Binaries and/or Source Code or XML Files of XUiComponents in exchange for payment
+    or commerical use.
 
     You are allowed to distribute modifications made to the XML Files of the XUiComponents mod provided you give appropriate
     credit to the Mod Author and provide a link to the original sources of XUiComponents and this license.
