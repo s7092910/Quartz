@@ -35,11 +35,14 @@ fuel tank gauge
 There are two ways to include this mod in your mod.
 
 First you have to download one of the [releases](https://github.com/s7092910/XUiComponents/releases/).
-In the download, there are 3 files the XUiComponents folder, the 3 files included are:
+In the download, there are 4 files the XUiComponents folder, the 4 files included are:
 
 * Modinfo.xml
+* LICENSE.md
 * XUiComponents.dll
 * XUiComponentsLoader.dll
+
+Please be aware of the [License](LICENSE.md) for use of XUiComponents
 
 ### As a seperate mod
 
@@ -100,7 +103,7 @@ server and the server must have Easy Anti Cheat turned off.
 
 ## Credits/The Team
 
-* [Christopher Beda](https://github.com/s7092910)
+* [Christopher Beda](https://github.com/s7092910) - Author
 * Sirillion - Ideas, feeback and testing
 
 ## Mods using XUiComponents
@@ -109,3 +112,21 @@ server and the server must have Easy Anti Cheat turned off.
 
 If you have a mod that is using XUiComponents and want to get it added to this list, create an issue and it will be added
 to this list shortly.
+
+## License
+
+```Text
+    Copyright 2022 Christopher Beda
+
+    You may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+    [License](LICENSE.md)
+```
