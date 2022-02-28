@@ -1,13 +1,13 @@
 # XUiComponents
 
-A 7 Days to Die modder's resource that adds some new XUi Views and XUi Controllers that modders can use
+A 7 Days to Die modder's resource that adds some new XUi Widgets and XUi Controllers that modders can use
 
 ## Features
 
 ### New Widgets
 
 * `curvedlabel` a curved text labels around a central point
-* `scrollview` a scrollable panel that can have other views inside
+* `scrollview` a scrollable panel that can have other vwidgets inside
 * `scrollbar` a scrollbar that goes with the scrollview
 
 ### New Controllers
@@ -45,7 +45,7 @@ In the download, there are 3 files the XUiComponents folder, the 3 files include
 
 To add the mod as a seperate mod, extract the XUiComponents folder and add it to the
 7 Days to Die Mods folder. From there, 7 Days to Die will load it as a seperate mod which will allow
-access the all the new views and controllers from any mod in a seperate mod folder.
+access the all the new widgets and controllers from any mod in a seperate mod folder.
 
 Make sure that the XUiComponents folder is included in the download of the mod or include
 instructions for users of the mod on how to download and install the XUiComponents standalone mod.
@@ -68,7 +68,7 @@ a mod folder can only have one dll that extends `IModApi`, so in the class that 
 To start, add XUiComponents.dll as a reference to the mod's source code project. Then in the class extending `IModApi` add the following line after the creation of the Harmoney object.
 
 ```C#
-            XUiComponents.LoadXuiComponents(harmony);
+    XUiComponents.LoadXuiComponents(harmony);
 ```
 
 #### Additonal Steps
