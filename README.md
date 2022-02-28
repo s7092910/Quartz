@@ -35,12 +35,20 @@ fuel tank gauge
 There are two ways to include this mod in your mod.
 
 First you have to download one of the [releases](https://github.com/s7092910/XUiComponents/releases/).
-In the download, there are 4 files the XUiComponents folder, the 4 files included are:
+In the download, there are a total of 5 files in the XUiComponents folder, the structure of the XUiComponents
+folder should look as followed:
 
-* Modinfo.xml
-* LICENSE.md
-* XUiComponents.dll
-* XUiComponentsLoader.dll
+```text
+Config
+    - XUi_Common
+        - styles.xml
+License
+    - LICENSE.md
+
+Modinfo.xml
+XUiComponents.dll
+XUiComponentsLoader.dll
+```
 
 Please be aware of the [License](LICENSE.md) for use of XUiComponents
 
@@ -55,12 +63,12 @@ instructions for users of the mod on how to download and install the XUiComponen
 
 ### Include in an existing mod's folder
 
-To add the mod as part of an existing mod, extract both the XUiComponents.dll and XUiComponentsLoader.dll
-into the mod's folder. 7 Days to Die will load the XUiComponentsLoader.dll from the mod's folder when
-the game is started.
+To add the mod as part of an existing mod, extract all the files from the XUiComponents folder except
+for the Modinfo.xml into the mod's folder. 7 Days to Die will load the XUiComponentsLoader.dll from
+the mod's folder when the game is started.
 
-When you bundle up the mod, make sure that the XUiComponents.dll and XUiComponentsLoader.dll are in the mod's
-folder. Mod users will not need to download any additional files.
+When you bundle up the mod, make sure that all the files from the XUiComponents folder except
+for the Modinfo.xml are in the mod's folder. Mod users will not need to download any additional files.
 
 #### If your mod includes its own dll with a class that extends `IModApi`
 
@@ -68,10 +76,30 @@ As XUiComponents uses Harmony to patch some of the 7 Days to Die code to work, i
 XUiComponentsLoader.dll does the Harmony patching, but uses `IModApi` to do so. One of the limitations of this is that
 a mod folder can only have one dll that extends `IModApi`, so in the class that extends `IModApi`, a call can be used to patch the XUiComponents.dll.
 
-To start, add XUiComponents.dll as a reference to the mod's source code project. Then in the class extending `IModApi` add the following line after the creation of the Harmoney object.
+To start, add XUiComponents.dll as a reference to the mod's source code project. Then in the class extending `IModApi` add the following lines. You may pass in your own Harmony object if you have one already.
 
 ```C#
+    Harmony harmony = new Harmony(GetType().ToString());
     XUiComponents.LoadXuiComponents(harmony);
+```
+
+#### If your mod includes it own XUi_Common styles.xml
+
+Add the following lines to the mod's styles.xml in the XUi_Common folder
+
+```xml
+ <append xpath="/styles">
+    <style type="curvedlabel">
+        <style_entry name="color" value="[labelColor]"/>
+        <style_entry name="font_face" value="ReferenceFont"/>
+        <style_entry name="font_size" value="28"/>
+        <style_entry name="justify" value="left"/>
+        <style_entry name="effect" value="none"/>
+        <style_entry name="pivot" value="topleft"/>
+        <style_entry name="text" value=""/>
+        <style_entry name="upper_case" value="false" />
+    </style>
+ </append>
 ```
 
 #### Additonal Steps
