@@ -103,7 +103,7 @@ Notes:
 
 ## XUiC.ItemStack
 
-This controller is an extension of the existing `ItemStack` controller. Some of the features of the `XUiC.ItemStack`
+This controller is an extension of the vanilla `ItemStack` controller. Some of the features of the `XUiC.ItemStack`
 requires the use of the `XUiC.Backpack`, `XUiC.LootContainer`, or `XUiC.VehicleContainer` controllers. Those controllers
 need to be attached as a controller to a parent widget of the widget containing the `XUiC.ItemStack` controller.
 
@@ -156,8 +156,8 @@ XML Binding | Description
     locked and what items match their search in their inventory
 </p>
 
-This controller is an extension of the existing `Backpack` controller. Both the Search and Slot locking features require
-the child ItemStack controllers to be `XUiC.ItemStack`.
+This controller is an extension of the vanilla `Backpack` controller. Both the Search and Slot locking features require
+the child `ItemStack` controllers to be replaced with `XUiC.ItemStack`.
 
 ### Using the Backpack Controller
 
@@ -171,19 +171,19 @@ controller="XUiC.Backpack, XUiComponents"
 
 #### Locked Slots
 
-7 Days to Die has a inventory locking feature that is disabled in the vanilla UI. To enable the inventory locking
+7 Days to Die has a inventory locking feature that is disabled in the vanilla UI. To enable the inventory locking,
 a combobox with the `ComboBoxInt` controller has to be within the same window. The `XUiC.Backpack` controller will
 use the first found widget with a `ComboBoxInt` controller attached to it.
 
 #### Inventory Search
 
 To enable the inventory search, a widget with the `TextInput` controller has to be within the same window. It is possible to
-use the existing `textfield` controls as the widget with the `TextInput` controller. The `XUiC.Backpack` controller will
+use the vanilla `textfield` controls as the widget with the `TextInput` controller. The `XUiC.Backpack` controller will
 use the first found widget with a `TextInput` controller attached to it.
 
 ## XUiC.LootContainer
 
-This controller is an extension of the existing `LootContainer` controller. Both the Search and Slot locking features require the child ItemStack controllers to be `XUiC.ItemStack`.
+This controller is an extension of the vanilla `LootContainer` controller. Both the Search and Slot locking features require the child ItemStack controllers to be `XUiC.ItemStack`.
 
 ### Using the LootContainer Controller
 
@@ -199,7 +199,7 @@ controller="XUiC.LootContainer, XUiComponents"
 
 ## XUiC.VehicleContainer
 
-This controller is an extension of the existing `VehicleContainer` controller. Both the Search and Slot locking features require the child ItemStack controllers to be `XUiC.ItemStack`.
+This controller is an extension of the vanilla `VehicleContainer` controller. Both the Search and Slot locking features require the child ItemStack controllers to be `XUiC.ItemStack`.
 
 ### Using the VehicleContainer Controller
 
@@ -215,7 +215,7 @@ controller="XUiC.VehicleContainer, XUiComponents"
 
 ## XUiC.MapInvitesListEntry
 
-This controller is an extension of the existing `MapInvitesListEntry` controller.
+This controller is an extension of the vanilla `MapInvitesListEntry` controller.
 
 ### Using the MapInvitesListEntry Controller
 
@@ -235,7 +235,7 @@ XML Binding | Description
 
 ## XUiC.MapWaypointListEntry
 
-This controller is an extension of the existing `MapWaypointListEntry` controller.
+This controller is an extension of the vanilla `MapWaypointListEntry` controller.
 
 ### Using the MapWaypointListEntry Controller
 

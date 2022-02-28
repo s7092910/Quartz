@@ -22,7 +22,7 @@ fuel tank gauge
 * `XUiC.MapInvitesListEntry` an updated `MapInvitesListEntry` controller that includes new bindings
 * `XUiC.MapWaypointListEntry` an updated `MapWaypointListEntry` controller that includes new bindings
 
-### Changes to existing Views/Controllers
+### Changes to Vanilla Widgets and Controllers
 
 * Allows `mapViewTexture` to be resized to different aspect ratios, no more 1:1 aspect ratios for the map
 
