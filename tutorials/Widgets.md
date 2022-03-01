@@ -66,7 +66,7 @@ and using the scroll wheel on their mouse. If a `scrollbar` is attached to the `
 ### Using the ScrollView
 
 <p align="center" width="100%">
-    <img width="33%" src="../images/ScrollView.gif"> <br>
+    <img width="33%" src="../images/Scrollview.gif"> <br>
     The player's backpack using the scrollview in the SMXui <br>
     ZMXuiCPPBM addon
 </p>

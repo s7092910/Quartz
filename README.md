@@ -117,13 +117,13 @@ server and the server must have Easy Anti Cheat turned off.
 
 ## Usage
 
-[Using the New Controllers](Tutorials/Controllers.md)
+[Using the New Controllers](tutorials/Controllers.md)
 
-[Using the New Widgets](Tutorials/Widgets.md)
+[Using the New Widgets](tutorials/Widgets.md)
 
-[Using the new changes to vanilla Widgets](Tutorials/VanillaWidgets.md)
+[Using the new changes to vanilla Widgets](tutorials/VanillaWidgets.md)
 
-[Using the XUiC Console/Debugging mode](Tutorials/XUiC-Console.md)
+[Using the XUiC Console/Debugging mode](tutorials/XUiC-Console.md)
 
 ## Changelog
 
