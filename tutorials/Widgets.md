@@ -71,7 +71,6 @@ and using the scroll wheel on their mouse. If a `scrollbar` is attached to the `
     ZMXuiCPPBM addon
 </p>
 
-
 The `scrollview` allows child widgets inside of it. All child widgets inside the `scrollview` will be clipped to the
 size of the `scrollview`.
 
