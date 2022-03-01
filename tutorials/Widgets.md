@@ -65,6 +65,13 @@ and using the scroll wheel on their mouse. If a `scrollbar` is attached to the `
 
 ### Using the ScrollView
 
+<p align="center" width="100%">
+    <img width="33%" src="../images/ScrollView.gif"> <br>
+    The player's backpack using the scrollview in the SMXui <br>
+    ZMXuiCPPBM addon
+</p>
+
+
 The `scrollview` allows child widgets inside of it. All child widgets inside the `scrollview` will be clipped to the
 size of the `scrollview`.
 
@@ -110,6 +117,12 @@ size of the `scrollview`.
 ```
 
 ## Scrollbar
+
+<p align="center" width="100%">
+    <img width="33%" src="../images/Scrollbar.gif"> <br>
+    The player's backpack using the scrollview with a scrollbar <br>
+    in the SMXui ZMXuiCPPBM addon
+</p>
 
 The Scrollbar is a new widget to be used in tandem with the `scrollview` widget. It is the widget that is the scrollbar
 for the `scrollview`. The `scrollbar` consists of two parts, the handle(foreground) and the background. The handle allow

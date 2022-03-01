@@ -185,11 +185,23 @@ the child `ItemStack` controllers to be replaced with `XUiC.ItemStack`.
 
 #### Locked Slots
 
+<p align="center" width="100%">
+    <img width="33%" src="../images/BackpackLockable.gif"> <br>
+    XUiC.Backpack being used in SMXui to show players which slots<br>
+    and their items, match their search in their inventory
+</p>
+
 7 Days to Die has a inventory locking feature that is disabled in the vanilla UI. To enable the inventory locking,
 a combobox with the `ComboBoxInt` controller has to be within the same window. The `XUiC.Backpack` controller will
 use the first found widget with a `ComboBoxInt` controller attached to it.
 
 #### Inventory Search
+
+<p align="center" width="100%">
+    <img width="33%" src="../images/BackpackSearch.gif"> <br>
+    XUiC.Backpack being used in SMXui to show players which slots are <br>
+    locked
+</p>
 
 To enable the inventory search, a widget with the `TextInput` controller has to be within the same window. It is possible to
 use the vanilla `textfield` controls as the widget with the `TextInput` controller. The `XUiC.Backpack` controller will

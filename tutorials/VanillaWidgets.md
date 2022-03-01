@@ -7,6 +7,11 @@ With the Harmony patching, there is no additional set up to be able to use the p
 
 ## Map View Texture
 
+<p align="center" width="100%">
+    <img width="50%" src="../images/map.png"> <br>
+    A curved label displayed in game
+</p>
+
 The `texture` widget with the name `mapViewTexture` used with the `MapArea` controller in vanilla is locked to a 1:1 aspect
 ratio and ba set size of 712 by 712.
 
