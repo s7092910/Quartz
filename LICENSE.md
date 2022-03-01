@@ -21,8 +21,9 @@ Distribution:
     You are allowed to distribute modifications made to the XML Files of the XUiComponents mod provided you give appropriate
     credit to the Mod Author and provide a link to the original sources of XUiComponents and this license.
 
-    You are allowed to distribute the original Binaries of the XUiComponents mod for non commercial use, provided you give
-    appropriate credit to the Mod Author and provide a link to the original sources of XUiComponents and this license.
+    You are allowed to distribute the original Binaries and XML Files of the XUiComponents mod for non commercial use, 
+    provided you give appropriate credit to the Mod Author and provide a link to the original sources of XUiComponents
+    and this license.
 
     You are allowed to distribute links to the original sources of XUiComponents.
 
