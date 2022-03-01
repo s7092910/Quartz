@@ -16,10 +16,10 @@ With XUiComponents, the hardcoded 712 by 712 size is removed and allows an aspec
 
 ```XML
 <texture 
-depth="2" 
-name="mapViewTexture"
-width="1920" - This can be any different width
-height="1080" - This can by any different height
-pos="0,0" 
-material="Materials/MaskableMainmap" />
+    depth="2" 
+    name="mapViewTexture"
+    width="1920" - This can be any different width
+    height="1080" - This can by any different height
+    pos="0,0" 
+    material="Materials/MaskableMainmap" />
 ```

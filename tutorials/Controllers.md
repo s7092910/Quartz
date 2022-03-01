@@ -21,9 +21,9 @@ In the widget that will use the controller, add the following line
 
 ```XML
 <Widget
-...
-controller="XUiC.{Name of the controller}, XUiComponents"
-...
+    ...
+    controller="XUiC.{Name of the controller}, XUiComponents"
+    ...
 />
 ```
 
@@ -33,9 +33,9 @@ For example, to use `XUiC.Spinner`, the xml will look like the following
 
 ```XML
 <Widget
-...
-controller="XUiC.Spinner, XUiComponents"
-...
+    ...
+    controller="XUiC.Spinner, XUiComponents"
+    ...
 />
 ```
 
@@ -55,14 +55,15 @@ The controller is added to the widget that is to be spun by the controller
 
 ```XML
 <Widget
-...
-controller="XUiC.Spinner, XUiComponents"
-spin="true|false" - True if the Spinner should be actively spinning
-angle_per_second="float" - The how fast of an angle in degrees the widget should 
-        spin per second. A positive number spins the widget
-        in a counter clockwise direction, while a negative number spins the widget
-        in a clockwise direction
-...
+    ...
+    controller="XUiC.Spinner, XUiComponents"
+    
+    spin="true|false" - True if the Spinner should be actively spinning
+
+    angle_per_second="float" - The how fast of an angle in degrees the widget should 
+            spin per second. A positive number spins the widget in a counter clockwise 
+            direction, while a negative number spins the widget in a clockwise direction
+    ...
 />
 ```
 
@@ -80,19 +81,27 @@ and calculating where the indicator should be based on its current value and min
 
 ```XML
 <Widget
-...
-controller="XUiC.DialIndicator, XUiComponents"
-indicator_value="float" - The current value of the indicator
-start_angle="float" - The angle in degrees of the dial for when the indicator value is equal to the range_min
-end_angle="float" - The angle in degrees of the dial for when the indicator value is equal to the range_max
-range_min="float" - The minimum value represented by the indicator
-range_max="float"  - The maximum value represented by the indicator
-limit_indicator_to_range="true|false" - if the indicator is to be bound to the min and max range values. If true 
-    the indicator will not move beyond the start and end angle if the indicator value is outside those ranges 
-animation_duration="float" - An estimate of how long the animation should take from changing from a previous value to
-    a new value. If the indicator value has changed during the animation, the animation time will reset with the
-    animation starting from the position it was in before the new indicator value.
-...
+    ...
+    controller="XUiC.DialIndicator, XUiComponents"
+
+    indicator_value="float" - The current value of the indicator
+
+    start_angle="float" - The angle in degrees of the dial for when the indicator value is equal to the range_min
+
+    end_angle="float" - The angle in degrees of the dial for when the indicator value is equal to the range_max
+
+    range_min="float" - The minimum value represented by the indicator
+
+    range_max="float"  - The maximum value represented by the indicator
+
+    limit_indicator_to_range="true|false" - if the indicator is to be bound to the min and max range values. If true 
+        the indicator will not move beyond the start and end angle if the indicator value is outside those ranges 
+
+    animation_duration="float" - An estimate of how long the animation should take from changing from a previous value to
+        a new value. If the indicator value has changed during the animation, the animation time will reset with the
+        animation starting from the position it was in before the new indicator value.
+
+    ...
 />
 ```
 
@@ -116,14 +125,19 @@ The `XUiC.ItemStack` controller when used in conjuction of the controllers menti
 
 ```XML
 <Widget
-...
-controller="XUiC.ItemStack, XUiComponents"
-lockedslot_color="color" - The color of that is returned to the {selectionbordercolor} binding if the slot is locked
-search_color="color" - The color of that is returned to the {selectionbordercolor} binding if the slot contains an item
-    that matches the search 
-nomatch_iconcolor="color" - The color that is returned to the {iconcolor} binding if the slot contains an item that 
-    does not match the search. Also is used to tint the {durabilitycolor} of the item if in the slot has a durabilitycolor
-...
+    ...
+    controller="XUiC.ItemStack, XUiComponents"
+    lockedslot_color="color" - The color of that is returned to the {selectionbordercolor} binding if the slot is 
+        locked
+
+    search_color="color" - The color of that is returned to the {selectionbordercolor} binding if the slot contains
+        an item that matches the search 
+
+    nomatch_iconcolor="color" - The color that is returned to the {iconcolor} binding if the slot contains an item 
+        that does not match the search. Also is used to tint the {durabilitycolor} of the item if in the slot has a
+        durabilitycolor
+
+    ...
 />
 ```
 
@@ -163,9 +177,9 @@ the child `ItemStack` controllers to be replaced with `XUiC.ItemStack`.
 
 ```XML
 <Widget
-...
-controller="XUiC.Backpack, XUiComponents"
-...
+    ...
+    controller="XUiC.Backpack, XUiComponents"
+    ...
 >
 ```
 
@@ -191,9 +205,9 @@ The usage is the same as the [`XUiC.Backpack`](#Using-the-Backpack-Controller)
 
 ```XML
 <Widget
-...
-controller="XUiC.LootContainer, XUiComponents"
-...
+    ...
+    controller="XUiC.LootContainer, XUiComponents"
+    ...
 >
 ```
 
@@ -207,9 +221,9 @@ The usage is the same as the [`XUiC.Backpack`](#Using-the-Backpack-Controller)
 
 ```XML
 <Widget
-...
-controller="XUiC.VehicleContainer, XUiComponents"
-...
+    ...
+    controller="XUiC.VehicleContainer, XUiComponents"
+    ...
 >
 ```
 
@@ -221,9 +235,9 @@ This controller is an extension of the vanilla `MapInvitesListEntry` controller.
 
 ```XML
 <Widget
-...
-controller="XUiC.MapInvitesListEntry, XUiComponents"
-...
+    ...
+    controller="XUiC.MapInvitesListEntry, XUiComponents"
+    ...
 >
 ```
 
@@ -241,9 +255,9 @@ This controller is an extension of the vanilla `MapWaypointListEntry` controller
 
 ```XML
 <Widget
-...
-controller="XUiC.MapWaypointListEntry, XUiComponents"
-...
+    ...
+    controller="XUiC.MapWaypointListEntry, XUiComponents"
+    ...
 >
 ```
 
