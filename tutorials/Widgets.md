@@ -5,9 +5,9 @@ you can start using the new widgets in your mod.
 
 ## The Widgets
 
-* [`curvedlabel`](#Curved-Label) A label that curves the text
-* [`scrollview`](#ScrollView) A widget container that is scrollable
-* [`scrollbar`](#Scrollbar) A scrollbar that is usable with the `scrollview` to scroll the `scrollview`
+* [`curvedlabel`](#curved-label) A label that curves the text
+* [`scrollview`](#scrollview) A widget container that is scrollable
+* [`scrollbar`](#scrollbar) A scrollbar that is usable with the `scrollview` to scroll the `scrollview`
 
 ## Overview on using the Widgets
 

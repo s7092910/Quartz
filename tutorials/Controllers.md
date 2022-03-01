@@ -5,15 +5,15 @@ you can start using the new controllers in your mod.
 
 ## The Controllers
 
-* [`XUiC.Spinner`](#XUiC.Spinner) spins the widget that it is attached to
-* [`XUiC.DialIndicator`](#XUiC.DialIndicator) makes the widget that it is attached to act like a dial indicator, useful to make a speedometer or
+* [`XUiC.Spinner`](#xuicspinner) spins the widget that it is attached to
+* [`XUiC.DialIndicator`](#xuicdialindicator) makes the widget that it is attached to act like a dial indicator, useful to make a speedometer or
 fuel tank gauge
-* [`XUiC.ItemStack`](#XUiC.ItemStack) an updated `ItemStack` controller that includes some additional bindings and features
-* [`XUiC.Backpack`](#XUiC.Backpack) an updated `Backpack` controller that includes new features like search
-* [`XUiC.LootContainer`](#XUiC.LootContainer) an updated `LootContainer` controller that includes new features like search
-* [`XUiC.VehicleContainer`](#XUiC.VehicleContainer) an updated `VehicleContainer` controller that includes new features like search
-* [`XUiC.MapInvitesListEntry`](#XUiC.MapInvitesListEntry) an updated `MapInvitesListEntry` controller that includes new bindings
-* [`XUiC.MapWaypointListEntry`](#XUiC.MapWaypointListEntry) an updated `MapWaypointListEntry` controller that includes new bindings
+* [`XUiC.ItemStack`](#xuicitemstack) an updated `ItemStack` controller that includes some additional bindings and features
+* [`XUiC.Backpack`](#xuicbackpack) an updated `Backpack` controller that includes new features like search
+* [`XUiC.LootContainer`](#xuiclootcontainer) an updated `LootContainer` controller that includes new features like search
+* [`XUiC.VehicleContainer`](#xuicvehiclecontainer) an updated `VehicleContainer` controller that includes new features like search
+* [`XUiC.MapInvitesListEntry`](#xuicmapinviteslistentry) an updated `MapInvitesListEntry` controller that includes new bindings
+* [`XUiC.MapWaypointListEntry`](#xuicmapwaypointlistentry) an updated `MapWaypointListEntry` controller that includes new bindings
 
 ## Add the controller in XML
 
@@ -213,7 +213,7 @@ This controller is an extension of the vanilla `LootContainer` controller. Both 
 
 ### Using the LootContainer Controller
 
-The usage is the same as the [`XUiC.Backpack`](#Using-the-Backpack-Controller)
+The usage is the same as the [`XUiC.Backpack`](#using-the-backpack-controller)
 
 ```XML
 <Widget
@@ -229,7 +229,7 @@ This controller is an extension of the vanilla `VehicleContainer` controller. Bo
 
 ### Using the VehicleContainer Controller
 
-The usage is the same as the [`XUiC.Backpack`](#Using-the-Backpack-Controller)
+The usage is the same as the [`XUiC.Backpack`](#using-the-backpack-controller)
 
 ```XML
 <Widget
