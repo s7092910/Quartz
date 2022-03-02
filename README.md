@@ -18,7 +18,7 @@ fuel tank gauge
 * `XUiC.ItemStack` an updated `ItemStack` controller that includes some additional bindings and features
 * `XUiC.Backpack` an updated `Backpack` controller that includes new features like search
 * `XUiC.LootContainer` an updated `LootContainer` controller that includes new features like search
-* `XUiC.VehicleContainter` an updated `VehicleContainter` controller that includes new features like search
+* `XUiC.VehicleContainer` an updated `VehicleContainer` controller that includes new features like search
 * `XUiC.MapInvitesListEntry` an updated `MapInvitesListEntry` controller that includes new bindings
 * `XUiC.MapWaypointListEntry` an updated `MapWaypointListEntry` controller that includes new bindings
 
