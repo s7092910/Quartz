@@ -1,16 +1,15 @@
 # Using the XUiC Console Commands
 
-Once XUiComponents is added to your mod as shown in the [README.md](../README.md),
-you can start using the XUiC console commands.
+Once Quartz is added to your mod as shown in the [README.md](../README.md),
+you can start using the Quartz console commands.
 
 To open up the console, press F1 while in 7 Days to Die. This allows viewing on the
-in game console. There are a few ways to turn on the XUiC Debugging with the in game console.
+in game console. There are a few ways to turn on the Quartz Debugging with the in game console.
 
 The initial commands available to access the sub commands are as followed:
 
 ```text
-    xuic
-    xuicomponents
+    Quartz
 ```
 
 Either initial command can be used.
@@ -19,9 +18,9 @@ Either initial command can be used.
 
 ### Debug
 
-The debug subcommand is used to turn on or off the debug mode for XUiComponents. Debug mode includes the following :
+The debug subcommand is used to turn on or off the debug mode for Quartz. Debug mode includes the following :
 
-* Logging of some messages from XUiComponents to the console and the 7D2D log file
+* Logging of some messages from Quartz to the console and the 7D2D log file
 * The NGUI UICamera debug is shown in the top left corner of the screen
 
 <p align="center" width="100%">
@@ -41,5 +40,5 @@ The debug subcommand is used to turn on or off the debug mode for XUiComponents.
 #### Example
 
 ```text
-    xuic debug
+    Quartz debug
 ```

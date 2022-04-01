@@ -1,6 +1,6 @@
 # Using the new Widgets in your mod
 
-Once XUiComponents is added to your mod as shown in the [README.md](../README.md),
+Once Quartz is added to your mod as shown in the [README.md](../README.md),
 you can start using the new widgets in your mod.
 
 ## The Widgets
@@ -11,7 +11,7 @@ you can start using the new widgets in your mod.
 
 ## Overview on using the Widgets
 
-The widgets in XUiComponents are added to the UI the same way as vanilla UI widgets. Each widget is an
+The widgets in Quartz are added to the UI the same way as vanilla UI widgets. Each widget is an
 individual xml element that can be added to the XUi xml files.
 
 ## Curved Label

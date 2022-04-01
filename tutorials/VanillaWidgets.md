@@ -1,6 +1,6 @@
 # Using the patched vanilla widgets in your mod
 
-Once XUiComponents is added to your mod as shown in the [README.md](../README.md),
+Once Quartz is added to your mod as shown in the [README.md](../README.md),
 you can start using the patched vanilla widgets and controllers in your mod.
 
 With the Harmony patching, there is no additional set up to be able to use the patched vanilla widgets.
@@ -15,7 +15,7 @@ With the Harmony patching, there is no additional set up to be able to use the p
 The `texture` widget with the name `mapViewTexture` used with the `MapArea` controller in vanilla is locked to a 1:1 aspect
 ratio and ba set size of 712 by 712.
 
-With XUiComponents, the hardcoded 712 by 712 size is removed and allows an aspect ratio that is not 1:1.
+With Quartz, the hardcoded 712 by 712 size is removed and allows an aspect ratio that is not 1:1.
 
 ### Usage of Map View Texture
 
