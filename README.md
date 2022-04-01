@@ -2,7 +2,7 @@
 
 A 7 Days to Die modder's resource that adds some new XUi Widgets and XUi Controllers that modders can use.
 
-## Important
+## Important Announcements
 
 XUiComponents has been rebranded as Quartz. There is a [guide](tutorials/UpgradingFromXUiComponents.md) to help
 upgrading from XUiComponents to Quartz.
