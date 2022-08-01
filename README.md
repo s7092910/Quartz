@@ -133,6 +133,11 @@ server and the server must have Easy Anti Cheat turned off.
 If you have a mod that is using Quartz and want to get it added to this list, create an issue and it will be added
 to this list shortly.
 
+## Contact
+There is a hosted channel in Guppy's Unofficial 7DtD Modding Server Discord. The channel is `#laydors-toolshed`
+
+* [Guppy's Unofficial 7DtD Modding Server Discord](https://discord.gg/mQpvj95rvW)
+
 ## License
 
 ```Text
