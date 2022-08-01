@@ -89,24 +89,10 @@ To start, add Quartz.dll as a reference to the mod's source code project. Then i
     QuartzMod.LoadQuartz(harmony);
 ```
 
-#### If your mod includes it own XUi_Common styles.xml
+#### If your mod includes it own XUi_Common and/or XUi files
 
-Add the following lines to the mod's styles.xml in the XUi_Common folder
-
-```xml
- <append xpath="/styles">
-    <style type="curvedlabel">
-        <style_entry name="color" value="[labelColor]"/>
-        <style_entry name="font_face" value="ReferenceFont"/>
-        <style_entry name="font_size" value="28"/>
-        <style_entry name="justify" value="left"/>
-        <style_entry name="effect" value="none"/>
-        <style_entry name="pivot" value="topleft"/>
-        <style_entry name="text" value=""/>
-        <style_entry name="upper_case" value="false" />
-    </style>
- </append>
-```
+Look in the XUi_Common or XUi Folder and copy and paste the lines from each file to their respective in each folder in your
+Mod's config folder.
 
 #### Additonal Steps
 
