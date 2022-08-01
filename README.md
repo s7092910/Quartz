@@ -91,8 +91,8 @@ To start, add Quartz.dll as a reference to the mod's source code project. Then i
 
 #### If your mod includes it own XUi_Common and/or XUi files
 
-Look in the XUi_Common or XUi Folder and copy and paste the lines from each file to their respective in each folder in your
-Mod's config folder.
+Look in the XUi_Common or XUi Folder, copy and paste the lines from each file to their respective file in each folder in your
+mod's config folder. Or if the file(s) doesn't exist, copy and paste the missing file(s) into your mod's config folder inside their current folder
 
 #### Additonal Steps
 
@@ -134,6 +134,7 @@ If you have a mod that is using Quartz and want to get it added to this list, cr
 to this list shortly.
 
 ## Contact
+
 There is a hosted channel in Guppy's Unofficial 7DtD Modding Server Discord. The channel is `#laydors-toolshed`
 
 * [Guppy's Unofficial 7DtD Modding Server Discord](https://discord.gg/mQpvj95rvW)
