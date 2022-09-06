@@ -1,4 +1,4 @@
-# Quartz
+![](images/Logo_1080_banner.png)
 
 A 7 Days to Die modder's resource that adds some new XUi Widgets and XUi Controllers that modders can use.
 
