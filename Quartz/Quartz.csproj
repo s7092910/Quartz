@@ -1,0 +1,152 @@
+﻿<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B7F7D85F-6596-48B0-B607-BEAC55EF2943}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <NoStandardLibraries>false</NoStandardLibraries>
+    <AssemblyName>Quartz</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>portable</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>Quartz</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\7DaysToDie_Data\Managed\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\7DaysToDie_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="GearsAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>References\GearsAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="InControl">
+      <HintPath>..\..\7DaysToDie_Data\Managed\InControl.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="LogLibrary">
+      <HintPath>..\..\7DaysToDie_Data\Managed\LogLibrary.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Quartz Mod Folder\License\LICENSE.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Source\Console\ConsoleCmdQuartz.cs" />
+    <Compile Include="Source\Controllers\DialIndicator.cs" />
+    <Compile Include="Source\Controllers\Inventory\Backpack\Backpack.cs" />
+    <Compile Include="Source\Controllers\Inventory\ItemStack\ItemStack.cs" />
+    <Compile Include="Source\Controllers\Inventory\ItemStack\XUiC_ItemStack_Harmony.cs" />
+    <Compile Include="Source\Controllers\Inventory\LootWindow\LootContainer.cs" />
+    <Compile Include="Source\Controllers\Inventory\LootWindow\XUiC_LootContainer_Harmony.cs" />
+    <Compile Include="Source\Controllers\Inventory\LootWindow\XUiC_LootWindow_Harmony.cs" />
+    <Compile Include="Source\Controllers\Inventory\SearchUtil.cs" />
+    <Compile Include="Source\Controllers\Inventory\VehicleStorageWindow\VehicleContainer.cs" />
+    <Compile Include="Source\Controllers\Inventory\VehicleStorageWindow\XUiC_VehicleContainer_Harmony.cs" />
+    <Compile Include="Source\Controllers\MainMenu\MainMenuMusic_Harmony.cs" />
+    <Compile Include="Source\Controllers\MainMenu\RandomTexture.cs" />
+    <Compile Include="Source\Controllers\Map\MapInvitesListEntry.cs" />
+    <Compile Include="Source\Controllers\Map\MapWaypointListEntry.cs" />
+    <Compile Include="Source\Controllers\Map\XUiC_MapArea_Harmony.cs" />
+    <Compile Include="Source\Controllers\Spinner.cs" />
+    <Compile Include="Source\Controllers\XUiController_Harmony.cs" />
+    <Compile Include="Source\Logging\Logging.cs" />
+    <Compile Include="Source\Overhaul\Controllers\Extensions\XuiExtensions.cs" />
+    <Compile Include="Source\Overhaul\Controllers\InfoWindow\InfoWindow.cs" />
+    <Compile Include="Source\Overhaul\Controllers\ItemStacks\ItemInfoWindow.cs" />
+    <Compile Include="Source\Overhaul\Controllers\ItemStacks\InventoryItemStack.cs" />
+    <Compile Include="Source\Overhaul\Controllers\ItemStacks\ItemStackBase.cs" />
+    <Compile Include="Source\Overhaul\Controllers\ItemStacks\ItemStackGrid.cs" />
+    <Compile Include="Source\Overhaul\Controllers\ItemStacks\SelectableEntry.cs" />
+    <Compile Include="Source\Overhaul\Controllers\XUiBaseController.cs" />
+    <Compile Include="Source\QuartzLoader.cs" />
+    <Compile Include="Source\QuartzMod.cs" />
+    <Compile Include="Source\QuartzGearsLoader.cs" />
+    <Compile Include="Source\Settings\Debugging.cs" />
+    <Compile Include="Source\Settings\GlobalSettings.cs" />
+    <Compile Include="Source\Utils\ColorExtensions.cs" />
+    <Compile Include="Source\Views\CurvedLabel\CurvedLabel.cs" />
+    <Compile Include="Source\Views\ScrollView\ScrollBarView.cs" />
+    <Compile Include="Source\Views\ScrollView\ScrollBar\ScrollBar_Button.cs" />
+    <Compile Include="Source\Views\ScrollView\ScrollBar\Scrollbar_Sprite.cs" />
+    <Compile Include="Source\Views\ScrollView\ScrollBar\UIScrollBar.cs" />
+    <Compile Include="Source\Views\ScrollView\ScrollView.cs" />
+    <Compile Include="Source\Views\ScrollView\ScrollViewContainer.cs" />
+    <Compile Include="Source\Views\XUiFromXml_Harmony.cs" />
+    <Compile Include="Source\Views\XUiV_Label_Harmony.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Source\Overhaul\Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Quartz Mod Folder\Config\Localization.txt" />
+    <Content Include="Quartz Mod Folder\Config\XUi\windows.xml" />
+    <Content Include="Quartz Mod Folder\Config\XUi_Common\controls.xml" />
+    <Content Include="Quartz Mod Folder\Config\XUi_Common\styles.xml" />
+    <Content Include="Quartz Mod Folder\ModInfo.xml" />
+    <Content Include="Quartz Mod Folder\ModSettings.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
+  <ProjectExtensions>
+    <VisualStudio AllowExistingFolder="true" />
+  </ProjectExtensions>
+  <PropertyGroup>
+    <PostBuildEvent>XCOPY "$(SolutionDir)Quartz\Quartz Mod Folder\" "$(SolutionDir)Release\0-Quartz\" /E /Y
+XCOPY "$(TargetDir)GearsAPI.dll" "$(SolutionDir)Release\0-Quartz\" /E /Y
+XCOPY "$(TargetPath)" "$(SolutionDir)Release\0-Quartz\" /E /Y</PostBuildEvent>
+  </PropertyGroup>
+</Project>
