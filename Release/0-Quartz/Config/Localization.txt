@@ -1,0 +1,10 @@
+﻿Key,File,Type,UsedInMainMenu,NoTranslate,english,Context / Alternate Text,german,latam,french,italian,japanese,koreana,polish,brazilian,russian,turkish,schinese,tchinese,spanish
+
+quartzSettingGeneral,UI,Menu,x,,General
+quartzSettingGeneralTooltip,UI,Menu,x,,General settings for Quartz
+quartzSettingDebug,UI,Menu,x,,Debug
+quartzSettingDebugTooltip,UI,Menu,x,,Debugging settings for Quartz
+quartzSettingTextResolution,UI,Menu,x,,Text Resolution
+quartzSettingTextResolutionTooltip,UI,Menu,x,,"Sets the Text resolution. If set to high, may cause flickering of the UI every so often"
+quartzSettingDebugMode,UI,Menu,x,,Debug Mode
+quartzSettingDebugModeTooltip,UI,Menu,x,,Enables or disable Quartz debug mode
