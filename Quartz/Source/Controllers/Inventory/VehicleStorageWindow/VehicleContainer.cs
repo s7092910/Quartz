@@ -62,7 +62,7 @@ namespace Quartz
 
 			if (IsDirty)
 			{
-				ViewComponent.IsVisible = xui.vehicle.GetVehicle().HasStorage(); ;
+				ViewComponent.IsVisible = xui.vehicle.GetVehicle().HasStorage();
 				IsDirty = false;
 			}
 
