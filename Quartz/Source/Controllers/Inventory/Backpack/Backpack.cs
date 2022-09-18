@@ -18,7 +18,14 @@ namespace Quartz
 	{
 		private const string TAG = "Backpack";
 
-		private string searchResult;
+		private const string lockedSlotsCvarName = "$varQuartzBackpackLockedSlots";
+
+        private string searchResult;
+
+		private XUiC_ComboBoxInt comboBox;
+		private XUiC_ContainerStandardControls standardControls;
+
+		private EntityPlayer player;
 
 		public override void Init()
 		{
@@ -29,7 +36,9 @@ namespace Quartz
 				return;
 			}
 
-			XUiC_ComboBoxInt comboBox = parent.GetChildByType<XUiC_ComboBoxInt>();
+			standardControls = parent.GetChildByType<XUiC_ContainerStandardControls>();
+
+			comboBox = parent.GetChildByType<XUiC_ComboBoxInt>();
 			if (comboBox != null)
 			{
 				comboBox.OnValueChanged += OnLockedSlotsChange;
@@ -42,6 +51,29 @@ namespace Quartz
 				if (searchInput.UIInput != null)
 				{
 					searchInput.Text = "";
+				}
+			}
+		}
+
+		public override void Update(float _dt)
+		{
+			base.Update(_dt);
+
+			if(player == null && XUi.IsGameRunning())
+			{
+				player = xui.playerUI.entityPlayer;
+
+				int lockedSlots = (int)player.Buffs.GetCustomVar(lockedSlotsCvarName);
+				
+				if(comboBox != null)
+				{
+					comboBox.Value = lockedSlots;
+                    OnLockedSlotsChange(this, 0, lockedSlots);
+                }
+
+				if(standardControls != null)
+				{
+					standardControls.ChangeLockedSlots(lockedSlots);
 				}
 			}
 		}
@@ -60,6 +92,10 @@ namespace Quartz
 
 		protected void OnLockedSlotsChange(XUiController sender, long value, long newValue)
 		{
+			if(player != null)
+			{
+				player.Buffs.SetCustomVar(lockedSlotsCvarName, newValue);
+			}
 
 			for (int i = 0; i < itemControllers.Length; i++)
 			{
