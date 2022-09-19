@@ -12,7 +12,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
+using Audio;
 using System.Collections;
+using UnityEngine;
 using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
 
 namespace Quartz
@@ -56,9 +58,25 @@ namespace Quartz
 					searchInput.Text = "";
 				}
 			}
+
+            foreach(XUiController xUiController in GetItemStackControllers())
+            {
+                xUiController.OnPress += ItemStackOnPress;
+            }
 		}
 
-		public override void Update(float _dt)
+        private void ItemStackOnPress(XUiController sender, int mouseButton)
+        {
+            ItemStack itemStack = sender as ItemStack;
+            if(itemStack != null && UICamera.GetKey(KeyCode.LeftAlt))
+            {
+                itemStack.IsALockedSlot = !itemStack.IsALockedSlot;
+                Manager.PlayButtonClick();
+                SaveLockedSlots();
+            }
+        }
+
+        public override void Update(float _dt)
 		{
 			base.Update(_dt);
 
@@ -68,7 +86,7 @@ namespace Quartz
 
 				LoadLockedSlots();
 
-                if(standardControls != null && !(standardControls is SmartLockContainerStandardControls))
+                if(standardControls != null && comboBox != null)
                 {
                     int lockedSlotsCount = (int)player.GetCVar(lockedSlotsCvarName);
                     comboBox.Value = lockedSlotsCount;
