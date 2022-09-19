@@ -37,7 +37,7 @@ namespace Quartz
             Logging.Inform("Loaded Patch");
 
             Logging.Inform("Loading ActionSets");
-            QuartzInputManager.InitCustomControls(modInstance.Path);
+            QuartzInputManager.InitControls(modInstance.Path);
         }
 
     }

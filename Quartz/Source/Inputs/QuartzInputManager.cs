@@ -18,7 +18,7 @@ namespace Quartz.Source.Inputs
 
         public static InventoryActions inventoryActions;
 
-        public static void InitCustomControls(string ModPath)
+        public static void InitControls(string ModPath)
         {
             if (GameManager.IsDedicatedServer && initCalled)
             {
@@ -26,12 +26,12 @@ namespace Quartz.Source.Inputs
             }
 
             saveFile = ModPath + saveName;
-            
+
+            initCalled = true;
+
             LoadActionSets();
             LoadControlSaves();
             SaveControls();
-
-            initCalled = true;
         }
 
         private static void LoadActionSets()
@@ -63,8 +63,9 @@ namespace Quartz.Source.Inputs
                 return;
             }
 
-            string[] actionSetSaveData = new string[1];
+            string[] actionSetSaveData = new string[2];
             actionSetSaveData[0] = inventoryActions.Save();
+            actionSetSaveData[1] = "-";
 
             string saveData = string.Join(";", actionSetSaveData);
             File.WriteAllText(saveFile, saveData);

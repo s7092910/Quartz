@@ -49,7 +49,7 @@ namespace Quartz
             IControlBindingSetting modBinding = cat.GetSetting("LockedSlots") as IControlBindingSetting;
 
             modBinding.PlayerAction = QuartzInputManager.inventoryActions.LockSlot;
-            modSetting.OnSettingChanged += ControlsSettingChanged;
+            modBinding.OnSettingChanged += ControlsSettingChanged;
         }
 
         private void ControlsSettingChanged(IModSetting setting, string newValue)
