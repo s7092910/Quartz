@@ -70,7 +70,6 @@ namespace Quartz
                 XUiC_ComboBoxInt comboBox = GetChildByType<XUiC_ComboBoxInt>();
                 if(comboBox != null)
                 {
-                    ClearEventHandlers(comboBox, "OnValueChanged");
                     comboBox.OnValueChanged += ComboBox_OnValueChanged;
                 }
             }
