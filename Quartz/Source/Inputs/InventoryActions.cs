@@ -31,7 +31,7 @@ namespace Quartz.Inputs
         protected override void CreateActions()
         {
             LockSlot = CreatePlayerAction("Inventory Lock Slot");
-            LockSlot.UserData = new PlayerActionData.ActionUserData("inpActInvLockSlot", null, PlayerActionData.GroupUI, PlayerActionData.EAppliesToInputType.KbdMouseOnly, true);
+            LockSlot.UserData = new PlayerActionData.ActionUserData("quartzSettingInputLockedSlots", "quartzSettingInputLockedSlotsTooltip", PlayerActionData.GroupUI, PlayerActionData.EAppliesToInputType.KbdMouseOnly, true);
         }
 
         protected override void CreateDefaultJoystickBindings()
