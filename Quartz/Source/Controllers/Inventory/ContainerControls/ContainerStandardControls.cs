@@ -125,7 +125,7 @@ namespace Quartz
             IInventory dstInventory;
             if (MoveAllowed(out srcGrid, out dstInventory))
             {
-                ValueTuple<bool, bool> valueTuple = XUiM_LootContainer.StashItems(srcGrid, dstInventory, ignoredLockedSlots, XUiM_LootContainer.EItemMoveKind.All, MoveStartBottomRight);
+                ValueTuple<bool, bool> valueTuple = StashItems(srcGrid, dstInventory, ignoredLockedSlots, XUiM_LootContainer.EItemMoveKind.All, MoveStartBottomRight);
                 bool item = valueTuple.Item1;
                 bool item2 = valueTuple.Item2;
                 Action<bool, bool> moveAllDone = MoveAllDone;
