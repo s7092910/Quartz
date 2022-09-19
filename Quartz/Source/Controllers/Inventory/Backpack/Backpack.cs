@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using System.Collections;
+using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
 
 namespace Quartz
 {
@@ -28,13 +29,6 @@ namespace Quartz
 		private EntityPlayer player;
 
         private string searchResult;
-
-        protected BitArray lockedSlots;
-
-		public BitArray LockedSlots
-		{
-			get { return lockedSlots; }
-		}
 
         public override void Init()
 		{
@@ -62,8 +56,6 @@ namespace Quartz
 					searchInput.Text = "";
 				}
 			}
-
-			lockedSlots = new BitArray(itemControllers.Length);
 		}
 
 		public override void Update(float _dt)
@@ -75,59 +67,15 @@ namespace Quartz
 				player = xui.playerUI.entityPlayer;
 
 				LoadLockedSlots();
-				SetLockedSlots();
-				
-				//if(comboBox != null)
-				//{
-				//	comboBox.Value = lockedSlots;
-    //                OnLockedSlotsChange(this, 0, lockedSlots);
-    //            }
 
-				//if(standardControls != null)
-				//{
-				//	standardControls.ChangeLockedSlots(lockedSlots);
-				//}
-			}
-		}
-
-		protected override void SetStacks(global::ItemStack[] stackList)
-		{
-			base.SetStacks(stackList);
-			FilterFromSearch(searchResult);
-		}
-
-		protected void OnSearchInputChange(XUiController sender, string text, bool changeFromCode)
-		{
-			searchResult = text;
-			FilterFromSearch(text);
-		}
-
-		protected void OnLockedSlotsChange(XUiController sender, long value, long newValue)
-		{
-			for (int i = 0; i < itemControllers.Length; i++)
-			{
-				ItemStack itemStack = itemControllers[i] as ItemStack;
-				if (itemStack != null)
-				{
-					itemStack.IsALockedSlot = i < newValue;
-					lockedSlots.Set(i, i < newValue);
-				}
-			}
-
-			SaveLockedSlots();
-		}
-
-		protected void SetLockedSlots()
-		{
-            for (int i = 0; i < itemControllers.Length; i++)
-            {
-                ItemStack itemStack = itemControllers[i] as ItemStack;
-                if (itemStack != null)
+                if(standardControls != null && !(standardControls is SmartLockContainerStandardControls))
                 {
-                    itemStack.IsALockedSlot = lockedSlots[i];
+                    int lockedSlotsCount = (int)player.GetCVar(lockedSlotsCvarName);
+                    comboBox.Value = lockedSlotsCount;
+                    standardControls.ChangeLockedSlots(lockedSlotsCount);
                 }
-            }
-        }
+			}
+		}
 
 		public override void HandleSlotChangedEvent(int slotNumber, global::ItemStack stack)
 		{
@@ -140,7 +88,105 @@ namespace Quartz
 			}
 		}
 
-		private void FilterFromSearch(string search)
+        protected override void SetStacks(global::ItemStack[] stackList)
+        {
+            base.SetStacks(stackList);
+            FilterFromSearch(searchResult);
+        }
+
+        protected void OnSearchInputChange(XUiController sender, string text, bool changeFromCode)
+        {
+            searchResult = text;
+            FilterFromSearch(text);
+        }
+
+        protected void OnLockedSlotsChange(XUiController sender, long value, long newValue)
+        {
+            for (int i = 0; i < itemControllers.Length; i++)
+            {
+                ItemStack itemStack = itemControllers[i] as ItemStack;
+                if (itemStack != null)
+                {
+                    if (value > i && i >= newValue)
+                    {
+                        itemStack.IsALockedSlot = false;
+                    }
+
+                    if (newValue > i && i >= value)
+                    {
+                        itemStack.IsALockedSlot = true;
+                    }
+                }
+            }
+
+            player.SetCVar(lockedSlotsCvarName, newValue);
+
+            SaveLockedSlots();
+        }
+
+        protected virtual void SaveLockedSlots()
+        {
+            if (player == null)
+            {
+                return;
+            }
+
+            int saveArrayCount = itemControllers.Length / 20;
+
+            if (itemControllers.Length % 20 != 0)
+            {
+                saveArrayCount++;
+            }
+
+            for (int i = 0; i < saveArrayCount; i++)
+            {
+                int flag = 0;
+                int indexOffset = i * 20;
+
+                for (int j = 0; j < 20; j++)
+                {
+                    ItemStack itemStack = itemControllers[j + indexOffset] as ItemStack;
+                    if (itemStack != null && itemStack.IsALockedSlot)
+                    {
+                        flag |= 1 << j;
+                    }
+                }
+
+                player.SetCVar(lockedSlotsCvarName + i, flag);
+            }
+        }
+
+        protected virtual void LoadLockedSlots()
+        {
+            if (player == null)
+            {
+                return;
+            }
+
+            int saveArrayCount = itemControllers.Length / 20;
+
+            if (itemControllers.Length % 20 != 0)
+            {
+                saveArrayCount++;
+            }
+
+            for (int i = 0; i < saveArrayCount; i++)
+            {
+                int flag = (int)player.GetCVar(lockedSlotsCvarName + i);
+                int indexOffset = i * 20;
+
+                for (int j = 0; j < 20; j++)
+                {
+                    ItemStack itemStack = itemControllers[j + indexOffset] as ItemStack;
+                    if (itemStack != null && (flag & (1 << j)) != 0)
+                    {
+                        itemStack.IsALockedSlot = true;
+                    }
+                }
+            }
+        }
+
+        private void FilterFromSearch(string search)
 		{
 			bool activeSearch = !string.IsNullOrEmpty(search);
 			foreach (var itemController in itemControllers)
@@ -166,65 +212,5 @@ namespace Quartz
 			}
 			itemStack.IsSearchActive = activeSearch;
 		}
-
-		protected virtual void SaveLockedSlots()
-		{
-            if (player == null)
-            {
-				return;
-            }
-
-            int saveArrayCount = lockedSlots.Count/20;
-
-			if(lockedSlots.Count % 20 != 0)
-			{
-				saveArrayCount++;
-			}
-
-			for(int i = 0; i < saveArrayCount; i++)
-			{
-				int flag = 0;
-				int indexOffset = i * 20;
-
-				for(int j = 0; j < 20; j++)
-				{
-                    if (lockedSlots[j + indexOffset])
-                    {
-                        flag |= 1 << j;
-                    }
-                }
-
-                player.SetCVar(lockedSlotsCvarName + i, flag);
-            }
-		}
-
-		protected virtual void LoadLockedSlots()
-		{
-            if (player == null)
-            {
-                return;
-            }
-
-            int saveArrayCount = lockedSlots.Count / 20;
-
-            if (lockedSlots.Count % 20 != 0)
-            {
-                saveArrayCount++;
-            }
-
-            for (int i = 0; i < saveArrayCount; i++)
-            {
-                int flag = (int)player.GetCVar(lockedSlotsCvarName + i);
-                int indexOffset = i * 20;
-
-                for (int j = 0; j < 20; j++)
-                {
-                    if ((flag & (1 << j)) != 0)
-                    {
-                        lockedSlots.Set(j + indexOffset, true);
-                    }
-                }
-            }
-        }
 	}
 }
