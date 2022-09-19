@@ -15,6 +15,7 @@ limitations under the License.*/
 using Gears.ModManager;
 using Gears.ModManager.Settings;
 using Quartz.Settings;
+using Quartz.Source.Inputs;
 
 namespace Quartz
 {
@@ -22,7 +23,7 @@ namespace Quartz
     {
         public void InitMod(IGearsMod modInstance)
         {
-            QuartzMod.LoadQuartz();
+            QuartzMod.LoadQuartz(modInstance as Mod);
         }
 
         public void OnSettingsLoaded(IModSettings modSettings)
@@ -40,6 +41,20 @@ namespace Quartz
 
             modSetting.OnSettingChanged += GlobalSettings.SetDebugMode;
             GlobalSettings.SetDebugMode(modSetting, modSetting.CurrentValue);
+
+            //Controls Tab Settings
+            tab = modSettings.GetTab("Controls");
+            cat = tab.GetCategory("Inventory");
+
+            IControlBindingSetting modBinding = cat.GetSetting("LockedSlots") as IControlBindingSetting;
+
+            modBinding.PlayerAction = QuartzInputManager.inventoryActions.LockSlot;
+            modSetting.OnSettingChanged += ControlsSettingChanged;
+        }
+
+        private void ControlsSettingChanged(IModSetting setting, string newValue)
+        {
+            QuartzInputManager.SaveControls();
         }
 
         public void OnEnabled()

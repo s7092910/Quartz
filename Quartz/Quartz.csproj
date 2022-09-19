@@ -105,6 +105,9 @@
     <Compile Include="Source\Controllers\Map\XUiC_MapArea_Harmony.cs" />
     <Compile Include="Source\Controllers\Spinner.cs" />
     <Compile Include="Source\Controllers\XUiController_Harmony.cs" />
+    <Compile Include="Source\Inputs\InventoryActions.cs" />
+    <Compile Include="Source\Inputs\PlayerActionsBaseExtensions.cs" />
+    <Compile Include="Source\Inputs\QuartzInputManager.cs" />
     <Compile Include="Source\Logging\Logging.cs" />
     <Compile Include="Source\Overhaul\Controllers\Extensions\XuiExtensions.cs" />
     <Compile Include="Source\Overhaul\Controllers\InfoWindow\InfoWindow.cs" />

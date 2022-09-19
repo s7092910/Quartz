@@ -18,7 +18,7 @@ namespace Quartz
     {
         public void InitMod(Mod _modInstance)
         {
-            QuartzMod.LoadQuartz();
+            QuartzMod.LoadQuartz(_modInstance);
         }
     }
 }

@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using Audio;
+using Quartz.Source.Inputs;
 using System.Collections;
 using UnityEngine;
 using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
@@ -87,7 +88,21 @@ namespace Quartz
 			}
 		}
 
-		public override void HandleSlotChangedEvent(int slotNumber, global::ItemStack stack)
+        public override void OnOpen()
+        {
+            base.OnOpen();
+
+            QuartzInputManager.inventoryActions.Enabled = true;
+        }
+
+        public override void OnClose()
+        {
+            base.OnClose();
+
+            QuartzInputManager.inventoryActions.Enabled = false;
+        }
+
+        public override void HandleSlotChangedEvent(int slotNumber, global::ItemStack stack)
 		{
 			if (slotNumber < itemControllers.Length)
 			{
@@ -137,7 +152,7 @@ namespace Quartz
         private void OnItemStackPress(XUiController sender, int mouseButton)
         {
             ItemStack itemStack = sender as ItemStack;
-            if (itemStack != null && UICamera.GetKey(KeyCode.LeftAlt))
+            if (itemStack != null && QuartzInputManager.inventoryActions.LockSlot.IsPressed)
             {
                 itemStack.IsALockedSlot = !itemStack.IsALockedSlot;
                 Manager.PlayButtonClick();
