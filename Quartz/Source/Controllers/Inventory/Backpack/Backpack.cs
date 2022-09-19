@@ -59,22 +59,14 @@ namespace Quartz
 				}
 			}
 
-            foreach(XUiController xUiController in GetItemStackControllers())
+            if(standardControls != null && standardControls is ContainerStandardControls)
             {
-                xUiController.OnPress += ItemStackOnPress;
+                foreach (XUiController xUiController in GetItemStackControllers())
+                {
+                    xUiController.OnPress += OnItemStackPress;
+                }
             }
 		}
-
-        private void ItemStackOnPress(XUiController sender, int mouseButton)
-        {
-            ItemStack itemStack = sender as ItemStack;
-            if(itemStack != null && UICamera.GetKey(KeyCode.LeftAlt))
-            {
-                itemStack.IsALockedSlot = !itemStack.IsALockedSlot;
-                Manager.PlayButtonClick();
-                SaveLockedSlots();
-            }
-        }
 
         public override void Update(float _dt)
 		{
@@ -140,6 +132,17 @@ namespace Quartz
             player.SetCVar(lockedSlotsCvarName, newValue);
 
             SaveLockedSlots();
+        }
+
+        private void OnItemStackPress(XUiController sender, int mouseButton)
+        {
+            ItemStack itemStack = sender as ItemStack;
+            if (itemStack != null && UICamera.GetKey(KeyCode.LeftAlt))
+            {
+                itemStack.IsALockedSlot = !itemStack.IsALockedSlot;
+                Manager.PlayButtonClick();
+                SaveLockedSlots();
+            }
         }
 
         protected virtual void SaveLockedSlots()
