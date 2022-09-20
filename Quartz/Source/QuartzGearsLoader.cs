@@ -15,7 +15,7 @@ limitations under the License.*/
 using Gears.ModManager;
 using Gears.ModManager.Settings;
 using Quartz.Settings;
-using Quartz.Source.Inputs;
+using Quartz.Inputs;
 
 namespace Quartz
 {
