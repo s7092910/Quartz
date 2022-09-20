@@ -13,8 +13,10 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using Audio;
+using Quartz.Inventory;
 using Quartz.Source.Inputs;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
 
@@ -84,6 +86,11 @@ namespace Quartz
                     int lockedSlotsCount = (int)player.GetCVar(lockedSlotsCvarName);
                     comboBox.Value = lockedSlotsCount;
                     standardControls.ChangeLockedSlots(lockedSlotsCount);
+
+                    if(standardControls is ContainerStandardControls)
+                    {
+                        standardControls.OnSortPressed = OnSortPressed;
+                    }
                 }
 			}
 		}
@@ -149,7 +156,13 @@ namespace Quartz
             SaveLockedSlots();
         }
 
-        private void OnItemStackPress(XUiController sender, int mouseButton)
+        protected void OnSortPressed(int ignoreSlots)
+        {
+            global::ItemStack[] slots = SortUtil.CombineAndSortStacks(this, ignoreSlots);
+            xui.PlayerInventory.Backpack.SetSlots(slots);
+        }
+
+        protected void OnItemStackPress(XUiController sender, int mouseButton)
         {
             ItemStack itemStack = sender as ItemStack;
             if (itemStack != null && QuartzInputManager.inventoryActions.LockSlot.IsPressed)
@@ -179,7 +192,7 @@ namespace Quartz
                 int flag = 0;
                 int indexOffset = i * 20;
 
-                for (int j = 0; j < 20; j++)
+                for (int j = 0; j < 20 && (j + indexOffset) < itemControllers.Length; j++)
                 {
                     ItemStack itemStack = itemControllers[j + indexOffset] as ItemStack;
                     if (itemStack != null && itemStack.IsALockedSlot)
@@ -211,7 +224,7 @@ namespace Quartz
                 int flag = (int)player.GetCVar(lockedSlotsCvarName + i);
                 int indexOffset = i * 20;
 
-                for (int j = 0; j < 20; j++)
+                for (int j = 0; j < 20 && (j + indexOffset) < itemControllers.Length; j++)
                 {
                     ItemStack itemStack = itemControllers[j + indexOffset] as ItemStack;
                     if (itemStack != null && (flag & (1 << j)) != 0)

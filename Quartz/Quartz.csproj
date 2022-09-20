@@ -96,6 +96,7 @@
     <Compile Include="Source\Controllers\Inventory\LootWindow\XUiC_LootContainer_Harmony.cs" />
     <Compile Include="Source\Controllers\Inventory\LootWindow\XUiC_LootWindow_Harmony.cs" />
     <Compile Include="Source\Controllers\Inventory\SearchUtil.cs" />
+    <Compile Include="Source\Controllers\Inventory\SortUtil.cs" />
     <Compile Include="Source\Controllers\Inventory\VehicleStorageWindow\VehicleContainer.cs" />
     <Compile Include="Source\Controllers\Inventory\VehicleStorageWindow\XUiC_VehicleContainer_Harmony.cs" />
     <Compile Include="Source\Controllers\MainMenu\MainMenuMusic_Harmony.cs" />

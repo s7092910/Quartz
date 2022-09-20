@@ -29,14 +29,7 @@ namespace Quartz
         {
             base.Init();
 
-            XUiController child = GetChildById("btnSort");
-            if (child != null)
-            {
-                ClearEventHandlers(child, "OnPress");
-                child.OnPress += Sort;
-            }
-
-            child = GetChildById("btnMoveAll");
+            XUiController child = GetChildById("btnMoveAll");
             if (child != null)
             {
                 ClearEventHandlers(child, "OnPress");
@@ -134,67 +127,6 @@ namespace Quartz
                     return;
                 }
                 moveAllDone(item, item2);
-            }
-        }
-
-        protected virtual void Sort(XUiController sender, int mouseButton)
-        {
-            XUiC_ItemStackGrid srcGrid;
-            IInventory dstInventory;
-            MoveAllowed(out srcGrid, out dstInventory);
-            if(!(srcGrid is Backpack))
-            {
-                Action<int> onSortPressed = OnSortPressed;
-                if (onSortPressed == null)
-                {
-                    return;
-                }
-                onSortPressed(ignoredLockedSlots);
-
-                return;
-            }
-
-            Backpack backpack = srcGrid as Backpack;
-
-            if(backpack != null)
-            {
-                XUiController[] itemStackControllers = srcGrid.GetItemStackControllers();
-
-                List<global::ItemStack> itemsList = new List<global::ItemStack>();
-
-                for(int i = ignoredLockedSlots; i < itemStackControllers.Length; i++)
-                {
-                    XUiC_ItemStack itemStack = itemStackControllers[i] as XUiC_ItemStack;
-                    if(itemStack != null)
-                    {
-                        if (!(itemStack is ItemStack quartzItemStack) || !quartzItemStack.IsALockedSlot)
-                        {
-                            itemsList.Add(itemStack.ItemStack);
-                        } 
-                    }
-                }
-
-                global::ItemStack[] items = itemsList.ToArray();
-                items = StackSortUtil.CombineAndSortStacks(items, 0);
-
-                global::ItemStack[] slots = backpack.GetSlots();
-
-                int j = 0;
-                for (int i = ignoredLockedSlots; i < slots.Length; i++)
-                {
-                    XUiC_ItemStack itemStack = itemStackControllers[i] as XUiC_ItemStack;
-                    if (itemStack != null)
-                    {
-                        if (!(itemStack is ItemStack quartzItemStack) || !quartzItemStack.IsALockedSlot)
-                        {
-                            slots[i] = items[j];
-                            j++;
-                        }
-                    }
-                }
-
-                xui.PlayerInventory.Backpack.SetSlots(slots);
-
             }
         }
 
