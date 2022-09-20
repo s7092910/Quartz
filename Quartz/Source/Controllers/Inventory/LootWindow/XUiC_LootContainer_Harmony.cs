@@ -19,7 +19,7 @@ public class XUiC_LootContainerPatch
 {
     private const string TAG = "XUiC_LootContainerPatch";
 
- 
+
     //Removed as OnTileEntityChanged is called anyways when this is called
 
     //[HarmonyPostfix]
@@ -31,6 +31,16 @@ public class XUiC_LootContainerPatch
     //        instance.HandleSlotChangedEvent(slotNumber, stack);
     //    }
     //}
+
+    [HarmonyPrefix]
+    [HarmonyPatch("SetSlots")]
+    public static void SetSlotsPrefix(XUiC_LootContainer __instance, TileEntityLootContainer lootContainer, ItemStack[] stackList)
+    {
+        if (__instance is Quartz.LootContainer instance)
+        {
+            instance.SetCurrentTileEntity(lootContainer);
+        }
+    }
 
     [HarmonyPostfix]
     [HarmonyPatch("SetSlots")]
