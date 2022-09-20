@@ -17,9 +17,9 @@ using HarmonyLib;
 using Platform.Local;
 using Quartz.Inputs;
 using Quartz.Inventory;
+using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Xml.Linq;
-using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
 
 namespace Quartz
 {
@@ -28,13 +28,11 @@ namespace Quartz
 		private const string TAG = "VehicleContainer";
         private const string lockedSlotsCvarName = "$varQuartzVehicleLockedSlots";
 
-		private XUiC_VehicleStorageWindowGroup parent;
         private XUiC_ContainerStandardControls controls;
-		
+
 		private EntityVehicle vehicle;
 
-		private Dictionary<string, float> cvars;
-
+		private int ignoredSlots;
 		private string searchResult;
 
 		private Traverse isClosingTraverse;
@@ -44,10 +42,6 @@ namespace Quartz
 		public override void Init()
 		{
 			base.Init();
-
-			cvars = new Dictionary<string, float>();
-
-			parent = GetParentByType<XUiC_VehicleStorageWindowGroup>();
 
 			XUiC_ComboBoxInt comboBox = GetChildByType<XUiC_ComboBoxInt>();
 			if (comboBox != null)
@@ -124,7 +118,14 @@ namespace Quartz
 			if (!isClosingTraverse.GetValue<bool>() && ViewComponent != null && ViewComponent.IsVisible && items != null && !xui.playerUI.windowManager.IsInputActive()
 				&& (xui.playerUI.playerInput.GUIActions.LeftStick.WasPressed || xui.playerUI.playerInput.PermanentActions.Reload.WasPressed))
 			{
-				controls.MoveAll();
+                if (controls is ContainerStandardControls quartzControls)
+                {
+                    quartzControls.MoveAllButLocked();
+                }
+                else
+                {
+                    controls.MoveAll();
+                }
 			}
 		}
 
@@ -143,7 +144,7 @@ namespace Quartz
 
         public void SetCurrentVehicle()
         {
-            vehicle = parent.CurrentVehicleEntity;
+            vehicle = xui.vehicle;
             LoadLockedSlots();
         }
 
@@ -173,7 +174,7 @@ namespace Quartz
 				}
 			}
 
-            cvars[lockedSlotsCvarName] = newValue;
+			ignoredSlots = (int)newValue;
 
             SaveLockedSlots();
         }
@@ -205,9 +206,13 @@ namespace Quartz
         {
             if (sender is ItemStack itemStack && QuartzInputManager.inventoryActions.LockSlot.IsPressed)
 			{
-                itemStack.IsALockedSlot = !itemStack.IsALockedSlot;
-                Manager.PlayButtonClick();
-                SaveLockedSlots();
+                int index = Array.IndexOf(itemControllers, itemStack);
+                if(index >= ignoredSlots)
+                {
+                    itemStack.IsALockedSlot = !itemStack.IsALockedSlot;
+                    Manager.PlayButtonClick();
+                    SaveLockedSlots();
+                }
             }
         }
 
@@ -218,31 +223,17 @@ namespace Quartz
                 return;
             }
 
-            int saveArrayCount = itemControllers.Length / 20;
-
-            if (itemControllers.Length % 20 != 0)
+			BitArray bitArray = new BitArray(itemControllers.Length);
+            for (int i = 0; i < bitArray.Length; i++)
             {
-                saveArrayCount++;
-            }
-
-            for (int i = 0; i < saveArrayCount; i++)
-            {
-                int flag = 0;
-                int indexOffset = i * 20;
-
-                for (int j = 0; j < 20 && (j + indexOffset) < itemControllers.Length; j++)
+                ItemStack itemStack = itemControllers[i] as ItemStack;
+                if (itemStack != null && itemStack.IsALockedSlot)
                 {
-                    ItemStack itemStack = itemControllers[j + indexOffset] as ItemStack;
-                    if (itemStack != null && itemStack.IsALockedSlot)
-                    {
-                        flag |= 1 << j;
-                    }
+                    bitArray.Set(i, true);
                 }
-
-				cvars[lockedSlotsCvarName + i] = flag;
             }
 
-            SaveVehicleCVars();
+            SaveLockedSlotsData(bitArray);
         }
 
         protected virtual void LoadLockedSlots()
@@ -252,82 +243,59 @@ namespace Quartz
                 return;
             }
 
-            LoadVehicleCvars();
+            BitArray bitArray = LoadLockedSlotsData();
 
-            int saveArrayCount = itemControllers.Length / 20;
-
-            if (itemControllers.Length % 20 != 0)
+            for (int i = 0; i < itemControllers.Length; i++)
             {
-                saveArrayCount++;
-            }
-
-            for (int i = 0; i < saveArrayCount; i++)
-            {
-                int flag = (int)cvars[lockedSlotsCvarName + i];
-                int indexOffset = i * 20;
-
-                for (int j = 0; j < 20 && (j + indexOffset) < itemControllers.Length; j++)
+                ItemStack itemStack = itemControllers[i] as ItemStack;
+                if (itemStack != null)
                 {
-                    ItemStack itemStack = itemControllers[j + indexOffset] as ItemStack;
-                    if (itemStack != null)
-                    {
-                        itemStack.IsALockedSlot = (flag & (1 << j)) != 0;
-                    }
+                    itemStack.IsALockedSlot = bitArray.Get(i);
                 }
             }
         }
 
-		private void LoadVehicleCvars()
-		{
-            int cVarCount = itemControllers.Length / 20;
-
-            if (itemControllers.Length % 20 != 0)
-            {
-                cVarCount++;
-            }
-
-            cvars.Clear();
-
-			List<PlatformUserIdentifierAbs> userIds = vehicle.GetVehicle().AllowedUsers;
-			for(int i = 0; i < cVarCount + 1 && i < userIds.Count; i++)
-			{
-				if (userIds[i] is UserIdentifierLocal userId)
-				{
-					string[] idStrings = userId.PlayerName.Split(',');
-					if (idStrings[0] == lockedSlotsCvarName || idStrings[0].Substring(0, lockedSlotsCvarName.Length) == lockedSlotsCvarName)
-					{
-						cvars.Add(idStrings[0],float.Parse(idStrings[1]));
-					}
-				}
-			}
-
-			if(cvars.Count <= 0)
-			{
-				for (int i = cVarCount - 1; i >= 0; i--)
-				{
-					userIds.Insert(0, new UserIdentifierLocal(lockedSlotsCvarName + i + "," + 0));
-					cvars.Add(lockedSlotsCvarName + i, 0);
-                }
-
-                userIds.Insert(0, new UserIdentifierLocal(lockedSlotsCvarName + "," + 0));
-                cvars.Add(lockedSlotsCvarName, 0);
-            }
-		}
-
-		private void SaveVehicleCVars()
-		{
+        private void SaveLockedSlotsData(BitArray bitArray)
+        {
             List<PlatformUserIdentifierAbs> userIds = vehicle.GetVehicle().AllowedUsers;
+            byte[] bytes = new byte[(bitArray.Length - 1) / 8 + 1];
+            bitArray.CopyTo(bytes, 0);
+
+            string newUserId = lockedSlotsCvarName + "," + ignoredSlots + "," + Convert.ToBase64String(bytes);
+
             for (int i = 0; i < userIds.Count; i++)
             {
                 if (userIds[i] is UserIdentifierLocal userId)
                 {
                     string[] idStrings = userId.PlayerName.Split(',');
-                    if (idStrings[0] == lockedSlotsCvarName || idStrings[0].Substring(0, lockedSlotsCvarName.Length) == lockedSlotsCvarName)
+                    if (idStrings[0] == lockedSlotsCvarName)
                     {
-                        userIds[i] = new UserIdentifierLocal(idStrings[0] + "," + cvars[idStrings[0]]);
+                        userIds[i] = new UserIdentifierLocal(newUserId);
+                        return;
                     }
                 }
             }
+
+            userIds.Insert(0, new UserIdentifierLocal(newUserId));
+        }
+
+        private BitArray LoadLockedSlotsData()
+        {
+            foreach (PlatformUserIdentifierAbs userId in vehicle.GetVehicle().AllowedUsers)
+			{
+                if (userId is UserIdentifierLocal user)
+                {
+                    string[] idStrings = user.PlayerName.Split(',');
+                    if (idStrings[0] == lockedSlotsCvarName && idStrings.Length == 3)
+                    {
+                        ignoredSlots = int.Parse(idStrings[1]);
+						byte[] bytes = Convert.FromBase64String(idStrings[2]);
+						return new BitArray(bytes);
+                    }
+                }
+            }
+
+			return new BitArray(itemControllers.Length);
         }
 
         private void FilterFromSearch(string search)

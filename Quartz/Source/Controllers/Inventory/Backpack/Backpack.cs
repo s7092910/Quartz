@@ -15,6 +15,7 @@ limitations under the License.*/
 using Audio;
 using Quartz.Inputs;
 using Quartz.Inventory;
+using System;
 
 namespace Quartz
 {
@@ -30,6 +31,7 @@ namespace Quartz
 		private EntityPlayer player;
 
         private string searchResult;
+        private int ignoredLockedSlots;
 
         public override void Init()
 		{
@@ -79,9 +81,9 @@ namespace Quartz
 
                 if(standardControls != null && comboBox != null)
                 {
-                    int lockedSlotsCount = (int)player.GetCVar(lockedSlotsCvarName);
-                    comboBox.Value = lockedSlotsCount;
-                    standardControls.ChangeLockedSlots(lockedSlotsCount);
+                    ignoredLockedSlots = (int)player.GetCVar(lockedSlotsCvarName);
+                    comboBox.Value = ignoredLockedSlots;
+                    standardControls.ChangeLockedSlots(ignoredLockedSlots);
 
                     if(standardControls is ContainerStandardControls)
                     {
@@ -148,6 +150,7 @@ namespace Quartz
             }
 
             player.SetCVar(lockedSlotsCvarName, newValue);
+            ignoredLockedSlots = (int)newValue;
 
             SaveLockedSlots();
         }
@@ -160,12 +163,15 @@ namespace Quartz
 
         protected void OnItemStackPress(XUiController sender, int mouseButton)
         {
-            ItemStack itemStack = sender as ItemStack;
-            if (itemStack != null && QuartzInputManager.inventoryActions.LockSlot.IsPressed)
+            if (sender is ItemStack itemStack && QuartzInputManager.inventoryActions.LockSlot.IsPressed)
             {
-                itemStack.IsALockedSlot = !itemStack.IsALockedSlot;
-                Manager.PlayButtonClick();
-                SaveLockedSlots();
+                int index = Array.IndexOf(itemControllers, itemStack);
+                if (index >= ignoredLockedSlots)
+                {
+                    itemStack.IsALockedSlot = !itemStack.IsALockedSlot;
+                    Manager.PlayButtonClick();
+                    SaveLockedSlots();
+                }
             }
         }
 

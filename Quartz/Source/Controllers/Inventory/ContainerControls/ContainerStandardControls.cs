@@ -129,6 +129,11 @@ namespace Quartz
             }
         }
 
+        public void MoveAllButLocked()
+        {
+            MoveAll(this, 0);
+        }
+
         private (bool allMoved, bool anyMoved) StashItems(XUiC_ItemStackGrid srcGrid, IInventory dstInventory, int ignoredSlots, XUiM_LootContainer.EItemMoveKind moveKind, bool startBottomRight)
         {
             if (srcGrid == null || dstInventory == null)
