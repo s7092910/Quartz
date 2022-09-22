@@ -104,6 +104,7 @@
     <Compile Include="Source\Controllers\Map\MapInvitesListEntry.cs" />
     <Compile Include="Source\Controllers\Map\MapWaypointListEntry.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MapArea_Harmony.cs" />
+    <Compile Include="Source\Controllers\RandomText.cs" />
     <Compile Include="Source\Controllers\Spinner.cs" />
     <Compile Include="Source\Controllers\XUiController_Harmony.cs" />
     <Compile Include="Source\Inputs\InventoryActions.cs" />
