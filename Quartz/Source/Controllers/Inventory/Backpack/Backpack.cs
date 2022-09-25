@@ -19,7 +19,7 @@ using System;
 
 namespace Quartz
 {
-	public class Backpack : global::XUiC_Backpack
+	public class Backpack : global::XUiC_Backpack, ILockableInventory
 	{
 		private const string TAG = "Backpack";
 
@@ -81,29 +81,27 @@ namespace Quartz
 
                 if(standardControls != null && comboBox != null)
                 {
-                    ignoredLockedSlots = (int)player.GetCVar(lockedSlotsCvarName);
                     comboBox.Value = ignoredLockedSlots;
                     standardControls.ChangeLockedSlots(ignoredLockedSlots);
-
-                    if(standardControls is ContainerStandardControls)
-                    {
-                        standardControls.OnSortPressed = OnSortPressed;
-                    }
                 }
-			}
+
+                if (standardControls is ContainerStandardControls controls)
+                {
+                    standardControls.OnSortPressed = OnSortPressed;
+                    controls.ChangeLockedSlots(ignoredLockedSlots);
+                }
+            }
 		}
 
         public override void OnOpen()
         {
             base.OnOpen();
-
             QuartzInputManager.inventoryActions.Enabled = true;
         }
 
         public override void OnClose()
         {
             base.OnClose();
-
             QuartzInputManager.inventoryActions.Enabled = false;
         }
 
@@ -117,6 +115,48 @@ namespace Quartz
 				FilterFromSearch(itemStack, !string.IsNullOrEmpty(searchResult), searchResult);
 			}
 		}
+
+        public int TotalLockedSlotsCount()
+        {
+            int count = 0;
+            for (int i = 0; i < itemControllers.Length; i++)
+            {
+                if (itemControllers[i] is ItemStack itemStack && itemStack.IsALockedSlot)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        public int IndividualLockedSlotsCount()
+        {
+            int count = 0;
+            for (int i = 0; i < itemControllers.Length; i++)
+            {
+                if (i >= ignoredLockedSlots && itemControllers[i] is ItemStack itemStack && itemStack.IsALockedSlot)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        public int UnlockedSlotCount()
+        {
+            int count = 0;
+            for (int i = 0; i < itemControllers.Length; i++)
+            {
+                if (i >= ignoredLockedSlots && itemControllers[i] is ItemStack itemStack && !itemStack.IsALockedSlot)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
 
         protected override void SetStacks(global::ItemStack[] stackList)
         {
@@ -163,7 +203,8 @@ namespace Quartz
 
         protected void OnItemStackPress(XUiController sender, int mouseButton)
         {
-            if (sender is ItemStack itemStack && QuartzInputManager.inventoryActions.LockSlot.IsPressed)
+            if (sender is ItemStack itemStack && standardControls is ContainerStandardControls controls 
+                && (QuartzInputManager.inventoryActions.LockSlot.IsPressed || controls.IsIndividualSlotLockingAllowed()))
             {
                 int index = Array.IndexOf(itemControllers, itemStack);
                 if (index >= ignoredLockedSlots)
@@ -171,6 +212,7 @@ namespace Quartz
                     itemStack.IsALockedSlot = !itemStack.IsALockedSlot;
                     Manager.PlayButtonClick();
                     SaveLockedSlots();
+                    controls.RefreshBindings();
                 }
             }
         }
@@ -235,6 +277,8 @@ namespace Quartz
                     }
                 }
             }
+
+            ignoredLockedSlots = (int)player.GetCVar(lockedSlotsCvarName);
         }
 
         private void FilterFromSearch(string search)
@@ -263,5 +307,5 @@ namespace Quartz
 			}
 			itemStack.IsSearchActive = activeSearch;
 		}
-	}
+    }
 }

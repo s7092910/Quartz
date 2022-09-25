@@ -23,16 +23,17 @@ using System.Collections.Generic;
 
 namespace Quartz
 {
-	public class VehicleContainer : global::XUiC_VehicleContainer
+	public class VehicleContainer : global::XUiC_VehicleContainer, ILockableInventory
 	{
 		private const string TAG = "VehicleContainer";
         private const string lockedSlotsCvarName = "$varQuartzVehicleLockedSlots";
 
-        private XUiC_ContainerStandardControls controls;
+        private XUiC_ContainerStandardControls standardControls;
+        private XUiC_ComboBoxInt comboBox;
 
 		private EntityVehicle vehicle;
 
-		private int ignoredSlots;
+		private int ignoredLockedSlots;
 		private string searchResult;
 
 		private Traverse isClosingTraverse;
@@ -43,7 +44,7 @@ namespace Quartz
 		{
 			base.Init();
 
-			XUiC_ComboBoxInt comboBox = GetChildByType<XUiC_ComboBoxInt>();
+			comboBox = GetChildByType<XUiC_ComboBoxInt>();
 			if (comboBox != null)
 			{
 				comboBox.OnValueChanged += OnLockedSlotsChange;
@@ -59,11 +60,11 @@ namespace Quartz
 				}
 			}
 
-			controls = GetChildByType<XUiC_ContainerStandardControls>();
+			standardControls = GetChildByType<XUiC_ContainerStandardControls>();
 
-            if (controls != null && controls is ContainerStandardControls)
+            if (standardControls is ContainerStandardControls)
             {
-                controls.OnSortPressed = OnSortPressed;
+                standardControls.OnSortPressed = OnSortPressed;
                 foreach (XUiController itemStackController in GetItemStackControllers())
 				{
                     itemStackController.OnPress += OnItemStackPress;
@@ -118,13 +119,13 @@ namespace Quartz
 			if (!isClosingTraverse.GetValue<bool>() && ViewComponent != null && ViewComponent.IsVisible && items != null && !xui.playerUI.windowManager.IsInputActive()
 				&& (xui.playerUI.playerInput.GUIActions.LeftStick.WasPressed || xui.playerUI.playerInput.PermanentActions.Reload.WasPressed))
 			{
-                if (controls is ContainerStandardControls quartzControls)
+                if (standardControls is ContainerStandardControls controls)
                 {
-                    quartzControls.MoveAllButLocked();
+                    controls.MoveAllButLocked();
                 }
                 else
                 {
-                    controls.MoveAll();
+                    standardControls.MoveAll();
                 }
 			}
 		}
@@ -146,6 +147,48 @@ namespace Quartz
         {
             vehicle = xui.vehicle;
             LoadLockedSlots();
+        }
+
+        public int TotalLockedSlotsCount()
+        {
+            int count = 0;
+            for (int i = 0; i < itemControllers.Length; i++)
+            {
+                if (itemControllers[i] is ItemStack itemStack && itemStack.IsALockedSlot)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        public int IndividualLockedSlotsCount()
+        {
+            int count = 0;
+            for (int i = 0; i < itemControllers.Length; i++)
+            {
+                if (i >= ignoredLockedSlots && itemControllers[i] is ItemStack itemStack && itemStack.IsALockedSlot)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        public int UnlockedSlotCount()
+        {
+            int count = 0;
+            for (int i = 0; i < itemControllers.Length; i++)
+            {
+                if (i >= ignoredLockedSlots && itemControllers[i] is ItemStack itemStack && !itemStack.IsALockedSlot)
+                {
+                    count++;
+                }
+            }
+
+            return count;
         }
 
         protected void OnSearchInputChange(XUiController sender, string text, bool changeFromCode)
@@ -174,7 +217,7 @@ namespace Quartz
 				}
 			}
 
-			ignoredSlots = (int)newValue;
+			ignoredLockedSlots = (int)newValue;
 
             SaveLockedSlots();
         }
@@ -204,10 +247,11 @@ namespace Quartz
 
         protected void OnItemStackPress(XUiController sender, int mouseButton)
         {
-            if (sender is ItemStack itemStack && QuartzInputManager.inventoryActions.LockSlot.IsPressed)
+            if (sender is ItemStack itemStack && standardControls is ContainerStandardControls controls
+                && (QuartzInputManager.inventoryActions.LockSlot.IsPressed || controls.IsIndividualSlotLockingAllowed()))
 			{
                 int index = Array.IndexOf(itemControllers, itemStack);
-                if(index >= ignoredSlots)
+                if(index >= ignoredLockedSlots)
                 {
                     itemStack.IsALockedSlot = !itemStack.IsALockedSlot;
                     Manager.PlayButtonClick();
@@ -253,6 +297,17 @@ namespace Quartz
                     itemStack.IsALockedSlot = bitArray.Get(i);
                 }
             }
+
+            if (standardControls != null && comboBox != null)
+            {
+                standardControls.ChangeLockedSlots(ignoredLockedSlots);
+                comboBox.Value = ignoredLockedSlots;
+            }
+
+            if (standardControls is ContainerStandardControls controls)
+            {
+                controls.ChangeLockedSlots(ignoredLockedSlots);
+            }
         }
 
         private void SaveLockedSlotsData(BitArray bitArray)
@@ -261,7 +316,7 @@ namespace Quartz
             byte[] bytes = new byte[(bitArray.Length - 1) / 8 + 1];
             bitArray.CopyTo(bytes, 0);
 
-            string newUserId = lockedSlotsCvarName + "," + ignoredSlots + "," + Convert.ToBase64String(bytes);
+            string newUserId = lockedSlotsCvarName + "," + ignoredLockedSlots + "," + Convert.ToBase64String(bytes);
 
             for (int i = 0; i < userIds.Count; i++)
             {
@@ -288,7 +343,7 @@ namespace Quartz
                     string[] idStrings = user.PlayerName.Split(',');
                     if (idStrings[0] == lockedSlotsCvarName && idStrings.Length == 3)
                     {
-                        ignoredSlots = int.Parse(idStrings[1]);
+                        ignoredLockedSlots = int.Parse(idStrings[1]);
 						byte[] bytes = Convert.FromBase64String(idStrings[2]);
 						return new BitArray(bytes);
                     }

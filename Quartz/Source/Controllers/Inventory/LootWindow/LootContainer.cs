@@ -22,17 +22,17 @@ using System.Collections;
 
 namespace Quartz
 {
-	public class LootContainer : global::XUiC_LootContainer
+	public class LootContainer : global::XUiC_LootContainer, ILockableInventory
 	{
 		private const string TAG = "LootContainer";
         private const string lockedSlotsCvarName = "$varQuartzLootContainerLockedSlots";
 
         private XUiC_ComboBoxInt comboBox;
-        private XUiC_ContainerStandardControls controls;
+        private XUiC_ContainerStandardControls standardControls;
 
         private TileEntityLootContainer lootContainer;
 
-        private int ignoredSlots;
+        private int ignoredLockedSlots;
 
         private string searchResult;
 
@@ -45,9 +45,9 @@ namespace Quartz
 				return;
 			}
 
-            controls = parent.GetChildByType<XUiC_ContainerStandardControls>();
+            standardControls = parent.GetChildByType<XUiC_ContainerStandardControls>();
 
-            comboBox = controls.GetChildByType<XUiC_ComboBoxInt>();
+            comboBox = standardControls.GetChildByType<XUiC_ComboBoxInt>();
             if (comboBox != null)
             {
                 comboBox.OnValueChanged += OnLockedSlotsChange;
@@ -63,7 +63,7 @@ namespace Quartz
                 }
             }
 
-            if (controls != null && controls is ContainerStandardControls)
+            if (standardControls != null && standardControls is ContainerStandardControls)
             {
                 foreach (XUiController xUiController in GetItemStackControllers())
                 {
@@ -75,7 +75,10 @@ namespace Quartz
         public override void OnOpen()
         {
             base.OnOpen();
-            controls.OnSortPressed = OnSortPressed;
+            if(standardControls is ContainerStandardControls)
+            {
+                standardControls.OnSortPressed = OnSortPressed;
+            }
             QuartzInputManager.inventoryActions.Enabled = true;
         }
 
@@ -122,7 +125,7 @@ namespace Quartz
                 }
             }
 
-            ignoredSlots = (int)newValue;
+            ignoredLockedSlots = (int)newValue;
 
             SaveLockedSlots();
         }
@@ -141,6 +144,48 @@ namespace Quartz
             FilterFromSearch(searchResult);
         }
 
+        public int TotalLockedSlotsCount()
+        {
+            int count = 0;
+            for (int i = 0; i < itemControllers.Length; i++)
+            {
+                if (itemControllers[i] is ItemStack itemStack && itemStack.IsALockedSlot)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        public int IndividualLockedSlotsCount()
+        {
+            int count = 0;
+            for (int i = 0; i < itemControllers.Length; i++)
+            {
+                if (i >= ignoredLockedSlots && itemControllers[i] is ItemStack itemStack && itemStack.IsALockedSlot)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        public int UnlockedSlotCount()
+        {
+            int count = 0;
+            for (int i = 0; i < itemControllers.Length; i++)
+            {
+                if (i >= ignoredLockedSlots && itemControllers[i] is ItemStack itemStack && !itemStack.IsALockedSlot)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
         protected void OnSortPressed(int ignoreSlots)
         {
             global::ItemStack[] array = SortUtil.CombineAndSortStacks(this, ignoreSlots);
@@ -152,10 +197,11 @@ namespace Quartz
 
         protected void OnItemStackPress(XUiController sender, int mouseButton)
         {
-            if (lootContainer is TileEntitySecureLootContainer && sender is ItemStack itemStack && QuartzInputManager.inventoryActions.LockSlot.IsPressed)
+            if (lootContainer is TileEntitySecureLootContainer && sender is ItemStack itemStack && standardControls is ContainerStandardControls controls
+                && (QuartzInputManager.inventoryActions.LockSlot.IsPressed || controls.IsIndividualSlotLockingAllowed()))
             {
                 int index = Array.IndexOf(itemControllers, itemStack);
-                if (index >= ignoredSlots)
+                if (index >= ignoredLockedSlots)
                 {
                     itemStack.IsALockedSlot = !itemStack.IsALockedSlot;
                     Manager.PlayButtonClick();
@@ -201,6 +247,17 @@ namespace Quartz
                     itemStack.IsALockedSlot = bitArray.Get(i);
                 }
             }
+
+            if (standardControls != null && comboBox != null)
+            {
+                standardControls.ChangeLockedSlots(ignoredLockedSlots);
+                comboBox.Value = ignoredLockedSlots;
+            }
+
+            if (standardControls is ContainerStandardControls controls)
+            {
+                controls.ChangeLockedSlots(ignoredLockedSlots);
+            }
         }
 
         private void SaveLockedSlotsData(BitArray bitArray)
@@ -215,7 +272,7 @@ namespace Quartz
             byte[] bytes = new byte[(bitArray.Length - 1) / 8 + 1];
             bitArray.CopyTo(bytes, 0);
 
-            string newUserId = lockedSlotsCvarName + "," + ignoredSlots + "," + Convert.ToBase64String(bytes);
+            string newUserId = lockedSlotsCvarName + "," + ignoredLockedSlots + "," + Convert.ToBase64String(bytes);
 
             for (int i = 0; i < userIds.Count; i++)
             {
@@ -248,7 +305,7 @@ namespace Quartz
                     string[] idStrings = user.PlayerName.Split(',');
                     if (idStrings[0] == lockedSlotsCvarName && idStrings.Length == 3)
                     {
-                        ignoredSlots = int.Parse(idStrings[1]);
+                        ignoredLockedSlots = int.Parse(idStrings[1]);
                         byte[] bytes = Convert.FromBase64String(idStrings[2]);
                         return new BitArray(bytes);
                     }

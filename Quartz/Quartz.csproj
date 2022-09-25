@@ -90,6 +90,7 @@
     <Compile Include="Source\Controllers\DialIndicator.cs" />
     <Compile Include="Source\Controllers\Inventory\Backpack\Backpack.cs" />
     <Compile Include="Source\Controllers\Inventory\ContainerControls\ContainerStandardControls.cs" />
+    <Compile Include="Source\Controllers\Inventory\ILockableInventory.cs" />
     <Compile Include="Source\Controllers\Inventory\ItemStack\ItemStack.cs" />
     <Compile Include="Source\Controllers\Inventory\ItemStack\XUiC_ItemStack_Harmony.cs" />
     <Compile Include="Source\Controllers\Inventory\LootWindow\LootContainer.cs" />

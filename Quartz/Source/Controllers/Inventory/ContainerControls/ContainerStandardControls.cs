@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using HarmonyLib;
+using Quartz.Inventory;
 using System;
 using System.Reflection;
 using UnityEngine;
@@ -23,6 +24,10 @@ namespace Quartz
     {
         protected int ignoredLockedSlots;
         protected static float lastStashTime;
+
+        protected XUiV_Button btnIndividualLock;
+
+        protected ILockableInventory inventory;
 
         public override void Init()
         {
@@ -62,14 +67,74 @@ namespace Quartz
                 XUiC_ComboBoxInt comboBox = GetChildByType<XUiC_ComboBoxInt>();
                 if(comboBox != null)
                 {
-                    comboBox.OnValueChanged += ComboBox_OnValueChanged;
+                    comboBox.OnValueChanged += ComboBoxOnValueChanged;
                 }
+            }
+
+            child = GetChildById("btnIndividualLock");
+            if(child != null)
+            {
+                child.OnPress += IndividualLockOnPress;
+                btnIndividualLock = child.ViewComponent as XUiV_Button;
+            }
+
+            inventory = GetParentWindow().Controller.GetChildByType<XUiC_ItemStackGrid>() as ILockableInventory;
+        }
+
+        public override void OnOpen()
+        {
+            base.OnOpen();
+            RefreshBindings();
+        }
+
+        public void MoveAllButLocked()
+        {
+            MoveAll(this, 0);
+        }
+
+        public bool IsIndividualSlotLockingAllowed()
+        {
+            return btnIndividualLock != null && btnIndividualLock.Selected;
+        }
+
+        public override bool GetBindingValue(ref string value, string bindingName)
+        {
+            switch(bindingName)
+            {
+                case "totallockedslotscount":
+                    value = inventory != null ? inventory.TotalLockedSlotsCount().ToString() : "0";
+                    return true;
+                case "combolockedslots":
+                    value = ignoredLockedSlots.ToString();
+                    return true;
+                case "individuallockedslotscount":
+                    value = inventory != null ? inventory.IndividualLockedSlotsCount().ToString() : "0";
+                    return true;
+                case "unlockedslotscount":
+                    value = inventory != null ? inventory.UnlockedSlotCount().ToString() : "0";
+                    return true;
+                default:
+                    return base.GetBindingValue(ref value, bindingName);
             }
         }
 
-        protected virtual void ComboBox_OnValueChanged(XUiController sender, long oldValue, long newValue)
+        public new void ChangeLockedSlots(long newValue)
         {
             ignoredLockedSlots = (int)newValue;
+            RefreshBindings();
+        }
+
+        protected virtual void IndividualLockOnPress(XUiController _sender, int _mouseButton)
+        {
+            if(btnIndividualLock != null)
+            {
+                btnIndividualLock.Selected = !btnIndividualLock.Selected;
+            }
+        }
+
+        protected virtual void ComboBoxOnValueChanged(XUiController sender, long oldValue, long newValue)
+        {
+            ChangeLockedSlots(newValue);
         }
 
         protected virtual void MoveSmart(XUiController sender, int mouseButton)
@@ -127,11 +192,6 @@ namespace Quartz
                 }
                 moveAllDone(item, item2);
             }
-        }
-
-        public void MoveAllButLocked()
-        {
-            MoveAll(this, 0);
         }
 
         private (bool allMoved, bool anyMoved) StashItems(XUiC_ItemStackGrid srcGrid, IInventory dstInventory, int ignoredSlots, XUiM_LootContainer.EItemMoveKind moveKind, bool startBottomRight)
