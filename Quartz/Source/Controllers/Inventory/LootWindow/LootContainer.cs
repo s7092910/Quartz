@@ -238,6 +238,7 @@ namespace Quartz
             }
 
             BitArray bitArray = LoadLockedSlotsData();
+            UpdateIgnoredLockedSlots();
 
             for (int i = 0; i < itemControllers.Length; i++)
             {
@@ -246,17 +247,6 @@ namespace Quartz
                 {
                     itemStack.IsALockedSlot = bitArray.Get(i);
                 }
-            }
-
-            if (standardControls != null && comboBox != null)
-            {
-                standardControls.ChangeLockedSlots(ignoredLockedSlots);
-                comboBox.Value = ignoredLockedSlots;
-            }
-
-            if (standardControls is ContainerStandardControls controls)
-            {
-                controls.ChangeLockedSlots(ignoredLockedSlots);
             }
         }
 
@@ -295,9 +285,12 @@ namespace Quartz
             TileEntitySecureLootContainer secureContainer = lootContainer as TileEntitySecureLootContainer;
             if(secureContainer == null)
             {
+                ignoredLockedSlots = 0;
+                comboBox.Enabled = false;
                 return new BitArray(itemControllers.Length);
             }
 
+            comboBox.Enabled = true;
             foreach (PlatformUserIdentifierAbs userId in secureContainer.GetUsers())
             {
                 if (userId is UserIdentifierLocal user)
@@ -313,6 +306,25 @@ namespace Quartz
             }
 
             return new BitArray(itemControllers.Length);
+        }
+
+        private void UpdateIgnoredLockedSlots()
+        {
+            if(standardControls == null)
+            {
+                return;
+            }
+
+            if (comboBox != null)
+            {
+                standardControls.ChangeLockedSlots(ignoredLockedSlots);
+                comboBox.Value = ignoredLockedSlots;
+            }
+
+            if (standardControls is ContainerStandardControls controls)
+            {
+                controls.ChangeLockedSlots(ignoredLockedSlots);
+            }
         }
 
         private void FilterFromSearch(string search)

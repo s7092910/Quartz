@@ -289,6 +289,8 @@ namespace Quartz
 
             BitArray bitArray = LoadLockedSlotsData();
 
+            UpdateIgnoredLockedSlots();
+
             for (int i = 0; i < itemControllers.Length; i++)
             {
                 ItemStack itemStack = itemControllers[i] as ItemStack;
@@ -296,17 +298,6 @@ namespace Quartz
                 {
                     itemStack.IsALockedSlot = bitArray.Get(i);
                 }
-            }
-
-            if (standardControls != null && comboBox != null)
-            {
-                standardControls.ChangeLockedSlots(ignoredLockedSlots);
-                comboBox.Value = ignoredLockedSlots;
-            }
-
-            if (standardControls is ContainerStandardControls controls)
-            {
-                controls.ChangeLockedSlots(ignoredLockedSlots);
             }
         }
 
@@ -350,7 +341,27 @@ namespace Quartz
                 }
             }
 
-			return new BitArray(itemControllers.Length);
+            ignoredLockedSlots = 0;
+            return new BitArray(itemControllers.Length);
+        }
+
+        private void UpdateIgnoredLockedSlots()
+        {
+            if (standardControls == null)
+            {
+                return;
+            }
+
+            if (comboBox != null)
+            {
+                standardControls.ChangeLockedSlots(ignoredLockedSlots);
+                comboBox.Value = ignoredLockedSlots;
+            }
+
+            if (standardControls is ContainerStandardControls controls)
+            {
+                controls.ChangeLockedSlots(ignoredLockedSlots);
+            }
         }
 
         private void FilterFromSearch(string search)
