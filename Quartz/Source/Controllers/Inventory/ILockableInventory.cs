@@ -12,13 +12,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
-namespace Quartz
+namespace Quartz.Inventory
 {
-    public class QuartzLoader : IModApi
+    public interface ILockableInventory
     {
-        public void InitMod(Mod _modInstance)
-        {
-            QuartzMod.LoadQuartz(_modInstance);
-        }
+        int TotalLockedSlotsCount();
+
+        int IndividualLockedSlotsCount();
+
+        int UnlockedSlotCount();
     }
 }

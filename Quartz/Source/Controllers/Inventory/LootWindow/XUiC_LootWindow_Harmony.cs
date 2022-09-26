@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using HarmonyLib;
+using Quartz;
 
 [HarmonyPatch(typeof(XUiC_LootWindow))]
 public class XUiC_LootWindowPatch
@@ -57,7 +58,14 @@ public class XUiC_LootWindowPatch
         if (!___isClosing && __instance.ViewComponent != null && __instance.ViewComponent.IsVisible && !__instance.xui.playerUI.windowManager.IsInputActive()
             && (__instance.xui.playerUI.playerInput.GUIActions.LeftStick.WasPressed || __instance.xui.playerUI.playerInput.PermanentActions.Reload.WasPressed))
         {
-            ___controls.MoveAll();
+            if(___controls is ContainerStandardControls controls)
+            {
+                controls.MoveAllButLocked();
+            }
+            else
+            {
+                ___controls.MoveAll();
+            }
         }
 
         return false;

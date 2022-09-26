@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using HarmonyLib;
+using Quartz.Inputs;
 using System;
 using System.Reflection;
 
@@ -22,7 +23,7 @@ namespace Quartz
     {
         private const string ModName = "com.Quartz.Mod";
 
-        public static void LoadQuartz()
+        public static void LoadQuartz(Mod modInstance)
         {
             //If patches have already been loaded, skip.
             if (Harmony.HasAnyPatches(ModName))
@@ -34,6 +35,9 @@ namespace Quartz
             var harmony = new Harmony(ModName);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             Logging.Inform("Loaded Patch");
+
+            Logging.Inform("Loading ActionSets");
+            QuartzInputManager.InitControls(modInstance.Path);
         }
 
     }

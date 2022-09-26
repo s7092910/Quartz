@@ -205,6 +205,11 @@ namespace Quartz
             base.OnHovered(isOver);
         }
 
+        protected override void SelectedChanged(bool _isSelected)
+        {
+            
+        }
+
         protected virtual void updateBorderColor()
         {
             if (IsDragAndDrop)

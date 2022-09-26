@@ -8,3 +8,7 @@ quartzSettingTextResolution,UI,Menu,x,,Text Resolution
 quartzSettingTextResolutionTooltip,UI,Menu,x,,"Sets the Text resolution. If set to high, may cause flickering of the UI every so often"
 quartzSettingDebugMode,UI,Menu,x,,Debug Mode
 quartzSettingDebugModeTooltip,UI,Menu,x,,Enables or disable Quartz debug mode
+quartzSettingInventory,UI,Menu,x,,Inventory
+quartzSettingInputInventoryTooltip,UI,Menu,x,,Inventory Player Control Bindings
+quartzSettingInputLockedSlots,UI,Menu,x,,Lock Slots
+quartzSettingInputLockedSlotsTooltip,UI,Menu,x,,Locks or Unlocks inventory slot when the slot is clicked on

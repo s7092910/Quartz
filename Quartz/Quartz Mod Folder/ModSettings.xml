@@ -25,4 +25,9 @@ limitations under the License.*/-->
       <Switch name="DebugMode" displayKey="quartzSettingDebugMode" tooltipKey="quartzSettingDebugModeTooltip" value="Disabled" defaultValue="Disabled" leftValue="Disabled" rightValue="Enabled" />
     </Category>
   </Tab>
+	<Tab name="Controls">
+		<Category name="Inventory" displayKey="quartzSettingInventory" tooltipKey="quartzSettingInputInventoryTooltip">
+			<Binding name="LockedSlots" displayKey="quartzSettingInputLockedSlots" tooltipKey="quartzSettingInputLockedSlotsTooltip" />
+		</Category>
+	</Tab>
 </ModSettings>

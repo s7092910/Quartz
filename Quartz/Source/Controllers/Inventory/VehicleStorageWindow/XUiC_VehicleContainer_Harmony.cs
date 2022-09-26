@@ -29,9 +29,19 @@ public class XUiC_VehicleContainerPatch
         }
     }
 
+    [HarmonyPrefix]
+    [HarmonyPatch("SetSlots")]
+    public static void SetSlotsPrefix(XUiC_VehicleContainer __instance, ItemStack[] stackList)
+    {
+        if (__instance is Quartz.VehicleContainer instance)
+        {
+            instance.SetCurrentVehicle();
+        }
+    }
+
     [HarmonyPostfix]
     [HarmonyPatch("SetSlots")]
-    public static void SetSlots(XUiC_VehicleContainer __instance, ItemStack[] stackList)
+    public static void SetSlotsPostfix(XUiC_VehicleContainer __instance, ItemStack[] stackList)
     {
         if (__instance is Quartz.VehicleContainer instance)
         {
