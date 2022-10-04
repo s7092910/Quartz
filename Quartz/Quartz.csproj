@@ -44,7 +44,7 @@
     <Reference Include="GearsAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>References\GearsAPI.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="InControl">
       <HintPath>..\..\7DaysToDie_Data\Managed\InControl.dll</HintPath>

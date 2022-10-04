@@ -56,6 +56,9 @@ public class XUiFromXmlPatch
             case "curvedlabel":
                 view = new CurvedLabel(id);
                 break;
+            case "videoplayer":
+                view = new XUiV_VideoPlayer(id);
+                break;
             case "scrollview":
                 view = new ScrollViewContainer(id);
                 break;
