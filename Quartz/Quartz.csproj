@@ -44,6 +44,7 @@
     <Reference Include="GearsAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>References\GearsAPI.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="InControl">
       <HintPath>..\..\7DaysToDie_Data\Managed\InControl.dll</HintPath>
@@ -80,6 +81,10 @@
       <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.VideoModule">
+      <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.VideoModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Quartz Mod Folder\License\LICENSE.md" />
@@ -107,6 +112,7 @@
     <Compile Include="Source\Controllers\Map\XUiC_MapArea_Harmony.cs" />
     <Compile Include="Source\Controllers\RandomText.cs" />
     <Compile Include="Source\Controllers\Spinner.cs" />
+    <Compile Include="Source\Views\VideoPlayer\XUiV_VideoPlayer.cs" />
     <Compile Include="Source\Controllers\XUiController_Harmony.cs" />
     <Compile Include="Source\Inputs\InventoryActions.cs" />
     <Compile Include="Source\Inputs\PlayerActionsBaseExtensions.cs" />

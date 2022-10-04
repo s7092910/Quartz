@@ -32,7 +32,7 @@ namespace Quartz
 
         public override bool GetBindingValue(ref string value, string bindingName)
         {
-            switch( bindingName )
+            switch (bindingName)
             {
                 case "randomtexture":
                     value = getRandomTexture();
@@ -70,7 +70,7 @@ namespace Quartz
 
         private string getRandomTexture()
         {
-            if(textures == null)
+            if (textures == null)
             {
                 return string.Empty;
             }
@@ -80,3 +80,4 @@ namespace Quartz
         }
     }
 }
+
