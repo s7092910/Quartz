@@ -20,16 +20,18 @@ namespace Quartz
 {
     public class XUiV_VideoPlayer : XUiView
     {
+
+        private const string TAG = "XUiV_VideoPlayer";
+
         protected VideoPlayer videoPlayer;
         protected UITexture uiTexture;
         protected RenderTexture renderTexture;
 
-        protected string pathName;
-        protected bool videoChanged;
+        protected string videoPath;
+        protected bool videoDirty;
 
         protected bool loopVideo = true;
         protected bool restartOnOpen = false;
-        protected bool playOnOpen = true;
         protected bool autoplay = true;
 
         private float globalOpacityModifier = 1f;
@@ -43,14 +45,14 @@ namespace Quartz
         {
             get
             {
-                return pathName;
+                return videoPath;
             }
             set
             {
-                if (value != pathName)
+                if (value != videoPath)
                 {
-                    pathName = value;
-                    videoChanged = true;
+                    videoPath = value;
+                    videoDirty = true;
                     isDirty = true;
                 }
             }
@@ -78,12 +80,6 @@ namespace Quartz
             set { restartOnOpen = value; }
         }
 
-        public bool AutoPlayOnOpen
-        {
-            get { return playOnOpen; }
-            set { playOnOpen = value; }
-        }
-
         public bool AutoPlay
         {
             get { return autoplay; }
@@ -98,7 +94,7 @@ namespace Quartz
             }
             set
             {
-                if(value != globalOpacityModifier)
+                if (value != globalOpacityModifier)
                 {
                     globalOpacityModifier = value;
                     isDirty = true;
@@ -124,15 +120,13 @@ namespace Quartz
 
             videoPlayer.playOnAwake = false;
             videoPlayer.renderMode = VideoRenderMode.RenderTexture;
+            videoPlayer.errorReceived += VideoPlayer_errorReceived;
 
             renderTexture = new RenderTexture(size.x, size.y, 32);
             renderTexture.format = RenderTextureFormat.ARGB32;
 
             videoPlayer.targetTexture = renderTexture;
             uiTexture.mainTexture = renderTexture;
-
-            UpdateData();
-            initialized = true;
         }
 
         public override void Update(float dt)
@@ -152,6 +146,8 @@ namespace Quartz
             }
 
             uiTexture.SetDimensions(size.x, size.y);
+            renderTexture.width = size.x;
+            renderTexture.height = size.y;
 
             videoPlayer.isLooping = loopVideo;
 
@@ -173,6 +169,8 @@ namespace Quartz
                     collider.center = uiTexture.localCenter;
                     collider.size = new Vector3(uiTexture.localSize.x * colliderScale, uiTexture.localSize.y * colliderScale, 0f);
                 }
+
+                initialized = true;
             }
 
             uiTexture.keepAspectRatio = keepAspectRatio;
@@ -180,24 +178,28 @@ namespace Quartz
             parseAnchors(uiTexture);
             base.UpdateData();
 
-            if (videoChanged)
+            if (!string.IsNullOrEmpty(videoPath))
             {
-                if(!string.IsNullOrEmpty(pathName))
+                if (videoDirty)
                 {
-                    videoPlayer.url = pathName;
-
-                    if(autoplay)
-                    {
-                        videoPlayer.Play();
-                    }
-                } 
-                else
-                {
-                    Stop();
+                    videoPlayer.url = videoPath;
+                    videoDirty = false;
                 }
 
-                videoChanged = false;
+                if (!videoPlayer.isPlaying)
+                {
+                    videoPlayer.Play();
+                    if (!autoplay)
+                    {
+                        videoPlayer.Pause();
+                    }
+                }
             }
+            else
+            {
+                Stop();
+            }
+
         }
 
         public override void OnOpen()
@@ -207,11 +209,6 @@ namespace Quartz
             {
                 videoPlayer.frame = 0;
             }
-            
-            if(playOnOpen)
-            {
-                Play();
-            }
         }
 
         public override void OnClose()
@@ -219,7 +216,6 @@ namespace Quartz
             base.OnClose();
             
             Pause();
-            renderTexture.Release();
         }
 
         public override bool ParseAttribute(string attribute, string value, XUiController parent)
@@ -232,9 +228,6 @@ namespace Quartz
                     return true;
                 case "restartonopen":
                     restartOnOpen = StringParsers.ParseBool(value);
-                    return true;
-                case "autoplayonopen":
-                    playOnOpen = StringParsers.ParseBool(value);
                     return true;
                 case "autoplay":
                     autoplay = StringParsers.ParseBool(value);
@@ -250,9 +243,15 @@ namespace Quartz
             }
         }
 
+        public override void Cleanup()
+        {
+            base.Cleanup();
+            Stop();
+        }
+
         public void Play()
         {
-            if(initialized && !string.IsNullOrEmpty(pathName) && !videoPlayer.isPlaying)
+            if(!string.IsNullOrEmpty(videoPath) && !videoPlayer.isPlaying)
             {
                 videoPlayer.Play();
             }
@@ -260,19 +259,19 @@ namespace Quartz
 
         public void Pause()
         {
-            if (initialized && videoPlayer.isPlaying)
-            {
-                videoPlayer.Pause();
-            }
+            videoPlayer.Pause();
+            renderTexture.Release();
         }
 
         public void Stop()
         {
-            if (initialized && videoPlayer.isPrepared)
-            {
-                videoPlayer.Stop();
-                renderTexture.Release();
-            }
+            videoPlayer.Stop();
+            renderTexture.Release();
+        }
+
+        private void VideoPlayer_errorReceived(VideoPlayer source, string message)
+        {
+            Logging.Error(TAG, message);
         }
     }
 }
