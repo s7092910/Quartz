@@ -75,6 +75,7 @@ namespace Quartz
                 return string.Empty;
             }
             string textureName = textures[rnd.Next(textures.Length)];
+            textureName = textureName.Trim();
             Logging.Out(TAG, "Random Texture: " + textureName);
             return textureName;
         }
