@@ -12,7 +12,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
-using System.Globalization;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -34,12 +33,12 @@ namespace Quartz
         protected bool restartOnOpen = false;
         protected bool autoplay = true;
 
-        private float globalOpacityModifier = 1f;
-
         public VideoPlayer VideoPlayer
         {
             get { return videoPlayer; }
         }
+
+        public event OnVideoFinishedPlayingEvent OnVideoFinishedPlaying;
 
         public string VideoPath
         {
@@ -86,22 +85,6 @@ namespace Quartz
             set { autoplay = value; }
         }
 
-        public float GlobalOpacityModifier
-        {
-            get
-            {
-                return globalOpacityModifier;
-            }
-            set
-            {
-                if (value != globalOpacityModifier)
-                {
-                    globalOpacityModifier = value;
-                    isDirty = true;
-                }
-            }
-        }
-
         public XUiV_VideoPlayer(string _id) : base(_id)
         {
         }
@@ -121,6 +104,7 @@ namespace Quartz
             videoPlayer.playOnAwake = false;
             videoPlayer.renderMode = VideoRenderMode.RenderTexture;
             videoPlayer.errorReceived += VideoPlayer_errorReceived;
+            videoPlayer.loopPointReached += VideoPlayer_loopPointReached;
 
             renderTexture = new RenderTexture(size.x, size.y, 32);
             renderTexture.format = RenderTextureFormat.ARGB32;
@@ -150,12 +134,6 @@ namespace Quartz
             renderTexture.height = size.y;
 
             videoPlayer.isLooping = loopVideo;
-
-            if (globalOpacityModifier != 0f && xui.ForegroundGlobalOpacity < 1f)
-            {
-                float a = Mathf.Clamp01(globalOpacityModifier * xui.ForegroundGlobalOpacity);
-                videoPlayer.targetCameraAlpha = a;
-            }
 
             if (!initialized)
             {
@@ -214,7 +192,6 @@ namespace Quartz
         public override void OnClose()
         {
             base.OnClose();
-            
             Pause();
         }
 
@@ -235,9 +212,6 @@ namespace Quartz
                 case "loop":
                     LoopVideo = StringParsers.ParseBool(value);
                     return true;
-                case "globalopacitymod":
-                    GlobalOpacityModifier = StringParsers.ParseFloat(value, 0, -1, NumberStyles.Any);
-                    return true;
                 default:
                     return base.ParseAttribute(attribute, value, parent);
             }
@@ -246,7 +220,8 @@ namespace Quartz
         public override void Cleanup()
         {
             base.Cleanup();
-            Stop();
+            videoPlayer.Stop();
+            renderTexture.Release();
         }
 
         public void Play()
@@ -273,5 +248,12 @@ namespace Quartz
         {
             Logging.Error(TAG, message);
         }
+
+        private void VideoPlayer_loopPointReached(VideoPlayer source)
+        {
+            OnVideoFinishedPlaying?.Invoke(this);
+        }
+
+        public delegate void OnVideoFinishedPlayingEvent(XUiV_VideoPlayer videoPlayer);
     }
 }
