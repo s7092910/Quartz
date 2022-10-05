@@ -112,6 +112,7 @@
     <Compile Include="Source\Controllers\Map\XUiC_MapArea_Harmony.cs" />
     <Compile Include="Source\Controllers\RandomText.cs" />
     <Compile Include="Source\Controllers\Spinner.cs" />
+    <Compile Include="Source\Controllers\VideoPlayer\XUiC_RandomVideo.cs" />
     <Compile Include="Source\Views\VideoPlayer\XUiV_VideoPlayer.cs" />
     <Compile Include="Source\Controllers\XUiController_Harmony.cs" />
     <Compile Include="Source\Inputs\InventoryActions.cs" />
