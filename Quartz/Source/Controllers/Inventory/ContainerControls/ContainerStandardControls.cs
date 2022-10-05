@@ -26,6 +26,7 @@ namespace Quartz
         protected static float lastStashTime;
 
         protected XUiV_Button btnIndividualLock;
+        protected XUiC_ComboBoxInt comboBox;
 
         protected ILockableInventory inventory;
 
@@ -64,7 +65,7 @@ namespace Quartz
             child = GetChildById("cbxLockedSlots");
             if (child != null)
             {
-                XUiC_ComboBoxInt comboBox = GetChildByType<XUiC_ComboBoxInt>();
+                comboBox = GetChildByType<XUiC_ComboBoxInt>();
                 if(comboBox != null)
                 {
                     comboBox.OnValueChanged += ComboBoxOnValueChanged;
@@ -122,6 +123,19 @@ namespace Quartz
         {
             ignoredLockedSlots = (int)newValue;
             RefreshBindings();
+        }
+
+        public void ChangeLockingStatus(bool enableLocking)
+        {
+            if(comboBox != null)
+            {
+                comboBox.Enabled = enableLocking;
+            }
+
+            if(btnIndividualLock != null)
+            {
+                btnIndividualLock.Enabled = enableLocking;
+            }
         }
 
         protected virtual void IndividualLockOnPress(XUiController _sender, int _mouseButton)

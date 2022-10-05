@@ -286,11 +286,9 @@ namespace Quartz
             if(secureContainer == null)
             {
                 ignoredLockedSlots = 0;
-                comboBox.Enabled = false;
                 return new BitArray(itemControllers.Length);
             }
 
-            comboBox.Enabled = true;
             foreach (PlatformUserIdentifierAbs userId in secureContainer.GetUsers())
             {
                 if (userId is UserIdentifierLocal user)
@@ -319,11 +317,13 @@ namespace Quartz
             {
                 standardControls.ChangeLockedSlots(ignoredLockedSlots);
                 comboBox.Value = ignoredLockedSlots;
+                comboBox.Enabled = lootContainer is TileEntitySecureLootContainer;
             }
 
             if (standardControls is ContainerStandardControls controls)
             {
                 controls.ChangeLockedSlots(ignoredLockedSlots);
+                controls.ChangeLockingStatus(lootContainer is TileEntitySecureLootContainer);
             }
         }
 
