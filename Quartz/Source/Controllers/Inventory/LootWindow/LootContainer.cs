@@ -283,9 +283,9 @@ namespace Quartz
         private BitArray LoadLockedSlotsData()
         {
             TileEntitySecureLootContainer secureContainer = lootContainer as TileEntitySecureLootContainer;
-            if(secureContainer == null)
+            ignoredLockedSlots = 0;
+            if (secureContainer == null)
             {
-                ignoredLockedSlots = 0;
                 return new BitArray(itemControllers.Length);
             }
 

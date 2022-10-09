@@ -327,6 +327,7 @@ namespace Quartz
 
         private BitArray LoadLockedSlotsData()
         {
+            ignoredLockedSlots = 0;
             foreach (PlatformUserIdentifierAbs userId in vehicle.GetVehicle().AllowedUsers)
 			{
                 if (userId is UserIdentifierLocal user)
@@ -341,7 +342,6 @@ namespace Quartz
                 }
             }
 
-            ignoredLockedSlots = 0;
             return new BitArray(itemControllers.Length);
         }
 
