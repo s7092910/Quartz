@@ -25,13 +25,14 @@ namespace Quartz
 
 		private const string lockedSlotsCvarName = "$varQuartzBackpackLockedSlots";
 
-        private XUiC_ComboBoxInt comboBox;
-        private XUiC_ContainerStandardControls standardControls;
+        protected XUiC_ContainerStandardControls standardControls;
+        protected XUiC_ComboBoxInt comboBox;
 
-		private EntityPlayer player;
+        protected EntityPlayer player;
+
+        protected int ignoredLockedSlots;
 
         private string searchResult;
-        private int ignoredLockedSlots;
 
         public override void Init()
 		{
@@ -170,7 +171,7 @@ namespace Quartz
             FilterFromSearch(text);
         }
 
-        protected void OnLockedSlotsChange(XUiController sender, long value, long newValue)
+        protected virtual void OnLockedSlotsChange(XUiController sender, long value, long newValue)
         {
             for (int i = 0; i < itemControllers.Length; i++)
             {
@@ -195,13 +196,13 @@ namespace Quartz
             SaveLockedSlots();
         }
 
-        protected void OnSortPressed(int ignoreSlots)
+        protected virtual void OnSortPressed(int ignoreSlots)
         {
             global::ItemStack[] slots = SortUtil.CombineAndSortStacks(this, ignoreSlots);
             xui.PlayerInventory.Backpack.SetSlots(slots);
         }
 
-        protected void OnItemStackPress(XUiController sender, int mouseButton)
+        protected virtual void OnItemStackPress(XUiController sender, int mouseButton)
         {
             if (sender is ItemStack itemStack && standardControls is ContainerStandardControls controls 
                 && (QuartzInputManager.inventoryActions.LockSlot.IsPressed || controls.IsIndividualSlotLockingAllowed()))

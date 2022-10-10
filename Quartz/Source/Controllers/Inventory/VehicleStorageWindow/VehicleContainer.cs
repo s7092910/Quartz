@@ -28,12 +28,13 @@ namespace Quartz
 		private const string TAG = "VehicleContainer";
         private const string lockedSlotsCvarName = "$varQuartzVehicleLockedSlots";
 
-        private XUiC_ContainerStandardControls standardControls;
-        private XUiC_ComboBoxInt comboBox;
+        protected XUiC_ContainerStandardControls standardControls;
+        protected XUiC_ComboBoxInt comboBox;
 
-		private EntityVehicle vehicle;
+        protected EntityVehicle vehicle;
 
-		private int ignoredLockedSlots;
+		protected int ignoredLockedSlots;
+
 		private string searchResult;
 
 		private Traverse isClosingTraverse;
@@ -143,7 +144,7 @@ namespace Quartz
             vehicle = null;
         }
 
-        public void SetCurrentVehicle()
+        public virtual void SetCurrentVehicle()
         {
             vehicle = xui.vehicle;
             LoadLockedSlots();
@@ -191,13 +192,27 @@ namespace Quartz
             return count;
         }
 
+        public override void HandleSlotChangedEvent(int slotNumber, global::ItemStack stack)
+        {
+            if (slotNumber < itemControllers.Length)
+            {
+                ItemStack itemStack = itemControllers[slotNumber] as ItemStack;
+                FilterFromSearch(itemStack, !string.IsNullOrEmpty(searchResult), searchResult);
+            }
+        }
+
+        public void UpdateFilterFromSearch()
+        {
+            FilterFromSearch(searchResult);
+        }
+
         protected void OnSearchInputChange(XUiController sender, string text, bool changeFromCode)
 		{
 			searchResult = text;
 			FilterFromSearch(text);
 		}
 
-		protected void OnLockedSlotsChange(XUiController sender, long value, long newValue)
+		protected virtual void OnLockedSlotsChange(XUiController sender, long value, long newValue)
 		{
 
             for (int i = 0; i < itemControllers.Length; i++)
@@ -222,21 +237,7 @@ namespace Quartz
             SaveLockedSlots();
         }
 
-		public override void HandleSlotChangedEvent(int slotNumber, global::ItemStack stack)
-		{
-			if (slotNumber < itemControllers.Length)
-			{
-				ItemStack itemStack = itemControllers[slotNumber] as ItemStack;
-				FilterFromSearch(itemStack, !string.IsNullOrEmpty(searchResult), searchResult);
-			}
-		}
-
-		public void UpdateFilterFromSearch()
-		{
-			FilterFromSearch(searchResult);
-		}
-
-        protected void OnSortPressed(int ignoreSlots)
+        protected virtual void OnSortPressed(int ignoreSlots)
         {
             if (xui.vehicle.GetVehicle() == null)
 			{
@@ -257,6 +258,25 @@ namespace Quartz
                     Manager.PlayButtonClick();
                     SaveLockedSlots();
                 }
+            }
+        }
+
+        protected void UpdateIgnoredLockedSlots()
+        {
+            if (standardControls == null)
+            {
+                return;
+            }
+
+            if (comboBox != null)
+            {
+                standardControls.ChangeLockedSlots(ignoredLockedSlots);
+                comboBox.Value = ignoredLockedSlots;
+            }
+
+            if (standardControls is ContainerStandardControls controls)
+            {
+                controls.ChangeLockedSlots(ignoredLockedSlots);
             }
         }
 
@@ -327,6 +347,7 @@ namespace Quartz
 
         private BitArray LoadLockedSlotsData()
         {
+            ignoredLockedSlots = 0;
             foreach (PlatformUserIdentifierAbs userId in vehicle.GetVehicle().AllowedUsers)
 			{
                 if (userId is UserIdentifierLocal user)
@@ -341,27 +362,7 @@ namespace Quartz
                 }
             }
 
-            ignoredLockedSlots = 0;
             return new BitArray(itemControllers.Length);
-        }
-
-        private void UpdateIgnoredLockedSlots()
-        {
-            if (standardControls == null)
-            {
-                return;
-            }
-
-            if (comboBox != null)
-            {
-                standardControls.ChangeLockedSlots(ignoredLockedSlots);
-                comboBox.Value = ignoredLockedSlots;
-            }
-
-            if (standardControls is ContainerStandardControls controls)
-            {
-                controls.ChangeLockedSlots(ignoredLockedSlots);
-            }
         }
 
         private void FilterFromSearch(string search)

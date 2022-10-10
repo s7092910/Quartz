@@ -75,6 +75,7 @@ namespace Quartz
                 return string.Empty;
             }
             string text = texts[rnd.Next(texts.Length)];
+            text = text.Trim();
             Logging.Out(TAG, "Random Text: " + text);
             return text;
         }

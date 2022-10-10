@@ -16,12 +16,12 @@ using System;
 
 namespace Quartz
 {
-    public class RandomTexture : XUiController
+    public class XUiC_RandomVideo : XUiController
     {
-        private const string TAG = "RandomTexture";
+        private const string TAG = "RandomVideo";
 
         private const char SPLITTER = ',';
-        private string[] textures;
+        private string[] videos;
         private readonly Random rnd = new Random();
 
         public override void OnOpen()
@@ -34,8 +34,8 @@ namespace Quartz
         {
             switch (bindingName)
             {
-                case "randomtexture":
-                    value = getRandomTexture();
+                case "randomvideo":
+                    value = getRandomVideo();
                     return true;
                 default:
                     return base.GetBindingValue(ref value, bindingName);
@@ -48,8 +48,8 @@ namespace Quartz
             {
                 switch (attribute)
                 {
-                    case "textures":
-                        parseTextures(value);
+                    case "videos":
+                        parseVideos(value);
                         return true;
                     default:
                         return base.ParseAttribute(attribute, value, parent);
@@ -58,27 +58,26 @@ namespace Quartz
             return false;
         }
 
-        private void parseTextures(string texturesString)
+        private void parseVideos(string videoString)
         {
-            if (string.IsNullOrEmpty(texturesString))
+            if (string.IsNullOrEmpty(videoString))
             {
                 return;
             }
 
-            textures = texturesString.Split(SPLITTER);
+            videos = videoString.Split(SPLITTER);
         }
 
-        private string getRandomTexture()
+        private string getRandomVideo()
         {
-            if (textures == null)
+            if (videos == null)
             {
                 return string.Empty;
             }
-            string textureName = textures[rnd.Next(textures.Length)];
-            textureName = textureName.Trim();
-            Logging.Out(TAG, "Random Texture: " + textureName);
-            return textureName;
+            string videoName = videos[rnd.Next(videos.Length)];
+            videoName = videoName.Trim();
+            Logging.Out(TAG, "Random Video: " + videoName);
+            return videoName;
         }
     }
 }
-
