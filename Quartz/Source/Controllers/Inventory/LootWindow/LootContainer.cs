@@ -27,14 +27,14 @@ namespace Quartz
 		private const string TAG = "LootContainer";
         private const string lockedSlotsCvarName = "$varQuartzLootContainerLockedSlots";
 
-        private XUiC_ComboBoxInt comboBox;
-        private XUiC_ContainerStandardControls standardControls;
+        protected XUiC_ContainerStandardControls standardControls;
+        protected XUiC_ComboBoxInt comboBox;
 
-        private TileEntityLootContainer lootContainer;
+        protected TileEntityLootContainer lootContainer;
 
-        private int ignoredLockedSlots;
+        protected int ignoredLockedSlots;
 
-        private string searchResult;
+        protected string searchResult;
 
 		public override void Init()
 		{
@@ -89,7 +89,7 @@ namespace Quartz
             lootContainer = null;
         }
 
-        public void SetCurrentTileEntity(TileEntityLootContainer container)
+        public virtual void SetCurrentTileEntity(TileEntityLootContainer container)
         {
             lootContainer = container;
             LoadLockedSlots();
@@ -101,7 +101,7 @@ namespace Quartz
             FilterFromSearch(text);
         }
 
-        protected void OnLockedSlotsChange(XUiController sender, long value, long newValue)
+        protected virtual void OnLockedSlotsChange(XUiController sender, long value, long newValue)
         {
             if (!(lootContainer is TileEntitySecureLootContainer) || !lootContainer.bPlayerStorage)
             {
@@ -186,7 +186,7 @@ namespace Quartz
             return count;
         }
 
-        protected void OnSortPressed(int ignoreSlots)
+        protected virtual void OnSortPressed(int ignoreSlots)
         {
             global::ItemStack[] array = SortUtil.CombineAndSortStacks(this, ignoreSlots);
             for (int i = 0; i < array.Length; i++)
@@ -195,7 +195,7 @@ namespace Quartz
             }
         }
 
-        protected void OnItemStackPress(XUiController sender, int mouseButton)
+        protected virtual void OnItemStackPress(XUiController sender, int mouseButton)
         {
             if (lootContainer is TileEntitySecureLootContainer && sender is ItemStack itemStack && standardControls is ContainerStandardControls controls
                 && (QuartzInputManager.inventoryActions.LockSlot.IsPressed || controls.IsIndividualSlotLockingAllowed()))
@@ -207,6 +207,27 @@ namespace Quartz
                     Manager.PlayButtonClick();
                     SaveLockedSlots();
                 }
+            }
+        }
+
+        protected void UpdateIgnoredLockedSlots()
+        {
+            if (standardControls == null)
+            {
+                return;
+            }
+
+            if (comboBox != null)
+            {
+                standardControls.ChangeLockedSlots(ignoredLockedSlots);
+                comboBox.Value = ignoredLockedSlots;
+                comboBox.Enabled = lootContainer is TileEntitySecureLootContainer;
+            }
+
+            if (standardControls is ContainerStandardControls controls)
+            {
+                controls.ChangeLockedSlots(ignoredLockedSlots);
+                controls.ChangeLockingStatus(lootContainer is TileEntitySecureLootContainer);
             }
         }
 
@@ -304,27 +325,6 @@ namespace Quartz
             }
 
             return new BitArray(itemControllers.Length);
-        }
-
-        private void UpdateIgnoredLockedSlots()
-        {
-            if(standardControls == null)
-            {
-                return;
-            }
-
-            if (comboBox != null)
-            {
-                standardControls.ChangeLockedSlots(ignoredLockedSlots);
-                comboBox.Value = ignoredLockedSlots;
-                comboBox.Enabled = lootContainer is TileEntitySecureLootContainer;
-            }
-
-            if (standardControls is ContainerStandardControls controls)
-            {
-                controls.ChangeLockedSlots(ignoredLockedSlots);
-                controls.ChangeLockingStatus(lootContainer is TileEntitySecureLootContainer);
-            }
         }
 
         private void FilterFromSearch(string search)
