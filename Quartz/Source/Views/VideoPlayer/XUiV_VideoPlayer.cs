@@ -106,32 +106,36 @@ namespace Quartz
             videoPlayer.errorReceived += VideoPlayer_errorReceived;
             videoPlayer.loopPointReached += VideoPlayer_loopPointReached;
 
-            renderTexture = new RenderTexture(size.x, size.y, 32);
-            renderTexture.format = RenderTextureFormat.ARGB32;
-
-            videoPlayer.targetTexture = renderTexture;
-            uiTexture.mainTexture = renderTexture;
-        }
-
-        public override void Update(float dt)
-        {
-            base.Update(dt);
-            if (xui.GlobalOpacityChanged)
-            {
-                isDirty = true;
-            }
+            ModEvents.GameShutdown.RegisterHandler(OnShutdown);
         }
 
         public override void UpdateData()
         {
+            Logging.Inform(TAG, nameof(UpdateData));
             if (!isDirty)
             {
                 return;
             }
 
             uiTexture.SetDimensions(size.x, size.y);
-            renderTexture.width = size.x;
-            renderTexture.height = size.y;
+
+            if(renderTexture != null)
+            {
+                renderTexture.Release();
+                renderTexture = new RenderTexture(size.x, size.y, 32);
+                renderTexture.format = RenderTextureFormat.ARGB32;
+
+                videoPlayer.targetTexture = renderTexture;
+                uiTexture.mainTexture = renderTexture;
+            } 
+            else
+            {
+                renderTexture = new RenderTexture(size.x, size.y, 32);
+                renderTexture.format = RenderTextureFormat.ARGB32;
+
+                videoPlayer.targetTexture = renderTexture;
+                uiTexture.mainTexture = renderTexture;
+            }
 
             videoPlayer.isLooping = loopVideo;
 
@@ -220,8 +224,8 @@ namespace Quartz
         public override void Cleanup()
         {
             base.Cleanup();
-            videoPlayer.Stop();
-            renderTexture.Release();
+            ModEvents.GameShutdown.UnregisterHandler(OnShutdown);
+            Stop();
         }
 
         public void Play()
@@ -234,14 +238,22 @@ namespace Quartz
 
         public void Pause()
         {
-            videoPlayer.Pause();
             renderTexture.Release();
+            videoPlayer.Pause();
         }
 
         public void Stop()
         {
-            videoPlayer.Stop();
-            renderTexture.Release();
+            if (videoPlayer != null)
+            {
+                renderTexture.Release();
+                videoPlayer.Stop();
+            }
+        }
+
+        private void OnShutdown()
+        {
+            videoPlayer.Pause();
         }
 
         private void VideoPlayer_errorReceived(VideoPlayer source, string message)
