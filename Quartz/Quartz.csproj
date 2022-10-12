@@ -152,7 +152,7 @@
     <Content Include="Quartz Mod Folder\Config\XUi\windows.xml" />
     <Content Include="Quartz Mod Folder\Config\XUi_Common\controls.xml" />
     <Content Include="Quartz Mod Folder\Config\XUi_Common\styles.xml" />
-    <Content Include="Quartz Mod Folder\ModInfo.xml" />
+    <Content Include="Quartz Mod Folder\ModInfo-Source.xml" />
     <Content Include="Quartz Mod Folder\ModSettings.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
@@ -162,6 +162,8 @@
   <PropertyGroup>
     <PostBuildEvent>XCOPY "$(SolutionDir)Quartz\Quartz Mod Folder\" "$(SolutionDir)Release\0-Quartz\" /E /Y
 XCOPY "$(TargetDir)GearsAPI.dll" "$(SolutionDir)Release\0-Quartz\" /E /Y
-XCOPY "$(TargetPath)" "$(SolutionDir)Release\0-Quartz\" /E /Y</PostBuildEvent>
+XCOPY "$(TargetPath)" "$(SolutionDir)Release\0-Quartz\" /E /Y
+erase "$(SolutionDir)Release\0-Quartz\ModInfo.xml"
+rename "$(SolutionDir)Release\0-Quartz\ModInfo-Source.xml" "ModInfo.xml"</PostBuildEvent>
   </PropertyGroup>
 </Project>
