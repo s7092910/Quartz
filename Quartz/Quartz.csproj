@@ -93,6 +93,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\Console\ConsoleCmdQuartz.cs" />
+    <Compile Include="Source\Controllers\Crafting\XUiC_RecipeEntry.cs" />
     <Compile Include="Source\Controllers\DialIndicator.cs" />
     <Compile Include="Source\Controllers\Inventory\Backpack\Backpack.cs" />
     <Compile Include="Source\Controllers\Inventory\ContainerControls\ContainerStandardControls.cs" />
