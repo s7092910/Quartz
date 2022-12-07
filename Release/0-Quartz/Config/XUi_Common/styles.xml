@@ -37,5 +37,7 @@ limitations under the License.*/-->
 	<append xpath="/styles/style[@type='textlist' and count(@*)=1]">
 		<style_entry name="crispness" value="OnDesktop" />
 	</append>
+
+	<setattribute xpath="/styles/style[@type='label' and count(@*)=1]/style_entry[@name='font_face']" name="value">Ariel</setattribute>
 	
 </Quartz>
