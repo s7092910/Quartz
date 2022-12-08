@@ -12,11 +12,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
-using Quartz;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
-using UnityEngine.TextCore.LowLevel;
 
 namespace QuartzOverhaul.Extensions
 {
@@ -24,6 +21,8 @@ namespace QuartzOverhaul.Extensions
     {
 
         private static Dictionary<string, NGUIFont> fonts = new Dictionary<string, NGUIFont>();
+
+        private static NGUIFont referenceFont;
 
         public static T GetChildByInterface<T>(this XUi xui) where T : class
         {
@@ -55,6 +54,11 @@ namespace QuartzOverhaul.Extensions
                     {
                         fonts.Add(nguiFont.spriteName, nguiFont);
                     }
+
+                    if(nguiFont.name == "ReferenceFont")
+                    {
+                        referenceFont = nguiFont;
+                    }
                 }
             }
 
@@ -78,37 +82,7 @@ namespace QuartzOverhaul.Extensions
                     fonts.Add(name, font);
 
                     return font;
-                } 
-                //else 
-                //{
-                //    string path = ModManager.PatchModPathString(name);
-                //    if(path != null && File.Exists(path))
-                //    {
-                //        FontEngine.LoadFontFace(path);
-                //        loadedFont = new Font("file://" + name);
-
-                //        foreach (string fontname in loadedFont.fontNames)
-                //        {
-                //            Logging.Inform("Font Name = " + fontname);
-                //        }
-
-                //        foreach (CharacterInfo characterInfo in loadedFont.characterInfo)
-                //        {
-                //            Logging.Inform("Character Info = " + characterInfo.ToString());
-                //        }
-
-                //        if (loadedFont != null)
-                //        {
-                //            font = ScriptableObject.CreateInstance<NGUIFont>();
-                //            font.name = name;
-                //            font.dynamicFont = loadedFont;
-
-                //            fonts.Add(name, font);
-
-                //            return font;
-                //        }
-                //    }
-                //}
+                }
             }
             else
             {
@@ -120,7 +94,6 @@ namespace QuartzOverhaul.Extensions
 
         public static NGUIFont TryLoadOSInstalledFont(string fontName)
         {
-            NGUIFont font = null;
             string[] osFonts = Font.GetOSInstalledFontNames();
             Font loadedFont = null;
 
@@ -134,7 +107,7 @@ namespace QuartzOverhaul.Extensions
 
             if (loadedFont != null)
             {
-                font = ScriptableObject.CreateInstance<NGUIFont>();
+                NGUIFont font = ScriptableObject.CreateInstance<NGUIFont>();
                 font.name = fontName;
                 font.dynamicFont = loadedFont;
 
