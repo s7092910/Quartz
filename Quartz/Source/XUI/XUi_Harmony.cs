@@ -15,11 +15,16 @@ limitations under the License.*/
 using HarmonyLib;
 using Quartz;
 using Quartz.Managers;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 [HarmonyPatch(typeof(XUi))]
 public static class XUiPatch
 {
+    private const string TAG = "Error Reverse Patching XUiController method: ";
 
     [HarmonyPrefix]
     [HarmonyPatch("GetUIFontByName")]
@@ -37,5 +42,30 @@ public static class XUiPatch
         }
 
         return false;
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch("LoadAsync")]
+    public static bool LoadAsync(ref IEnumerator __result, XUi __instance, List<string> windowGroupSubset = null)
+    {
+        __result = LoadAsyncInternal(__instance, windowGroupSubset);
+        return false;
+    }
+
+    [HarmonyReversePatch]
+    [HarmonyPatch("LoadAsync")]
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public static IEnumerator LoadAsync(XUi instance, List<string> windowGroupSubset = null)
+    {
+        // its a stub so it has no initial content
+        throw new NotImplementedException(TAG + "Update()");
+    }
+
+    public static IEnumerator LoadAsyncInternal(XUi xUi, List<string> windowGroupSubset)
+    {
+        Dictionary<string, XUiFromXml.StyleData> styles = AccessTools.Field(typeof(XUiFromXml), "styles").GetValue(null) as Dictionary<string, XUiFromXml.StyleData>;
+        yield return FontManager.LoadFonts(xUi, styles);
+        yield return LoadAsync(xUi, windowGroupSubset);
+        yield break;
     }
 }

@@ -22,7 +22,6 @@ limitations under the License.*/-->
 		</Fonts>
 		<Fonts type="Fonts" name="OSFonts">
 			<font_entry name="Arial" value="Arial"/>
-			<font_entry name="Stencil" value="Stencil"/>
 		</Fonts>
 	</append>
 

@@ -99,68 +99,6 @@ public class XUiFromXmlPatch
         return true;
     }
 
-    [HarmonyPrefix]
-    [HarmonyPatch("LoadXui")]
-    public static bool LoadXui(XUi _xui, string windowGroupToLoad, Dictionary<string, XUiFromXml.StyleData> ___styles)
-    {
-        if(FontsLoaded)
-        {
-            return true;
-        }
-
-        Logging.Inform("Loading Fonts");
-        bool loadedXUIFonts = FontManager.LoadXUiFonts(_xui);
-        if(!loadedXUIFonts)
-        {
-            Logging.Warning(TAG, "Unable to load XUi Fonts");
-        }
-
-        XUiFromXml.StyleData fontData;
-        if(___styles.TryGetValue(FontManager.styleKeyNGUIFonts, out fontData))
-        {
-            foreach(XUiFromXml.StyleEntryData fontEntry in fontData.StyleEntries.Values)
-            {
-                bool sucess = FontManager.LoadNGUIFont(fontEntry.Name, fontEntry.Value);
-
-                if (!sucess)
-                {
-                    Logging.Warning(TAG, "Unable to load Font: " + fontEntry.Name);
-                }
-            }
-        }
-
-        if (___styles.TryGetValue(FontManager.styleKeyUnityFonts, out fontData))
-        {
-            foreach (XUiFromXml.StyleEntryData fontEntry in fontData.StyleEntries.Values)
-            {
-                bool sucess = FontManager.LoadUnityFont(fontEntry.Name, fontEntry.Value);
-
-                if (!sucess)
-                {
-                    Logging.Warning(TAG, "Unable to load Font: " + fontEntry.Name);
-                }
-            }
-        }
-
-        if (___styles.TryGetValue(FontManager.styleKeyOSFonts, out fontData))
-        {
-            foreach (XUiFromXml.StyleEntryData fontEntry in fontData.StyleEntries.Values)
-            {
-                bool sucess = FontManager.LoadOSInstalledFont(fontEntry.Value);
-
-                if (!sucess)
-                {
-                    Logging.Warning(TAG, "Unable to load Font: " + fontEntry.Name);
-                }
-            }
-        }
-        FontsLoaded = true;
-
-        Logging.Inform("Loaded Fonts");
-
-        return true;
-    }
-
     private static void createScrollBarViewComponents(XmlNode _node, ScrollBarView view, XUiWindowGroup _windowGroup, Dictionary<string, object> _controlParams = null)
     {
         if (!view.HasXMLChildren)

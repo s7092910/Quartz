@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,8 @@ namespace Quartz.Managers
 
         private static bool loaded;
 
+        private const string TAG = "FontManager";
+
         public const string styleKeyNGUIFonts = "Fonts.NGUIFonts";
         public const string styleKeyUnityFonts = "Fonts.UnityFonts";
         public const string styleKeyOSFonts = "Fonts.OSFonts";
@@ -23,6 +26,68 @@ namespace Quartz.Managers
         public static NGUIFont GetVanillaFont()
         {
             return referenceFont;
+        }
+
+        public static IEnumerator LoadFonts(XUi xui, Dictionary<string, XUiFromXml.StyleData> styles)
+        {
+            yield return null;
+            while (!XUiFromXml.HasData())
+            {
+                yield return null;
+            }
+
+            yield return null;
+
+            Logging.Inform("Loading Fonts");
+            bool loadedXUIFonts = FontManager.LoadXUiFonts(xui);
+            if (!loadedXUIFonts)
+            {
+                Logging.Warning("Unable to load XUi Fonts");
+            }
+
+            XUiFromXml.StyleData fontData;
+            if (styles.TryGetValue(FontManager.styleKeyNGUIFonts, out fontData))
+            {
+                foreach (XUiFromXml.StyleEntryData fontEntry in fontData.StyleEntries.Values)
+                {
+                    bool sucess = FontManager.LoadNGUIFont(fontEntry.Name, fontEntry.Value);
+
+                    if (!sucess)
+                    {
+                        Logging.Warning("Unable to load Font: " + fontEntry.Name);
+                    }
+                }
+            }
+
+            if (styles.TryGetValue(FontManager.styleKeyUnityFonts, out fontData))
+            {
+                foreach (XUiFromXml.StyleEntryData fontEntry in fontData.StyleEntries.Values)
+                {
+                    bool sucess = FontManager.LoadUnityFont(fontEntry.Name, fontEntry.Value);
+
+                    if (!sucess)
+                    {
+                        Logging.Warning("Unable to load Font: " + fontEntry.Name);
+                    }
+                }
+            }
+
+            if (styles.TryGetValue(FontManager.styleKeyOSFonts, out fontData))
+            {
+                foreach (XUiFromXml.StyleEntryData fontEntry in fontData.StyleEntries.Values)
+                {
+                    bool sucess = FontManager.LoadOSInstalledFont(fontEntry.Value);
+
+                    if (!sucess)
+                    {
+                        Logging.Warning("Unable to load Font: " + fontEntry.Name);
+                    }
+                }
+            }
+
+            Logging.Inform("Loaded Fonts");
+
+            yield break;
         }
 
         public static bool LoadXUiFonts(XUi xui)
@@ -78,6 +143,7 @@ namespace Quartz.Managers
                     font.dynamicFont = loadedFont;
 
                     fonts.Add(fontName, font);
+                    Logging.Inform(TAG, "Font: " + fontName + " loaded");
                 }
             }
 
@@ -100,6 +166,7 @@ namespace Quartz.Managers
                 if (font != null)
                 {
                     fonts.Add(fontName, font);
+                    Logging.Inform(TAG, "Font: " + fontName + " loaded");
                 }
             }
 
@@ -132,6 +199,7 @@ namespace Quartz.Managers
                 font.dynamicFont = loadedFont;
 
                 fonts.Add(fontName, font);
+                Logging.Inform(TAG, "Font: " + fontName + " loaded");
             }
 
             return font != null;

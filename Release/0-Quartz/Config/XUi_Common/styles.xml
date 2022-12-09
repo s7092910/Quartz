@@ -15,14 +15,13 @@ See the License for the specific language governing permissions and
 limitations under the License.*/-->
 
 	<append xpath="/styles">
-		<Fonts name="NGUIFonts" type="Fonts">
+		<Fonts type="Fonts" name="NGUIFonts">
 		</Fonts>
-		<Fonts name="UnityFonts" type="Fonts">
+		<Fonts type="Fonts" name="UnityFonts">
 			<font_entry name="Blocky Best" value="#@modfolder(Quartz)://Fonts/font?Assets/Fonts/Blocky Best.ttf"/>
 		</Fonts>
-		<Fonts name="OSFonts" type="Fonts">
+		<Fonts type="Fonts" name="OSFonts">
 			<font_entry name="Arial" value="Arial"/>
-			<font_entry name="Stencil" value="Stencil"/>
 		</Fonts>
 	</append>
 
