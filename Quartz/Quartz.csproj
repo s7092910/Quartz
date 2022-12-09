@@ -123,7 +123,8 @@
     <Compile Include="Source\Controllers\RandomText.cs" />
     <Compile Include="Source\Controllers\Spinner.cs" />
     <Compile Include="Source\Controllers\VideoPlayer\XUiC_RandomVideo.cs" />
-    <Compile Include="Source\Controllers\XUi_Harmony.cs" />
+    <Compile Include="Source\XUI\XUi_Harmony.cs" />
+    <Compile Include="Source\Managers\FontManager.cs" />
     <Compile Include="Source\Views\VideoPlayer\XUiV_VideoPlayer.cs" />
     <Compile Include="Source\Controllers\XUiController_Harmony.cs" />
     <Compile Include="Source\Inputs\InventoryActions.cs" />
@@ -151,7 +152,7 @@
     <Compile Include="Source\Views\ScrollView\ScrollBar\UIScrollBar.cs" />
     <Compile Include="Source\Views\ScrollView\ScrollView.cs" />
     <Compile Include="Source\Views\ScrollView\ScrollViewContainer.cs" />
-    <Compile Include="Source\Views\XUiFromXml_Harmony.cs" />
+    <Compile Include="Source\XUI\XUiFromXml_Harmony.cs" />
     <Compile Include="Source\Views\XUiV_Label_Harmony.cs" />
   </ItemGroup>
   <ItemGroup>

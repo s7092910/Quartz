@@ -20,10 +20,6 @@ namespace QuartzOverhaul.Extensions
     public static class XuiExtensions
     {
 
-        private static Dictionary<string, NGUIFont> fonts = new Dictionary<string, NGUIFont>();
-
-        private static NGUIFont referenceFont;
-
         public static T GetChildByInterface<T>(this XUi xui) where T : class
         {
             for (int i = 0; i < xui.WindowGroups.Count; i++)
@@ -39,85 +35,6 @@ namespace QuartzOverhaul.Extensions
             }
 
             return null;
-        }
-
-        public static NGUIFont GetNGUIFontByName(this XUi xui, string name)
-        {
-
-            if (fonts.Count == 0)
-            {
-                foreach (NGUIFont nguiFont in xui.NGUIFonts)
-                {
-                    fonts.Add(nguiFont.name, nguiFont);
-
-                    if (nguiFont.name != nguiFont.spriteName)
-                    {
-                        fonts.Add(nguiFont.spriteName, nguiFont);
-                    }
-
-                    if(nguiFont.name == "ReferenceFont")
-                    {
-                        referenceFont = nguiFont;
-                    }
-                }
-            }
-
-            NGUIFont font;
-
-            if (fonts.TryGetValue(name, out font))
-            {
-                return font;
-            }
-
-            if (name.Contains("@modfolder("))
-            {
-                Font loadedFont = DataLoader.LoadAsset<Font>(name);
-
-                if(loadedFont != null)
-                {
-                    font = ScriptableObject.CreateInstance<NGUIFont>();
-                    font.name = name;
-                    font.dynamicFont = loadedFont;
-
-                    fonts.Add(name, font);
-
-                    return font;
-                }
-            }
-            else
-            {
-                return TryLoadOSInstalledFont(name);
-            }
-
-            return null;
-        }
-
-        public static NGUIFont TryLoadOSInstalledFont(string fontName)
-        {
-            string[] osFonts = Font.GetOSInstalledFontNames();
-            Font loadedFont = null;
-
-            foreach (string osFont in osFonts)
-            { 
-                if (osFont == fontName)
-                {
-                    loadedFont = Font.CreateDynamicFontFromOSFont(osFont, 30);
-                }
-            }
-
-            if (loadedFont != null)
-            {
-                NGUIFont font = ScriptableObject.CreateInstance<NGUIFont>();
-                font.name = fontName;
-                font.dynamicFont = loadedFont;
-
-                fonts.Add(fontName, font);
-
-                return font;
-            }
-
-            return null;
-
         }
     }
 }

@@ -14,6 +14,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/-->
 
+	<append xpath="/styles">
+		<Fonts name="NGUIFonts" type="Fonts">
+		</Fonts>
+		<Fonts name="UnityFonts" type="Fonts">
+			<font_entry name="Blocky Best" value="#@modfolder(Quartz)://Fonts/font?Assets/Fonts/Blocky Best.ttf"/>
+		</Fonts>
+		<Fonts name="OSFonts" type="Fonts">
+			<font_entry name="Arial" value="Arial"/>
+			<font_entry name="Stencil" value="Stencil"/>
+		</Fonts>
+	</append>
+
 	<!-- Curved Label-->
 	<append xpath="/styles">
 		<style type="curvedlabel">
@@ -38,6 +50,6 @@ limitations under the License.*/-->
 		<style_entry name="crispness" value="OnDesktop" />
 	</append>
 
-	<setattribute xpath="/styles/style[@type='label' and count(@*)=1]/style_entry[@name='font_face']" name="value">Ariel</setattribute>
+	<setattribute xpath="/styles/style[@type='label' and count(@*)=1]/style_entry[@name='font_face']" name="value">Arial</setattribute>
 	
 </Quartz>
