@@ -44,28 +44,13 @@ public static class XUiPatch
         return false;
     }
 
-    [HarmonyPrefix]
+    [HarmonyPostfix]
     [HarmonyPatch("LoadAsync")]
-    public static bool LoadAsync(ref IEnumerator __result, XUi __instance, List<string> windowGroupSubset = null)
-    {
-        __result = LoadAsyncInternal(__instance, windowGroupSubset);
-        return false;
-    }
-
-    [HarmonyReversePatch]
-    [HarmonyPatch("LoadAsync")]
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    public static IEnumerator LoadAsync(XUi instance, List<string> windowGroupSubset = null)
-    {
-        // its a stub so it has no initial content
-        throw new NotImplementedException(TAG + "Update()");
-    }
-
-    public static IEnumerator LoadAsyncInternal(XUi xUi, List<string> windowGroupSubset)
+    public static IEnumerator LoadAsync(IEnumerator __result, XUi __instance, List<string> windowGroupSubset = null)
     {
         Dictionary<string, XUiFromXml.StyleData> styles = AccessTools.Field(typeof(XUiFromXml), "styles").GetValue(null) as Dictionary<string, XUiFromXml.StyleData>;
-        yield return FontManager.LoadFonts(xUi, styles);
-        yield return LoadAsync(xUi, windowGroupSubset);
+        yield return FontManager.LoadFonts(__instance, styles);
+        yield return __result;
         yield break;
     }
 }
