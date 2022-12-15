@@ -18,10 +18,8 @@ limitations under the License.*/-->
 		<Fonts type="Fonts" name="NGUIFonts">
 		</Fonts>
 		<Fonts type="Fonts" name="UnityFonts">
-			<font_entry name="Blocky Best" value="#@modfolder(Quartz)://Fonts/font?Assets/Fonts/Blocky Best.ttf"/>
 		</Fonts>
 		<Fonts type="Fonts" name="OSFonts">
-			<font_entry name="Arial" value="Arial"/>
 		</Fonts>
 	</append>
 
@@ -48,7 +46,5 @@ limitations under the License.*/-->
 	<append xpath="/styles/style[@type='textlist' and count(@*)=1]">
 		<style_entry name="crispness" value="OnDesktop" />
 	</append>
-
-	<setattribute xpath="/styles/style[@type='label' and count(@*)=1]/style_entry[@name='font_face']" name="value">Arial</setattribute>
 	
 </Quartz>

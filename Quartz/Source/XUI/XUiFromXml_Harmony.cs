@@ -14,13 +14,11 @@ limitations under the License.*/
 
 using HarmonyLib;
 using Quartz;
-using Quartz.Managers;
 using Quartz.Views;
 using System;
 using System.Collections.Generic;
 using System.Xml;
 using UnityEngine;
-using static XUiFromXml;
 
 [HarmonyPatch(typeof(XUiFromXml))]
 public class XUiFromXmlPatch
