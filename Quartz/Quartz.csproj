@@ -21,7 +21,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>embedded</DebugType>
+    <DebugType>portable</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
@@ -82,6 +82,15 @@
       <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.TextCoreModule">
+      <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.TextCoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine.VideoModule">
       <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.VideoModule.dll</HintPath>
       <Private>False</Private>
@@ -115,6 +124,8 @@
     <Compile Include="Source\Controllers\RandomText.cs" />
     <Compile Include="Source\Controllers\Spinner.cs" />
     <Compile Include="Source\Controllers\VideoPlayer\XUiC_RandomVideo.cs" />
+    <Compile Include="Source\XUI\XUi_Harmony.cs" />
+    <Compile Include="Source\Managers\FontManager.cs" />
     <Compile Include="Source\Views\VideoPlayer\XUiV_VideoPlayer.cs" />
     <Compile Include="Source\Controllers\XUiController_Harmony.cs" />
     <Compile Include="Source\Inputs\InventoryActions.cs" />
@@ -142,7 +153,7 @@
     <Compile Include="Source\Views\ScrollView\ScrollBar\UIScrollBar.cs" />
     <Compile Include="Source\Views\ScrollView\ScrollView.cs" />
     <Compile Include="Source\Views\ScrollView\ScrollViewContainer.cs" />
-    <Compile Include="Source\Views\XUiFromXml_Harmony.cs" />
+    <Compile Include="Source\XUI\XUiFromXml_Harmony.cs" />
     <Compile Include="Source\Views\XUiV_Label_Harmony.cs" />
   </ItemGroup>
   <ItemGroup>
