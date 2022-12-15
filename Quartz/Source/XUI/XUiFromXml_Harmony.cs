@@ -24,7 +24,6 @@ using UnityEngine;
 public class XUiFromXmlPatch
 {
     private const string TAG = "XUiFromXmlPatch";
-    private static bool FontsLoaded = false;
 
     [HarmonyPrefix]
     [HarmonyPatch("parseByElementName")]
