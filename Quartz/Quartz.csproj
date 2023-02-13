@@ -107,6 +107,8 @@
     <Compile Include="Source\Controllers\Inventory\Backpack\Backpack.cs" />
     <Compile Include="Source\Controllers\Inventory\ContainerControls\ContainerStandardControls.cs" />
     <Compile Include="Source\Controllers\Inventory\ILockableInventory.cs" />
+    <Compile Include="Source\Controllers\Inventory\ItemInfoWindow\XUiC_ItemInfoWindow.cs" />
+    <Compile Include="Source\Controllers\Inventory\ItemInfoWindow\XUiC_ItemInfoWindow_Harmony.cs" />
     <Compile Include="Source\Controllers\Inventory\ItemStack\ItemStack.cs" />
     <Compile Include="Source\Controllers\Inventory\ItemStack\XUiC_ItemStack_Harmony.cs" />
     <Compile Include="Source\Controllers\Inventory\LootWindow\LootContainer.cs" />
@@ -124,6 +126,8 @@
     <Compile Include="Source\Controllers\RandomText.cs" />
     <Compile Include="Source\Controllers\Spinner.cs" />
     <Compile Include="Source\Controllers\VideoPlayer\XUiC_RandomVideo.cs" />
+    <Compile Include="Source\Models\UIDisplay\DisplayInfoEntry.cs" />
+    <Compile Include="Source\Models\UIDisplay\UIDisplayInfoFromXml_Harmony.cs" />
     <Compile Include="Source\XUI\XUi_Harmony.cs" />
     <Compile Include="Source\Managers\FontManager.cs" />
     <Compile Include="Source\Views\VideoPlayer\XUiV_VideoPlayer.cs" />
