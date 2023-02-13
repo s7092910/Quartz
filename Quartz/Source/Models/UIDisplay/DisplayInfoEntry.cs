@@ -1,6 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-
-<!--/*Copyright 2023 Christopher Beda
+﻿/*Copyright 2023 Christopher Beda
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,14 +10,12 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
-limitations under the License.*/-->
+limitations under the License.*/
 
-<xml>
-	<ModInfo>
-		<Name value="Quartz" />
-		<Description value="A UI framework mod that adds some new XUi Widgets and XUi Controllers that can be used by modders" />
-		<Author value="Laydor" />
-		<Version value="A20-v1.6.0" />
-		<Website value="" />
-	</ModInfo>
-</xml>
+namespace Quartz.Models
+{
+    public class DisplayInfoEntry : global::DisplayInfoEntry
+    {
+        public string icon;
+    }
+}
