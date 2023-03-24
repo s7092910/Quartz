@@ -38,4 +38,24 @@ public static class XUiC_ItemInfoWindowPatch
         // its a stub so it has no initial content
         throw new NotImplementedException(TAG + "GetStatValue()");
     }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("SetInfo")]
+    public static void SetInfo(XUiC_ItemInfoWindow __instance, ItemStack stack, XUiController controller, XUiC_ItemActionList.ItemActionListTypes actionListType, ItemDisplayEntry ___itemDisplayEntry)
+    {
+        if (__instance is Quartz.XUiC_ItemInfoWindow instance)
+        {
+            instance.SetItemStats(stack, ___itemDisplayEntry);
+        }
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("CompareStack", MethodType.Setter)]
+    public static void CompareStack(XUiC_ItemInfoWindow __instance)
+    {
+        if (__instance is Quartz.XUiC_ItemInfoWindow instance)
+        {
+            instance.RefreshItemStats();
+        }
+    }
 }

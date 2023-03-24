@@ -109,6 +109,7 @@
     <Compile Include="Source\Controllers\Inventory\ILockableInventory.cs" />
     <Compile Include="Source\Controllers\Inventory\ItemInfoWindow\XUiC_ItemInfoWindow.cs" />
     <Compile Include="Source\Controllers\Inventory\ItemInfoWindow\XUiC_ItemInfoWindow_Harmony.cs" />
+    <Compile Include="Source\Controllers\Inventory\ItemInfoWindow\XUiC_ItemStatEntry.cs" />
     <Compile Include="Source\Controllers\Inventory\ItemStack\ItemStack.cs" />
     <Compile Include="Source\Controllers\Inventory\ItemStack\XUiC_ItemStack_Harmony.cs" />
     <Compile Include="Source\Controllers\Inventory\LootWindow\LootContainer.cs" />
