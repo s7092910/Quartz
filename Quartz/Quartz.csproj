@@ -104,6 +104,19 @@
     <Compile Include="Source\Console\ConsoleCmdQuartz.cs" />
     <Compile Include="Source\Controllers\Crafting\XUiC_RecipeEntry.cs" />
     <Compile Include="Source\Controllers\DialIndicator.cs" />
+    <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_AttitudeIndictator.cs" />
+    <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_Speedometer.cs" />
+    <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_VehicleGas.cs" />
+    <Compile Include="Source\Controllers\Hud\XUiC_HUDStealth.cs" />
+    <Compile Include="Source\Controllers\Hud\XUiC_HUDWater.cs" />
+    <Compile Include="Source\Controllers\Hud\XUiC_HUDFood.cs" />
+    <Compile Include="Source\Controllers\Hud\XUiC_HUDStamina.cs" />
+    <Compile Include="Source\Controllers\Hud\XUiC_HUDHealth.cs" />
+    <Compile Include="Source\Controllers\Hud\XUiC_HUDStat.cs" />
+    <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_HUDVehicle.cs" />
+    <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_VehicleHealth.cs" />
+    <Compile Include="Source\Controllers\Hud\XUiC_HUDActiveItem.cs" />
+    <Compile Include="Source\Controllers\Hud\XUiC_HUDLeftStatBars.cs" />
     <Compile Include="Source\Controllers\Inventory\Backpack\Backpack.cs" />
     <Compile Include="Source\Controllers\Inventory\ContainerControls\ContainerStandardControls.cs" />
     <Compile Include="Source\Controllers\Inventory\ILockableInventory.cs" />
@@ -129,6 +142,7 @@
     <Compile Include="Source\Controllers\VideoPlayer\XUiC_RandomVideo.cs" />
     <Compile Include="Source\Models\UIDisplay\DisplayInfoEntry.cs" />
     <Compile Include="Source\Models\UIDisplay\UIDisplayInfoFromXml_Harmony.cs" />
+    <Compile Include="Source\Utils\VehicleExtensions.cs" />
     <Compile Include="Source\XUI\XUi_Harmony.cs" />
     <Compile Include="Source\Managers\FontManager.cs" />
     <Compile Include="Source\Views\VideoPlayer\XUiV_VideoPlayer.cs" />
@@ -162,6 +176,7 @@
     <Compile Include="Source\Views\XUiV_Label_Harmony.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Source\Overhaul\Controllers\Hud\" />
     <Folder Include="Source\Overhaul\Models\" />
   </ItemGroup>
   <ItemGroup>
