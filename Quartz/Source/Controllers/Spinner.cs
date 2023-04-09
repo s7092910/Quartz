@@ -24,7 +24,6 @@ namespace Quartz
         private int spinSpeedAngle;
         private float rotation;
 
-
         public override void Update(float _dt)
         {
             base.Update(_dt);
