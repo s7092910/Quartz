@@ -116,7 +116,6 @@
     <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_HUDVehicle.cs" />
     <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_VehicleHealth.cs" />
     <Compile Include="Source\Controllers\Hud\XUiC_HUDActiveItem.cs" />
-    <Compile Include="Source\Controllers\Hud\XUiC_HUDLeftStatBars.cs" />
     <Compile Include="Source\Controllers\Inventory\Backpack\Backpack.cs" />
     <Compile Include="Source\Controllers\Inventory\ContainerControls\ContainerStandardControls.cs" />
     <Compile Include="Source\Controllers\Inventory\ILockableInventory.cs" />
