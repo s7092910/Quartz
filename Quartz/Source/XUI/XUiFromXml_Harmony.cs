@@ -59,6 +59,9 @@ public class XUiFromXmlPatch
             case "videoplayer":
                 view = new XUiV_VideoPlayer(id);
                 break;
+            case "maskedtexture":
+                view = new XUiV_MaskedTexture(id);
+                break;
             case "scrollview":
                 view = new ScrollViewContainer(id);
                 break;
