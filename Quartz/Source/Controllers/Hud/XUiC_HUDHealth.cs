@@ -16,12 +16,8 @@ using Quartz.Hud;
 
 namespace Quartz
 {
-    public class XUiC_HUDHealth : XUiC_HUDStat
+    public class XUiC_HUDHealth : XUiC_HUDStatbar
     {
-        protected override string GetStatName()
-        {
-            return "health";
-        }
 
         protected override float GetCurrentStat()
         {

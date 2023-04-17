@@ -17,7 +17,7 @@ using UnityEngine;
 
 namespace Quartz.Hud
 {
-    public abstract class XUiC_HUDStat : XUiController
+    public abstract class XUiC_HUDStatbar : XUiController
     {
         private EntityPlayerLocal localPlayer;
 
@@ -95,17 +95,10 @@ namespace Quartz.Hud
 
         public override bool GetBindingValue(ref string value, string bindingName)
         {
-            bindingName = bindingName.Replace(GetStatName(), "stat");
             switch (bindingName)
             {
-                case "statcurrent":
-                    value = "0";
-                    if (localPlayer != null)
-                    {
-                        value = statcurrentFormatterInt.Format((int)GetCurrentStat());
-                    }
-                    return true;
                 case "stat":
+                case "statcurrent":
                     value = "0";
                     if (localPlayer != null)
                     {
@@ -206,8 +199,6 @@ namespace Quartz.Hud
 
             return true;
         }
-
-        protected abstract string GetStatName();
 
         protected abstract float GetStatUIPercentage();
 

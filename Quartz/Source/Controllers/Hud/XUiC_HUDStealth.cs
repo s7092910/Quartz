@@ -16,19 +16,18 @@ using Quartz.Hud;
 
 namespace Quartz
 {
-    public class XUiC_HUDStealth : XUiC_HUDStat
+    public class XUiC_HUDStealth : XUiC_HUDStatbar
     {
         private int buffOffset = 52;
 
         public override bool ParseAttribute(string attribute, string value, XUiController _parent)
         {
-            int temp = 0;
             if (attribute != null)
             {
                 switch (attribute)
                 {
-                    case "indicator_value":
-                        temp = buffOffset;
+                    case "buff_offset":
+                        int temp = buffOffset;
                         int.TryParse(value, out buffOffset);
                         IsDirty |= temp != buffOffset;
                         return true;
@@ -49,11 +48,6 @@ namespace Quartz
             }
 
             return false;
-        }
-
-        protected override string GetStatName()
-        {
-            return "stealth";
         }
 
         protected override float GetCurrentStat()

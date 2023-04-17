@@ -16,13 +16,8 @@ using Quartz.Hud;
 
 namespace Quartz
 {
-    public class XUiC_HUDStamina : XUiC_HUDStat
+    public class XUiC_HUDStamina : XUiC_HUDStatbar
     {
-        protected override string GetStatName()
-        {
-            return "stamina";
-        }
-
         protected override float GetCurrentStat()
         {
             return XUiM_Player.GetStamina(LocalPlayer);

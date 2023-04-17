@@ -127,14 +127,6 @@ namespace Quartz
                 case "blockdamage":
                     value = blockDamage;
                     return true;
-                case "elevation":
-                    value = "";
-                    if (XUi.IsGameRunning() && localPlayer != null)
-                    {
-                        int v = Mathf.RoundToInt(localPlayer.GetPosition().y - WeatherManager.SeaLevel());
-                        value = levelFormatter.Format(v);
-                    }
-                    return true;
                 default:
                     return false;
             }
@@ -291,12 +283,6 @@ namespace Quartz
             {
                 result = oldValue != localPlayer.inventory.holdingItemItemValue.Meta;
                 oldValue = localPlayer.inventory.holdingItemItemValue.Meta;
-            }
-            else if (IsToolHeld())
-            {
-                float elevation = Mathf.RoundToInt(localPlayer.GetPosition().y - WeatherManager.SeaLevel());
-                result = oldValue != elevation;
-                oldValue = elevation;
             }
             else if (IsMeleeHeld())
             {

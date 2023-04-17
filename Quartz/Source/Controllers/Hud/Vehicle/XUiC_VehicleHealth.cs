@@ -16,7 +16,7 @@ using Quartz.Hud;
 
 namespace Quartz
 {
-    public class XUiC_VehicleHealth : XUiC_HUDStat
+    public class XUiC_VehicleHealth : XUiC_HUDStatbar
     {
         private EntityVehicle vehicle;
 
@@ -56,11 +56,6 @@ namespace Quartz
         {
             return base.IsStatVisible()
                 && vehicle != null;
-        }
-
-        protected override string GetStatName()
-        {
-            return "health";
         }
 
         protected override float GetStatUIPercentage()
