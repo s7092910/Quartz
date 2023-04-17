@@ -12,29 +12,41 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
-using HarmonyLib;
-using System.Reflection;
 
 namespace Quartz
 {
     public class XUiC_ItemInfoWindow : global::XUiC_ItemInfoWindow
     {
-        private FieldInfo itemDisplayEntryField;
+        private global::ItemStack itemStack;
+        private ItemDisplayEntry displayEntry;
 
-        public XUiC_ItemInfoWindow()
+        private XUiC_ItemStatEntry[] itemStatControllers;
+
+        public override void Init()
         {
-            itemDisplayEntryField = AccessTools.Field(typeof(global::XUiC_ItemInfoWindow), "itemDisplayEntry");
+            base.Init();
+
+            itemStatControllers = GetChildrenByType<XUiC_ItemStatEntry>();
+            foreach(var controller in itemStatControllers )
+            {
+                controller.ItemInfoWindow = this;
+            }
+        }
+
+        public override void Update(float _dt)
+        {
+            base.Update(_dt);
         }
 
         public override bool GetBindingValue(ref string value, string bindingName)
         {
-            if(bindingName.StartsWith("itemstat") && bindingName.Contains("-"))
+            if (bindingName.StartsWith("itemstat") && bindingName.Contains("-"))
             {
                 string[] split = bindingName.Split('-');
                 int index = 0;
-                if(split.Length == 2)
+                if (split.Length == 2)
                 {
-                    if(int.TryParse(split[1], out index))
+                    if (int.TryParse(split[1], out index))
                     {
                         index--;
                     }
@@ -59,7 +71,7 @@ namespace Quartz
                     case "itemstat":
                         value = XUiC_ItemInfoWindowPatch.GetStatValue(this, index);
                         return true;
-                    default: 
+                    default:
                         return base.GetBindingValue(ref value, bindingName);
                 }
             }
@@ -67,17 +79,42 @@ namespace Quartz
             return base.GetBindingValue(ref value, bindingName);
         }
 
+        public void SetItemStats(global::ItemStack itemStack, ItemDisplayEntry itemDisplayEntry)
+        {
+            this.itemStack = itemStack;
+            displayEntry = itemDisplayEntry;
+
+            for (int i = 0; i < itemStatControllers.Length; i++)
+            {
+                if (displayEntry != null && i < displayEntry.DisplayStats.Count)
+                {
+                    itemStatControllers[i].SetEntry(this.itemStack, itemDisplayEntry.DisplayStats[i]);
+                }
+                else
+                {
+                    itemStatControllers[i].clearEntry();
+                }
+            }
+        }
+
+        public void RefreshItemStats()
+        {
+            foreach(XUiC_ItemStatEntry entry in itemStatControllers)
+            {
+                entry.IsDirty = true;
+            }
+        }
+
         private string GetStatIcon(int index)
         {
-            ItemDisplayEntry itemDisplayEntry = itemDisplayEntryField.GetValue(this) as ItemDisplayEntry;
-            if (itemDisplayEntry == null || itemDisplayEntry.DisplayStats.Count <= index)
+            if (displayEntry == null || displayEntry.DisplayStats.Count <= index)
             {
                 return string.Empty;
             }
-            Models.DisplayInfoEntry displayEntry = itemDisplayEntry.DisplayStats[index] as Models.DisplayInfoEntry;
-            if (displayEntry != null && !string.IsNullOrEmpty(displayEntry.icon))
+            Models.DisplayInfoEntry displayInfoEntry = displayEntry.DisplayStats[index] as Models.DisplayInfoEntry;
+            if (displayInfoEntry != null && !string.IsNullOrEmpty(displayInfoEntry.icon))
             {
-                return displayEntry.icon;
+                return displayInfoEntry.icon;
             }
             return string.Empty;
         }
@@ -88,7 +125,7 @@ namespace Quartz
             int sepIndex = value.IndexOf('(');
             if (sepIndex != -1)
             {
-                value= value.Substring(0, sepIndex - 1);
+                value = value.Substring(0, sepIndex - 1);
             }
 
             return value;
@@ -97,7 +134,7 @@ namespace Quartz
 
         private string GetStatValueCompare(int index)
         {
-            if(CompareStack == global::ItemStack.Empty)
+            if (CompareStack == global::ItemStack.Empty)
             {
                 return string.Empty;
             }

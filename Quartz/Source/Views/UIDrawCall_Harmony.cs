@@ -12,20 +12,22 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
-namespace Quartz
-{
-    public class XUiC_RecipeEntry : global::XUiC_RecipeEntry
-    {
+using HarmonyLib;
+using UnityEngine;
 
-        public override bool GetBindingValue(ref string value, string bindingName)
+namespace Quartz.Views
+{
+    [HarmonyPatch(typeof(UIDrawCall))]
+    public class UIDrawCall_Harmony
+    {
+        [HarmonyPostfix]
+        [HarmonyPatch("CreateMaterial")]
+        public static void CreateMaterial(UIDrawCall __instance, ref Shader ___mShader)
         {
-            switch(bindingName)
+            if(__instance.baseMaterial != null && __instance.baseMaterial.name.Contains("Transparent FixableMask") && __instance.dynamicMaterial.shader != __instance.baseMaterial.shader)
             {
-                case "workstationname":
-                    value = Recipe != null ? Localization.Get(Recipe.craftingArea): "";
-                    return true;
-                default:
-                    return base.GetBindingValue(ref value, bindingName);
+                __instance.dynamicMaterial.shader = __instance.baseMaterial.shader;
+                ___mShader = __instance.baseMaterial.shader;
             }
         }
     }

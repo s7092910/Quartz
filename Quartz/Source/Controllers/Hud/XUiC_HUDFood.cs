@@ -12,21 +12,31 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
+using Quartz.Hud;
+
 namespace Quartz
 {
-    public class XUiC_RecipeEntry : global::XUiC_RecipeEntry
+    public class XUiC_HUDFood : XUiC_HUDStatbar
     {
 
-        public override bool GetBindingValue(ref string value, string bindingName)
+        protected override float GetCurrentStat()
         {
-            switch(bindingName)
-            {
-                case "workstationname":
-                    value = Recipe != null ? Localization.Get(Recipe.craftingArea): "";
-                    return true;
-                default:
-                    return base.GetBindingValue(ref value, bindingName);
-            }
+            return LocalPlayer.Stats.Food.Value;
+        }
+
+        protected override float GetMaxStat()
+        {
+            return LocalPlayer.Stats.Food.Max;
+        }
+
+        protected override float GetModifiedMax()
+        {
+            return LocalPlayer.Stats.Food.ModifiedMax;
+        }
+
+        protected override float GetStatUIPercentage()
+        {
+            return LocalPlayer.Stats.Food.ValuePercentUI;
         }
     }
 }

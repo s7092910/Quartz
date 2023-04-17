@@ -91,6 +91,14 @@
       <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestTextureModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine.VideoModule">
       <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.VideoModule.dll</HintPath>
       <Private>False</Private>
@@ -98,17 +106,31 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Quartz Mod Folder\License\LICENSE.md" />
+    <None Include="Quartz Mod Folder\Resources\quartzshaders.unity3d" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\Console\ConsoleCmdQuartz.cs" />
     <Compile Include="Source\Controllers\Crafting\XUiC_RecipeEntry.cs" />
     <Compile Include="Source\Controllers\DialIndicator.cs" />
+    <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_AttitudeIndictator.cs" />
+    <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_Speedometer.cs" />
+    <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_VehicleGas.cs" />
+    <Compile Include="Source\Controllers\Hud\XUiC_HUDStealth.cs" />
+    <Compile Include="Source\Controllers\Hud\XUiC_HUDWater.cs" />
+    <Compile Include="Source\Controllers\Hud\XUiC_HUDFood.cs" />
+    <Compile Include="Source\Controllers\Hud\XUiC_HUDStamina.cs" />
+    <Compile Include="Source\Controllers\Hud\XUiC_HUDHealth.cs" />
+    <Compile Include="Source\Controllers\Hud\XUiC_HUDStatbar.cs" />
+    <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_HUDVehicle.cs" />
+    <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_VehicleHealth.cs" />
+    <Compile Include="Source\Controllers\Hud\XUiC_HUDActiveItem.cs" />
     <Compile Include="Source\Controllers\Inventory\Backpack\Backpack.cs" />
     <Compile Include="Source\Controllers\Inventory\ContainerControls\ContainerStandardControls.cs" />
     <Compile Include="Source\Controllers\Inventory\ILockableInventory.cs" />
     <Compile Include="Source\Controllers\Inventory\ItemInfoWindow\XUiC_ItemInfoWindow.cs" />
     <Compile Include="Source\Controllers\Inventory\ItemInfoWindow\XUiC_ItemInfoWindow_Harmony.cs" />
+    <Compile Include="Source\Controllers\Inventory\ItemInfoWindow\XUiC_ItemStatEntry.cs" />
     <Compile Include="Source\Controllers\Inventory\ItemStack\ItemStack.cs" />
     <Compile Include="Source\Controllers\Inventory\ItemStack\XUiC_ItemStack_Harmony.cs" />
     <Compile Include="Source\Controllers\Inventory\LootWindow\LootContainer.cs" />
@@ -126,8 +148,13 @@
     <Compile Include="Source\Controllers\RandomText.cs" />
     <Compile Include="Source\Controllers\Spinner.cs" />
     <Compile Include="Source\Controllers\VideoPlayer\XUiC_RandomVideo.cs" />
+    <Compile Include="Source\Controllers\XUiC_CVarTimer.cs" />
     <Compile Include="Source\Models\UIDisplay\DisplayInfoEntry.cs" />
     <Compile Include="Source\Models\UIDisplay\UIDisplayInfoFromXml_Harmony.cs" />
+    <Compile Include="Source\Utils\VehicleExtensions.cs" />
+    <Compile Include="Source\Views\MaskedTexture\UIMaskedTexture.cs" />
+    <Compile Include="Source\Views\MaskedTexture\XUiV_MaskedTexture.cs" />
+    <Compile Include="Source\Views\UIDrawCall_Harmony.cs" />
     <Compile Include="Source\XUI\XUi_Harmony.cs" />
     <Compile Include="Source\Managers\FontManager.cs" />
     <Compile Include="Source\Views\VideoPlayer\XUiV_VideoPlayer.cs" />
@@ -161,6 +188,7 @@
     <Compile Include="Source\Views\XUiV_Label_Harmony.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Source\Overhaul\Controllers\Hud\" />
     <Folder Include="Source\Overhaul\Models\" />
   </ItemGroup>
   <ItemGroup>

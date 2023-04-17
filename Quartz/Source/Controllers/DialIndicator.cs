@@ -21,7 +21,6 @@ namespace Quartz
     {
         private const string TAG = "DialIndicator";
 
-        private bool isDirty;
         private bool ClampValue = true;
 
         private float velocity = 0f;
@@ -43,7 +42,7 @@ namespace Quartz
         public override void Update(float _dt)
         {
             base.Update(_dt);
-            if (ViewComponent.IsVisible && (isDirty || lastValue != indicatorValue))
+            if (ViewComponent.IsVisible && (IsDirty || lastValue != indicatorValue))
             {
                 angleRange = calculateAngleRange(startAngle, endAngle);
                 valueRange = rangeMax - rangeMin;
@@ -61,7 +60,7 @@ namespace Quartz
                 indicatorAngle %= 360;
 
                 ViewComponent.UiTransform.localEulerAngles = new Vector3(0f, 0f, indicatorAngle);
-                isDirty = false;
+                IsDirty = false;
             }
 
         }
@@ -76,32 +75,32 @@ namespace Quartz
                     case "indicator_value":
                         temp = indicatorValue;
                         float.TryParse(value, out indicatorValue);
-                        isDirty |= temp != indicatorValue;
+                        IsDirty |= temp != indicatorValue;
                         return true;
                     case "range_max":
                         temp = rangeMax;
                         float.TryParse(value, out rangeMax);
-                        isDirty |= temp != rangeMax;
+                        IsDirty |= temp != rangeMax;
                         return true;
                     case "range_min":
                         temp = rangeMin;
                         float.TryParse(value, out rangeMin);
-                        isDirty |= temp != rangeMin;
+                        IsDirty |= temp != rangeMin;
                         return true;
                     case "start_angle":
                         temp = startAngle;
                         float.TryParse(value, out startAngle);
-                        isDirty |= temp != startAngle;
+                        IsDirty |= temp != startAngle;
                         return true;
                     case "end_angle":
                         temp = endAngle;
                         float.TryParse(value, out endAngle);
-                        isDirty |= temp != endAngle;
+                        IsDirty |= temp != endAngle;
                         return true;
                     case "limit_indicator_to_range":
                         bool b = ClampValue;
                         ClampValue = StringParsers.ParseBool(value, 0, -1, true);
-                        isDirty |= b != ClampValue;
+                        IsDirty |= b != ClampValue;
                         return true;
                     case "animation_duration":
                         float.TryParse(value, out duration);
@@ -117,7 +116,7 @@ namespace Quartz
         public override void OnOpen()
         {
             base.OnOpen();
-            isDirty = true;
+            IsDirty = true;
             lastValue = indicatorValue;
         }
 
