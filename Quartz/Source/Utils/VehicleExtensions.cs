@@ -51,5 +51,15 @@ namespace Quartz.Utils
 
             return false;
         }
+
+        public static VPHeadlight GetHeadlight(this EntityVehicle vehicle)
+        {
+            if (vehicle == null)
+            {
+                return null;
+            }
+
+            return vehicle.GetVehicle().FindPart("headlight") as VPHeadlight;
+        }
     }
 }
