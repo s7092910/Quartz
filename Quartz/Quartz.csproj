@@ -116,6 +116,7 @@
     <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_AttitudeIndictator.cs" />
     <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_Speedometer.cs" />
     <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_VehicleGas.cs" />
+    <Compile Include="Source\Controllers\Hud\XUiC_HUDCVar.cs" />
     <Compile Include="Source\Controllers\Hud\XUiC_HUDStealth.cs" />
     <Compile Include="Source\Controllers\Hud\XUiC_HUDWater.cs" />
     <Compile Include="Source\Controllers\Hud\XUiC_HUDFood.cs" />
