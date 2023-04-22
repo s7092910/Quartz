@@ -20,8 +20,10 @@ namespace Quartz
     {
         private EntityPlayerLocal localPlayer;
         private EntityVehicle vehicle;
+        private VPHeadlight headlight;
         private bool isInFlyingVehicle;
         private bool isDriving;
+        private bool isHeadlightOn;
 
         public EntityVehicle Vehicle
         {
@@ -32,6 +34,7 @@ namespace Quartz
                 {
                     vehicle = value;
                     isInFlyingVehicle = vehicle.IsFlyingVehicle();
+                    headlight = vehicle.GetHeadlight();
                     IsDirty = true;
                 }
             }
@@ -60,8 +63,9 @@ namespace Quartz
                 }
             }
 
-            if (IsDirty)
+            if (IsDirty || isHeadlightOn != IsHeadlightOn())
             {
+                isHeadlightOn = IsHeadlightOn();
                 IsDirty = false;
                 RefreshBindings();
             }
@@ -90,10 +94,30 @@ namespace Quartz
                         ? "true" : "false";
                     return true;
                 case "isdriver":
-                    value = IsDriver().ToString();
+                    value = IsDriver() ? "true" : "false";
                     return true;
                 case "isaflyingvehicle":
                     value = isInFlyingVehicle ? "true" : "false";
+                    return true;
+                case "hasengine":
+                case "hasfuel":
+                    value = localPlayer != null
+                        && !localPlayer.IsDead()
+                        && vehicle != null
+                        && vehicle.GetVehicle().HasEnginePart()
+                        ? "true" : "false";
+                    return true;
+                case "hasheadlight":
+                    value = localPlayer != null
+                        && !localPlayer.IsDead()
+                        && headlight != null
+                        ? "true" : "false";
+                    return true;
+                case "isheadlighton":
+                    value = localPlayer != null
+                        && !localPlayer.IsDead()
+                        && IsHeadlightOn()
+                        ? "true" : "false";
                     return true;
                 default:
                     return base.GetBindingValue(ref value, bindingName);
@@ -107,6 +131,11 @@ namespace Quartz
                 && vehicle != null 
                 && vehicle.HasDriver 
                 && vehicle.AttachedMainEntity == localPlayer;
+        }
+
+        private bool IsHeadlightOn()
+        {
+            return headlight != null && headlight.IsOn();
         }
     }
 }
