@@ -182,6 +182,11 @@ namespace Quartz.Hud
 
         protected virtual bool HasChanged()
         {
+            if(localPlayer == null)
+            {
+                return false;
+            }
+
             float value = GetCurrentStat();
 
             bool result = cachedValue != value;
