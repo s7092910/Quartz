@@ -15,11 +15,10 @@ See the License for the specific language governing permissions and
 limitations under the License.*/-->
 
 <xml>
-	<ModInfo>
-		<Name value="Quartz" />
-		<Description value="A UI framework mod that adds some new XUi Widgets and XUi Controllers that can be used by modders" />
-		<Author value="Laydor" />
-		<Version value="A20-v1.7.1" />
-		<Website value="" />
-	</ModInfo>
+	<Name value="Quartz" />
+	<DisplayName value="Quartz" />
+	<Version value="2.0.0" />
+	<Description value="A UI framework mod that adds some new XUi Widgets and XUi Controllers that can be used by modders" />
+	<Author value="Laydor" />
+	<Website value="" />
 </xml>

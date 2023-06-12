@@ -205,10 +205,10 @@
     <VisualStudio AllowExistingFolder="true" />
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>XCOPY "$(SolutionDir)Quartz\Quartz Mod Folder\" "$(SolutionDir)Release\0-Quartz\" /E /Y
-XCOPY "$(TargetDir)GearsAPI.dll" "$(SolutionDir)Release\0-Quartz\" /E /Y
-XCOPY "$(TargetPath)" "$(SolutionDir)Release\0-Quartz\" /E /Y
-erase "$(SolutionDir)Release\0-Quartz\ModInfo.xml"
-rename "$(SolutionDir)Release\0-Quartz\ModInfo-Source.xml" "ModInfo.xml"</PostBuildEvent>
+    <PostBuildEvent>XCOPY "$(SolutionDir)Quartz\Quartz Mod Folder\" "$(SolutionDir)Release\Quartz\" /E /Y
+XCOPY "$(TargetDir)GearsAPI.dll" "$(SolutionDir)Release\Quartz\" /E /Y
+XCOPY "$(TargetPath)" "$(SolutionDir)Release\Quartz\" /E /Y
+erase "$(SolutionDir)Release\Quartz\ModInfo.xml"
+rename "$(SolutionDir)Release\Quartz\ModInfo-Source.xml" "ModInfo.xml"</PostBuildEvent>
   </PropertyGroup>
 </Project>

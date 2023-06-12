@@ -14,7 +14,7 @@ limitations under the License.*/
 
 using HarmonyLib;
 using System;
-using System.Xml;
+using System.Xml.Linq;
 
 [HarmonyPatch(typeof(UIDisplayInfoFromXml))]
 public class UIDisplayInfoFromXmlPatch
@@ -23,7 +23,7 @@ public class UIDisplayInfoFromXmlPatch
 
     [HarmonyPrefix]
     [HarmonyPatch("ParseDisplayInfoEntry")]
-    public static bool ParseDisplayInfoEntry(ref DisplayInfoEntry __result,XmlElement node)
+    public static bool ParseDisplayInfoEntry(ref DisplayInfoEntry __result, XElement node)
     {
         Quartz.Models.DisplayInfoEntry displayInfoEntry = new Quartz.Models.DisplayInfoEntry();
         if (node.HasAttribute("name"))

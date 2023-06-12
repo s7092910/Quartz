@@ -38,7 +38,7 @@ public class ConsoleCmdQuartz : ConsoleCmdAbstract
     {
     }
 
-    public override string[] GetCommands()
+    protected override string[] getCommands()
     {
         return new string[]
         {
@@ -46,7 +46,7 @@ public class ConsoleCmdQuartz : ConsoleCmdAbstract
         };
     }
 
-    public override string GetDescription()
+    protected override string getDescription()
     {
         return "Execute Quartz operations";
     }
