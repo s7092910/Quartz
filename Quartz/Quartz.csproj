@@ -74,6 +74,11 @@
       <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
       <Private>False</Private>
@@ -110,8 +115,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Source\Bindings\BindingInfo_Harmony.cs" />
     <Compile Include="Source\Console\ConsoleCmdQuartz.cs" />
     <Compile Include="Source\Controllers\Crafting\XUiC_RecipeEntry.cs" />
+    <Compile Include="Source\Controllers\Debugging\XUiC_UiAtlasList.cs" />
     <Compile Include="Source\Controllers\DialIndicator.cs" />
     <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_AttitudeIndictator.cs" />
     <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_Speedometer.cs" />
@@ -152,6 +159,7 @@
     <Compile Include="Source\Controllers\XUiC_CVarTimer.cs" />
     <Compile Include="Source\Models\UIDisplay\DisplayInfoEntry.cs" />
     <Compile Include="Source\Models\UIDisplay\UIDisplayInfoFromXml_Harmony.cs" />
+    <Compile Include="Source\Utils\TextureExtensions.cs" />
     <Compile Include="Source\Utils\VehicleExtensions.cs" />
     <Compile Include="Source\Views\MaskedTexture\UIMaskedTexture.cs" />
     <Compile Include="Source\Views\MaskedTexture\XUiV_MaskedTexture.cs" />
@@ -178,13 +186,13 @@
     <Compile Include="Source\Settings\Debugging.cs" />
     <Compile Include="Source\Settings\GlobalSettings.cs" />
     <Compile Include="Source\Utils\ColorExtensions.cs" />
-    <Compile Include="Source\Views\CurvedLabel\CurvedLabel.cs" />
-    <Compile Include="Source\Views\ScrollView\ScrollBarView.cs" />
-    <Compile Include="Source\Views\ScrollView\ScrollBar\ScrollBar_Button.cs" />
-    <Compile Include="Source\Views\ScrollView\ScrollBar\Scrollbar_Sprite.cs" />
+    <Compile Include="Source\Views\CurvedLabel\XUiV_CurvedLabel.cs" />
+    <Compile Include="Source\Views\ScrollView\XUiV_ScrollBar.cs" />
+    <Compile Include="Source\Views\ScrollView\ScrollBar\XUiC_ScrollBar_Button.cs" />
+    <Compile Include="Source\Views\ScrollView\ScrollBar\XUiC_Scrollbar_Sprite.cs" />
     <Compile Include="Source\Views\ScrollView\ScrollBar\UIScrollBar.cs" />
-    <Compile Include="Source\Views\ScrollView\ScrollView.cs" />
-    <Compile Include="Source\Views\ScrollView\ScrollViewContainer.cs" />
+    <Compile Include="Source\Views\ScrollView\XUiV_ScrollView.cs" />
+    <Compile Include="Source\Views\ScrollView\XUiV_ScrollViewContainer.cs" />
     <Compile Include="Source\XUI\XUiFromXml_Harmony.cs" />
     <Compile Include="Source\Views\XUiV_Label_Harmony.cs" />
   </ItemGroup>
@@ -194,9 +202,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Quartz Mod Folder\Config\Localization.txt" />
+    <Content Include="Quartz Mod Folder\UIAtlases\UIAtlas\quartz_scrollbar_background.png" />
+    <Content Include="Quartz Mod Folder\UIAtlases\UIAtlas\quartz_scrollbar_handler.png" />
     <Content Include="Quartz Mod Folder\Config\XUi\windows.xml" />
     <Content Include="Quartz Mod Folder\Config\XUi_Common\controls.xml" />
     <Content Include="Quartz Mod Folder\Config\XUi_Common\styles.xml" />
+    <Content Include="Quartz Mod Folder\Config\XUi_Menu\windows.xml" />
+    <Content Include="Quartz Mod Folder\Config\XUi_Menu\xui.xml" />
     <Content Include="Quartz Mod Folder\ModInfo-Source.xml" />
     <Content Include="Quartz Mod Folder\ModSettings.xml" />
   </ItemGroup>
@@ -205,10 +217,10 @@
     <VisualStudio AllowExistingFolder="true" />
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>XCOPY "$(SolutionDir)Quartz\Quartz Mod Folder\" "$(SolutionDir)Release\Quartz\" /E /Y
-XCOPY "$(TargetDir)GearsAPI.dll" "$(SolutionDir)Release\Quartz\" /E /Y
-XCOPY "$(TargetPath)" "$(SolutionDir)Release\Quartz\" /E /Y
-erase "$(SolutionDir)Release\Quartz\ModInfo.xml"
-rename "$(SolutionDir)Release\Quartz\ModInfo-Source.xml" "ModInfo.xml"</PostBuildEvent>
+    <PostBuildEvent>XCOPY "$(SolutionDir)Quartz\Quartz Mod Folder\" "$(SolutionDir)Release\0-Quartz\" /E /Y
+XCOPY "$(TargetDir)GearsAPI.dll" "$(SolutionDir)Release\0-Quartz\" /E /Y
+XCOPY "$(TargetPath)" "$(SolutionDir)Release\0-Quartz\" /E /Y
+erase "$(SolutionDir)Release\0-Quartz\ModInfo.xml"
+rename "$(SolutionDir)Release\0-Quartz\ModInfo-Source.xml" "ModInfo.xml"</PostBuildEvent>
   </PropertyGroup>
 </Project>

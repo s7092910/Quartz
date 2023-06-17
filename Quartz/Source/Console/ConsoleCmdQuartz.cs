@@ -12,6 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
+using Quartz.Debugging;
 using Quartz.Settings;
 using System;
 using System.Collections.Generic;
@@ -53,7 +54,9 @@ public class ConsoleCmdQuartz : ConsoleCmdAbstract
 
     public override string GetHelp()
     {
-        return "Usage:\n   quartz debug \n";
+        return "Usage:\n   " +
+            "quartz debug \n" +
+            "quartz uiatlas - opens the UIAtlas window \n";
     }
 
     public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -63,13 +66,38 @@ public class ConsoleCmdQuartz : ConsoleCmdAbstract
             SingletonMonoBehaviour<SdtdConsole>.Instance.Output("No sub command given.");
             return;
         }
-        if (_params[0].EqualsCaseInsensitive("debug"))
+
+        switch(_params[0].ToLowerInvariant())
         {
-            ExecuteDebug(_params);
+            case "debug":
+                ExecuteDebug(_params);
+                break;
+            case "uiatlas":
+                ExecuteUiAtlas(_params);
+                break;
+            default:
+                SingletonMonoBehaviour<SdtdConsole>.Instance.Output("Invalid sub command \"" + _params[0] + "\".");
+                break;
+
+        }
+    }
+
+    private void ExecuteUiAtlas(List<string> _params)
+    {
+        if (_params.Count > 1)
+        {
+            SdtdConsole.Instance.Output("Wrong number of arguments, expected 1, found " + _params.Count.ToString() + ".");
             return;
         }
 
-        SingletonMonoBehaviour<SdtdConsole>.Instance.Output("Invalid sub command \"" + _params[0] + "\".");
+        XUi xuiInstance = getXuiInstance();
+        if (xuiInstance == null)
+        {
+            return;
+        }
+
+        xuiInstance.playerUI.windowManager.CloseIfOpen(XUiC_MainMenu.ID);
+        xuiInstance.playerUI.windowManager.OpenIfNotOpen(XUiC_UiAtlasList.ID, true, false, false);
     }
 
     private void ExecuteDebug(List<string> _params)
@@ -122,6 +150,13 @@ public class ConsoleCmdQuartz : ConsoleCmdAbstract
         }
 
         return false;
+    }
+
+    private XUi getXuiInstance()
+    {
+        XUi[] array = UnityEngine.Object.FindObjectsOfType<XUi>();
+        Array.Sort<XUi>(array, (XUi _x, XUi _y) => string.Compare(_x.playerUI.windowManager.gameObject.name, _y.playerUI.windowManager.gameObject.name, StringComparison.Ordinal));
+        return array[0];
     }
 }
 
