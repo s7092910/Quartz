@@ -54,7 +54,7 @@ public class XUiFromXmlPatch
         switch(localName)
         {
             case "curvedlabel":
-                view = new CurvedLabel(id);
+                view = new XUiV_CurvedLabel(id);
                 break;
             case "videoplayer":
                 view = new XUiV_VideoPlayer(id);
@@ -63,16 +63,16 @@ public class XUiFromXmlPatch
                 view = new XUiV_MaskedTexture(id);
                 break;
             case "scrollview":
-                view = new ScrollViewContainer(id);
+                view = new XUiV_ScrollViewContainer(id);
                 break;
             case "scrollbar":
-                view = new ScrollBarView(id);
+                view = new XUiV_ScrollBar(id);
                 view.xui = _windowGroup.xui;
                 XUiFromXmlReversePatch.parseController(_node, view, _parent);
                 XUiFromXmlReversePatch.parseAttributes(_node, view, _parent, _controlParams);
 
                 view.Controller.WindowGroup = _windowGroup;
-                createScrollBarViewComponents(_node, view as ScrollBarView, _windowGroup, _controlParams);
+                createScrollBarViewComponents(_node, view as XUiV_ScrollBar, _windowGroup, _controlParams);
                 __result = view;
                 return false;
         }
@@ -98,7 +98,7 @@ public class XUiFromXmlPatch
         return true;
     }
 
-    private static void createScrollBarViewComponents(XElement _node, ScrollBarView view, XUiWindowGroup _windowGroup, Dictionary<string, object> _controlParams = null)
+    private static void createScrollBarViewComponents(XElement _node, XUiV_ScrollBar view, XUiWindowGroup _windowGroup, Dictionary<string, object> _controlParams = null)
     {
         if (!view.HasXMLChildren)
         {
@@ -148,11 +148,11 @@ public class XUiFromXmlPatch
         switch (name)
         {
             case "sprite":
-                view = new Scrollbar_Sprite(id);
+                view = new XUiC_Scrollbar_Sprite(id);
                 Logging.Out(TAG, "ScrollBar Sprite Created");
                 break;
             case "button":
-                view = new ScrollBar_Button(id);
+                view = new XUiC_ScrollBar_Button(id);
                 Logging.Out(TAG, "ScrollBar Button Created");
                 break;
         }

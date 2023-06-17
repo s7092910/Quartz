@@ -14,9 +14,9 @@ limitations under the License.*/
 
 namespace Quartz
 {
-    public class MapWaypointListEntry : global::XUiC_MapWaypointListEntry
+    public class XUiC_MapInvitesListEntry : global::XUiC_MapInvitesListEntry 
     {
-        private const string TAG = "MapWaypointListEntry";
+        private const string TAG = "MapInvitesListEntry";
 
         protected Waypoint cachedWaypoint;
 

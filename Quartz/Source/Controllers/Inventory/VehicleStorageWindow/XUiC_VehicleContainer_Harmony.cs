@@ -23,7 +23,7 @@ public class XUiC_VehicleContainerPatch
     [HarmonyPatch("HandleLootSlotChangedEvent")]
     public static void HandleLootSlotChangedEvent(XUiC_VehicleContainer __instance, int slotNumber, ItemStack stack)
     {
-        if(__instance is Quartz.VehicleContainer instance)
+        if(__instance is Quartz.XUiC_VehicleContainer instance)
         {
             instance.HandleSlotChangedEvent(slotNumber, stack);
         }
@@ -33,7 +33,7 @@ public class XUiC_VehicleContainerPatch
     [HarmonyPatch("SetSlots")]
     public static void SetSlotsPrefix(XUiC_VehicleContainer __instance, ItemStack[] stackList)
     {
-        if (__instance is Quartz.VehicleContainer instance)
+        if (__instance is Quartz.XUiC_VehicleContainer instance)
         {
             instance.SetCurrentVehicle();
         }
@@ -43,7 +43,7 @@ public class XUiC_VehicleContainerPatch
     [HarmonyPatch("SetSlots")]
     public static void SetSlotsPostfix(XUiC_VehicleContainer __instance, ItemStack[] stackList)
     {
-        if (__instance is Quartz.VehicleContainer instance)
+        if (__instance is Quartz.XUiC_VehicleContainer instance)
         {
             instance.UpdateFilterFromSearch();
         }

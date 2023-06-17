@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace Quartz
 {
-    public class ItemStack : global::XUiC_ItemStack
+    public class XUiC_ItemStack : global::XUiC_ItemStack
     {
         private const string TAG = "ItemStack";
 

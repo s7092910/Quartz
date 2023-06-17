@@ -20,7 +20,7 @@ using UnityEngine;
 
 namespace Quartz
 {
-    public class ContainerStandardControls : XUiC_ContainerStandardControls
+    public class XUiC_ContainerStandardControls : global::XUiC_ContainerStandardControls
     {
         protected int ignoredLockedSlots;
         protected static float lastStashTime;
@@ -221,8 +221,8 @@ namespace Quartz
             int num = startBottomRight ? (itemStackControllers.Length - 1) : ignoredSlots;
             while (startBottomRight ? (num >= ignoredSlots) : (num < itemStackControllers.Length))
             {
-                XUiC_ItemStack xuiC_ItemStack = (XUiC_ItemStack)itemStackControllers[num];
-                if (!xuiC_ItemStack.StackLock && (!(xuiC_ItemStack is ItemStack quartzItemStack) || !quartzItemStack.IsALockedSlot))
+                global::XUiC_ItemStack xuiC_ItemStack = (global::XUiC_ItemStack)itemStackControllers[num];
+                if (!xuiC_ItemStack.StackLock && (!(xuiC_ItemStack is XUiC_ItemStack quartzItemStack) || !quartzItemStack.IsALockedSlot))
                 {
                     global::ItemStack itemStack = xuiC_ItemStack.ItemStack;
                     if (!xuiC_ItemStack.ItemStack.IsEmpty())
