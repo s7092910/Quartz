@@ -19,7 +19,7 @@ using System;
 
 namespace Quartz
 {
-	public class Backpack : global::XUiC_Backpack, ILockableInventory
+	public class XUiC_Backpack : global::XUiC_Backpack, ILockableInventory
 	{
 		private const string TAG = "Backpack";
 
@@ -61,7 +61,7 @@ namespace Quartz
 				}
 			}
 
-            if(standardControls != null && standardControls is ContainerStandardControls)
+            if(standardControls != null && standardControls is XUiC_ContainerStandardControls)
             {
                 foreach (XUiController xUiController in GetItemStackControllers())
                 {
@@ -86,7 +86,7 @@ namespace Quartz
                     standardControls.ChangeLockedSlots(ignoredLockedSlots);
                 }
 
-                if (standardControls is ContainerStandardControls controls)
+                if (standardControls is XUiC_ContainerStandardControls controls)
                 {
                     standardControls.OnSortPressed = OnSortPressed;
                     controls.ChangeLockedSlots(ignoredLockedSlots);
@@ -112,7 +112,7 @@ namespace Quartz
 			{
 				base.HandleSlotChangedEvent(slotNumber, stack);
 
-				ItemStack itemStack = itemControllers[slotNumber] as ItemStack;
+				XUiC_ItemStack itemStack = itemControllers[slotNumber] as XUiC_ItemStack;
 				FilterFromSearch(itemStack, !string.IsNullOrEmpty(searchResult), searchResult);
 			}
 		}
@@ -122,7 +122,7 @@ namespace Quartz
             int count = 0;
             for (int i = 0; i < itemControllers.Length; i++)
             {
-                if (itemControllers[i] is ItemStack itemStack && itemStack.IsALockedSlot)
+                if (itemControllers[i] is XUiC_ItemStack itemStack && itemStack.IsALockedSlot)
                 {
                     count++;
                 }
@@ -136,7 +136,7 @@ namespace Quartz
             int count = 0;
             for (int i = 0; i < itemControllers.Length; i++)
             {
-                if (i >= ignoredLockedSlots && itemControllers[i] is ItemStack itemStack && itemStack.IsALockedSlot)
+                if (i >= ignoredLockedSlots && itemControllers[i] is XUiC_ItemStack itemStack && itemStack.IsALockedSlot)
                 {
                     count++;
                 }
@@ -150,7 +150,7 @@ namespace Quartz
             int count = 0;
             for (int i = 0; i < itemControllers.Length; i++)
             {
-                if (i >= ignoredLockedSlots && itemControllers[i] is ItemStack itemStack && !itemStack.IsALockedSlot)
+                if (i >= ignoredLockedSlots && itemControllers[i] is XUiC_ItemStack itemStack && !itemStack.IsALockedSlot)
                 {
                     count++;
                 }
@@ -175,7 +175,7 @@ namespace Quartz
         {
             for (int i = 0; i < itemControllers.Length; i++)
             {
-                ItemStack itemStack = itemControllers[i] as ItemStack;
+                XUiC_ItemStack itemStack = itemControllers[i] as XUiC_ItemStack;
                 if (itemStack != null)
                 {
                     if (value > i && i >= newValue)
@@ -204,7 +204,7 @@ namespace Quartz
 
         protected virtual void OnItemStackPress(XUiController sender, int mouseButton)
         {
-            if (sender is ItemStack itemStack && standardControls is ContainerStandardControls controls 
+            if (sender is XUiC_ItemStack itemStack && standardControls is XUiC_ContainerStandardControls controls 
                 && (QuartzInputManager.inventoryActions.LockSlot.IsPressed || controls.IsIndividualSlotLockingAllowed()))
             {
                 int index = Array.IndexOf(itemControllers, itemStack);
@@ -239,7 +239,7 @@ namespace Quartz
 
                 for (int j = 0; j < 20 && (j + indexOffset) < itemControllers.Length; j++)
                 {
-                    ItemStack itemStack = itemControllers[j + indexOffset] as ItemStack;
+                    XUiC_ItemStack itemStack = itemControllers[j + indexOffset] as XUiC_ItemStack;
                     if (itemStack != null && itemStack.IsALockedSlot)
                     {
                         flag |= 1 << j;
@@ -271,7 +271,7 @@ namespace Quartz
 
                 for (int j = 0; j < 20 && (j + indexOffset) < itemControllers.Length; j++)
                 {
-                    ItemStack itemStack = itemControllers[j + indexOffset] as ItemStack;
+                    XUiC_ItemStack itemStack = itemControllers[j + indexOffset] as XUiC_ItemStack;
                     if (itemStack != null && (flag & (1 << j)) != 0)
                     {
                         itemStack.IsALockedSlot = true;
@@ -287,12 +287,12 @@ namespace Quartz
 			bool activeSearch = !string.IsNullOrEmpty(search);
 			foreach (var itemController in itemControllers)
 			{
-				ItemStack itemStack = itemController as ItemStack;
+				XUiC_ItemStack itemStack = itemController as XUiC_ItemStack;
 				FilterFromSearch(itemStack, activeSearch, search);
 			}
 		}
 
-		private void FilterFromSearch(ItemStack itemStack, bool activeSearch, string search)
+		private void FilterFromSearch(XUiC_ItemStack itemStack, bool activeSearch, string search)
 		{
 			if (itemStack == null)
 			{

@@ -17,7 +17,7 @@ using UnityEngine;
 
 namespace Quartz.Views
 {
-    public class ScrollView : XUiView
+    public class XUiV_ScrollView : XUiView
     {
 
         private const string TAG = "ScrollView";
@@ -25,7 +25,7 @@ namespace Quartz.Views
         protected UIScrollView uiScrollView;
         protected UIScrollBar uiScrollBar;
 
-        protected ScrollViewContainer container;
+        protected XUiV_ScrollViewContainer container;
 
         private bool opened;
 
@@ -47,7 +47,7 @@ namespace Quartz.Views
             }
         }
 
-        public ScrollViewContainer Container 
+        public XUiV_ScrollViewContainer Container 
         { 
             get 
             { 
@@ -138,7 +138,7 @@ namespace Quartz.Views
         private Vector2 clippingSoftness;
         private float scrollWheelFactor;
 
-        public ScrollView(string _id) : base(_id)
+        public XUiV_ScrollView(string _id) : base(_id)
         {
         }
 

@@ -23,7 +23,7 @@ public class XUiC_ItemStackPatch
     [HarmonyPatch("updateBorderColor")]
     public static bool updateBorderColor(XUiC_ItemStack __instance)
     {
-        return !(__instance is Quartz.ItemStack);
+        return !(__instance is Quartz.XUiC_ItemStack);
     }
 
 }

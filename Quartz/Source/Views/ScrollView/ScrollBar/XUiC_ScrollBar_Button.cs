@@ -17,13 +17,13 @@ using UnityEngine;
 
 namespace Quartz
 {
-    public class ScrollBar_Button : XUiV_Button
+    public class XUiC_ScrollBar_Button : XUiV_Button
     {
         private const string TAG = "ScrollBar Button";
 
         private AudioClip xuiSound;
 
-        public ScrollBar_Button(string _id) : base(_id)
+        public XUiC_ScrollBar_Button(string _id) : base(_id)
         {
         }
 

@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace Quartz.Views
 {
-    public class ScrollBarView : XUiView
+    public class XUiV_ScrollBar : XUiView
     {
         private const string TAG = "ScrollBar";
 
@@ -127,7 +127,7 @@ namespace Quartz.Views
             }
         }
 
-        public ScrollBarView(string _id) : base(_id)
+        public XUiV_ScrollBar(string _id) : base(_id)
         {
         }
 
@@ -145,7 +145,7 @@ namespace Quartz.Views
 
             if (foregroundView == null)
             {
-                XUiV_Sprite foreground = new Scrollbar_Sprite(id + "_foreground");
+                XUiV_Sprite foreground = new XUiC_Scrollbar_Sprite(id + "_foreground");
                 foreground.xui = xui;
                 foreground.Controller = new XUiController(controller);
                 foreground.Controller.xui = xui;
@@ -165,7 +165,7 @@ namespace Quartz.Views
 
             if (backgroundView == null)
             {
-                XUiV_Sprite background = new Scrollbar_Sprite(id + "_background");
+                XUiV_Sprite background = new XUiC_Scrollbar_Sprite(id + "_background");
                 background.xui = xui;
                 background.Controller = new XUiController(controller);
                 background.Controller.xui = xui;

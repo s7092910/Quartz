@@ -18,7 +18,7 @@ using UnityEngine;
 
 namespace Quartz.Views
 {
-    public class CurvedLabel : XUiV_Label
+    public class XUiV_CurvedLabel : XUiV_Label
     {
         private const string TAG = "CurvedLabel";
 
@@ -31,7 +31,7 @@ namespace Quartz.Views
         private bool flipText = false;
         private bool drawOutwards = false;
 
-        public CurvedLabel(string _id) : base(_id)
+        public XUiV_CurvedLabel(string _id) : base(_id)
         {
         }
 

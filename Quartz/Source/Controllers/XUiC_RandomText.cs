@@ -16,12 +16,12 @@ using System;
 
 namespace Quartz
 {
-    public class RandomTexture : XUiController
+    public class XUiC_RandomText : XUiController
     {
-        private const string TAG = "RandomTexture";
+        private const string TAG = "RandomText";
 
         private const char SPLITTER = ',';
-        private string[] textures;
+        private string[] texts;
         private readonly Random rnd = new Random();
 
         public override void OnOpen()
@@ -32,10 +32,10 @@ namespace Quartz
 
         public override bool GetBindingValue(ref string value, string bindingName)
         {
-            switch (bindingName)
+            switch( bindingName )
             {
-                case "randomtexture":
-                    value = getRandomTexture();
+                case "randomtext":
+                    value = Localization.Get(getRandomText());
                     return true;
                 default:
                     return base.GetBindingValue(ref value, bindingName);
@@ -48,8 +48,8 @@ namespace Quartz
             {
                 switch (attribute)
                 {
-                    case "textures":
-                        parseTextures(value);
+                    case "texts":
+                        parseTexts(value);
                         return true;
                     default:
                         return base.ParseAttribute(attribute, value, parent);
@@ -58,27 +58,26 @@ namespace Quartz
             return false;
         }
 
-        private void parseTextures(string texturesString)
+        private void parseTexts(string textsString)
         {
-            if (string.IsNullOrEmpty(texturesString))
+            if (string.IsNullOrEmpty(textsString))
             {
                 return;
             }
 
-            textures = texturesString.Split(SPLITTER);
+            texts = textsString.Split(SPLITTER);
         }
 
-        private string getRandomTexture()
+        private string getRandomText()
         {
-            if (textures == null)
+            if(texts == null)
             {
                 return string.Empty;
             }
-            string textureName = textures[rnd.Next(textures.Length)];
-            textureName = textureName.Trim();
-            Logging.Out(TAG, "Random Texture: " + textureName);
-            return textureName;
+            string text = texts[rnd.Next(texts.Length)];
+            text = text.Trim();
+            Logging.Out(TAG, "Random Text: " + text);
+            return text;
         }
     }
 }
-

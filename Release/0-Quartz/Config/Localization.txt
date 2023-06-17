@@ -12,3 +12,7 @@ quartzSettingInventory,UI,Menu,x,,Inventory
 quartzSettingInputInventoryTooltip,UI,Menu,x,,Inventory Player Control Bindings
 quartzSettingInputLockedSlots,UI,Menu,x,,Lock Slots
 quartzSettingInputLockedSlotsTooltip,UI,Menu,x,,Locks or Unlocks inventory slot when the slot is clicked on
+quartzUiSpriteWindowHeader,UI,Menu,x,,UIAtlas Sprites
+quartzXuiExport,UI,Menu,x,,Export Sprites
+quartzXuiExplorer,UI,Menu,x,,Open Export Folder
+quartzTooltipShowModSprites,UI,Menu,x,,Switch to show modded UIAtlas sprites

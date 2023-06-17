@@ -472,6 +472,7 @@ namespace Quartz
 
         private void fetchWwwTexture(string _uri)
         {
+            _uri = _uri.Replace("#", "%23").Replace("+", "%2B");
             wwwTexture = UnityWebRequestTexture.GetTexture(_uri);
             wwwTexture.SendWebRequest();
             ThreadManager.StartCoroutine(waitForWwwTextureData());
@@ -479,6 +480,7 @@ namespace Quartz
 
         private void fetchWwwMask(string _uri)
         {
+            _uri = _uri.Replace("#", "%23").Replace("+", "%2B");
             wwwMask = UnityWebRequestTexture.GetTexture(_uri);
             wwwMask.SendWebRequest();
             ThreadManager.StartCoroutine(waitForWwwMaskData());

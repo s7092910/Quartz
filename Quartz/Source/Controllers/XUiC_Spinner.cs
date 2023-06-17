@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace Quartz
 {
-    public class Spinner : XUiController
+    public class XUiC_Spinner : XUiController
     {
         private const string TAG = "Spinner";
 

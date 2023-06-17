@@ -17,12 +17,12 @@ using UnityEngine;
 
 namespace Quartz.Views
 {
-    public class ScrollViewContainer : global::XUiView
+    public class XUiV_ScrollViewContainer : XUiView
     {
         private const string TAG = "ScrollViewContainer";
 
-        protected ScrollView scrollView;
-        protected ScrollBarView scrollBar;
+        protected XUiV_ScrollView scrollView;
+        protected XUiV_ScrollBar scrollBar;
         protected XUiV_Grid grid;
         protected UIWidget widget;
 
@@ -35,10 +35,10 @@ namespace Quartz.Views
         private bool overScroll = false;
         private float scrollWheelFactor = 2.5f;
 
-        public ScrollView ScrollView { get { return scrollView; } }
-        public ScrollBarView ScrollBar { get { return scrollBar; } }
+        public XUiV_ScrollView ScrollView { get { return scrollView; } }
+        public XUiV_ScrollBar ScrollBar { get { return scrollBar; } }
 
-        public ScrollViewContainer(string id) : base(id)
+        public XUiV_ScrollViewContainer(string id) : base(id)
         {
         }
 
@@ -47,7 +47,7 @@ namespace Quartz.Views
             scrollViewId = id;
             id = id + "Container";
 
-            scrollView = new ScrollView(scrollViewId);
+            scrollView = new XUiV_ScrollView(scrollViewId);
             scrollView.xui = xui;
             scrollView.Controller = new XUiController();
             scrollView.Controller.xui = xui;
@@ -62,7 +62,7 @@ namespace Quartz.Views
 
             if (scrollbarId != null)
             {
-                scrollBar = controller.Parent.GetChildById(scrollbarId)?.ViewComponent as ScrollBarView;
+                scrollBar = controller.Parent.GetChildById(scrollbarId)?.ViewComponent as XUiV_ScrollBar;
             }
 
             grid = FindGrid(controller);

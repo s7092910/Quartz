@@ -14,11 +14,11 @@ limitations under the License.*/
 
 namespace Quartz
 {
-    public class Scrollbar_Sprite : XUiV_Sprite
+    public class XUiC_Scrollbar_Sprite : XUiV_Sprite
     {
         private const string TAG = "ScrollBar Sprite";
 
-        public Scrollbar_Sprite(string _id) : base(_id)
+        public XUiC_Scrollbar_Sprite(string _id) : base(_id)
         {
         }
 

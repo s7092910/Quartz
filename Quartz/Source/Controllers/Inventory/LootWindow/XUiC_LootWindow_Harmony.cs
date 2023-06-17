@@ -58,7 +58,7 @@ public class XUiC_LootWindowPatch
         if (!___isClosing && __instance.ViewComponent != null && __instance.ViewComponent.IsVisible && !__instance.xui.playerUI.windowManager.IsInputActive()
             && (__instance.xui.playerUI.playerInput.GUIActions.LeftStick.WasPressed || __instance.xui.playerUI.playerInput.PermanentActions.Reload.WasPressed))
         {
-            if(___controls is ContainerStandardControls controls)
+            if(___controls is Quartz.XUiC_ContainerStandardControls controls)
             {
                 controls.MoveAllButLocked();
             }

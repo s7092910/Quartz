@@ -36,7 +36,7 @@ public class XUiC_LootContainerPatch
     [HarmonyPatch("SetSlots")]
     public static void SetSlotsPrefix(XUiC_LootContainer __instance, TileEntityLootContainer lootContainer, ItemStack[] stackList)
     {
-        if (__instance is Quartz.LootContainer instance)
+        if (__instance is Quartz.XUiC_LootContainer instance)
         {
             instance.SetCurrentTileEntity(lootContainer);
         }
@@ -46,7 +46,7 @@ public class XUiC_LootContainerPatch
     [HarmonyPatch("SetSlots")]
     public static void SetSlots(XUiC_LootContainer __instance, TileEntityLootContainer lootContainer, ItemStack[] stackList)
     {
-        if (__instance is Quartz.LootContainer instance)
+        if (__instance is Quartz.XUiC_LootContainer instance)
         {
             instance.UpdateFilterFromSearch();
         }
@@ -56,7 +56,7 @@ public class XUiC_LootContainerPatch
     [HarmonyPatch("OnTileEntityChanged")]
     public static void OnTileEntityChanged(XUiC_LootContainer __instance, TileEntity _te, int _dataObject)
     {
-        if (__instance is Quartz.LootContainer instance)
+        if (__instance is Quartz.XUiC_LootContainer instance)
         {
             instance.UpdateFilterFromSearch();
         }

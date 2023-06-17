@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Quartz name="XUi_Menu/windows.xml">
+
+<!--/*Copyright 2023 Christopher Beda
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/-->
+
+	<append xpath="/windows">
+		<window name="UiSpritesWindow" anchor="CenterCenter" pos="-600,375" width="1185" height="780" cursor_area="true" controller="Quartz.Debugging.UiAtlasList, Quartz" clear_selection_on_open="false" clear_searchtext_on_open="true">
+			<!-- Header -->
+			<panel name="header" pos="0,0" height="43" depth="1" backgroundspritename="ui_game_panel_header" bordercolor="[black]" borderthickness="3" >
+				<label style="header.name" name="windowheader" pos="10,-6" width="550" text_key="quartzUiSpriteWindowHeader" />
+				<button depth="1" name="btnShowModSprites" style="icon32px, press, hover" pivot="center" pos="1169, -21" sprite="ui_game_symbol_electric_switch" tooltip_key="quartzTooltipShowModSprites" sound="[paging_click]" />
+			</panel>
+
+			<rect name="spriteList" pos="0,-50" height="656" width="1185">
+				<sprite depth="8" name="border" sprite="menu_empty3px" color="[black]" type="sliced" fillcenter="false" />
+				<sprite depth="0" name="backgroundMain" pos="1,-1" height="654" width="1183" sprite="menu_empty3px" color="[mediumGrey]" type="sliced" fillcenter="true" />
+
+				<rect depth="4" name="searchControls" height="44" pos="0,-0">
+					<sprite depth="8" name="backgroundMain" sprite="menu_empty" color="[black]" type="sliced" fillcenter="false" />
+
+					<sprite depth="4" name="searchIcon" style="icon30px" pos="5,-22" sprite="ui_game_symbol_search" pivot="Left"/>
+					<textfield name="searchInput" depth="5" pos="40,-22" width="550" height="30" pivot="Left" search_field="true" />
+				</rect>
+
+				<scrollbar	name="scrollbar" depth="6" pos="1177,-348" width="12" height="610" padding="4" foregroundname="handler" backgroundname="background" pivot="center" globalopacitymod="1.8">
+					<button name="handler" sprite="quartz_scrollbar_handler" pivot="center" hovercolor="[quartz_scrollbar_handler_hover]" color="[quartz_scrollbar_handler]" defaultcolor="[quartz_scrollbar_handler]" hoverscale="1" />
+					<button name="background" sprite="quartz_scrollbar_background" pivot="center" hovercolor="[quartz_scrollbar_background_hover]" color="[quartz_scrollbar_background]" defaultcolor="[quartz_scrollbar_background]" hoverscale="1" sound_play_on_press_down="[paging_click]" />
+				</scrollbar>
+
+				<scrollview name="scrollview" depth="5" pos="2,-44" width="1172" height="609" scrollbar="scrollbar" reset_position="true" over_scroll="false" scroll_speed="2.5">
+					<grid name="list" rows="{#Round(spriteCount/4,0) + 1}" cols="4" pos="0,-44" cell_width="293" cell_height="110" repeat_content="true" arrangement="horizontal" >
+						<Quartz_UiAtlas_Entry width="293" height="110" controller="ListEntry`1[[Quartz.Debugging.XUiC_UiAtlasList+ListEntry, Quartz]]"/>
+					</grid>
+				</scrollview>
+			</rect>
+
+			<rect pos="0, -720">
+				<simplebutton name="btnBack" depth="3" pos="0, 0" width="200" height="36" font_size="40" caption_key="xuiBack" upper_case="true" />
+				<simplebutton name="btnExport" depth="3" pos="910, 0" pivot="right" width="200" height="40" font_size="32" caption_key="quartzXuiExport" visible="true" upper_case="true" />
+				<simplebutton name="btnExplorer" depth="3" pos="1185, 0" pivot="right" width="250" height="40" font_size="32" caption_key="quartzXuiExplorer" upper_case="true" />
+			</rect>
+		</window>
+	</append>
+	
+</Quartz>

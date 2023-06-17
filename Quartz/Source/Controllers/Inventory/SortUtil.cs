@@ -27,10 +27,10 @@ namespace Quartz.Inventory
 
             for (int i = ignoreSlots; i < itemControllers.Length; i++)
             {
-                XUiC_ItemStack itemStack = itemControllers[i] as XUiC_ItemStack;
+                global::XUiC_ItemStack itemStack = itemControllers[i] as global::XUiC_ItemStack;
                 if (itemStack != null)
                 {
-                    if (!(itemStack is ItemStack quartzItemStack) || !quartzItemStack.IsALockedSlot)
+                    if (!(itemStack is XUiC_ItemStack quartzItemStack) || !quartzItemStack.IsALockedSlot)
                     {
                         itemsList.Add(itemStack.ItemStack);
                     }
@@ -45,10 +45,10 @@ namespace Quartz.Inventory
             int j = 0;
             for (int i = ignoreSlots; i < slots.Length; i++)
             {
-                XUiC_ItemStack itemStack = itemControllers[i] as XUiC_ItemStack;
+                global::XUiC_ItemStack itemStack = itemControllers[i] as global::XUiC_ItemStack;
                 if (itemStack != null)
                 {
-                    if (!(itemStack is ItemStack quartzItemStack) || !quartzItemStack.IsALockedSlot)
+                    if (!(itemStack is XUiC_ItemStack quartzItemStack) || !quartzItemStack.IsALockedSlot)
                     {
                         slots[i] = items[j];
                         j++;

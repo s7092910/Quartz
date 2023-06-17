@@ -17,7 +17,7 @@ using UnityEngine;
 
 namespace Quartz
 {
-    public class DialIndicator : XUiController
+    public class XUiC_DialIndicator : XUiController
     {
         private const string TAG = "DialIndicator";
 
