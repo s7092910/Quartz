@@ -224,7 +224,7 @@ namespace Quartz
                 global::XUiC_ItemStack xuiC_ItemStack = (global::XUiC_ItemStack)itemStackControllers[num];
                 if (!xuiC_ItemStack.StackLock && (!(xuiC_ItemStack is XUiC_ItemStack quartzItemStack) || !quartzItemStack.IsALockedSlot))
                 {
-                    global::ItemStack itemStack = xuiC_ItemStack.ItemStack;
+                    ItemStack itemStack = xuiC_ItemStack.ItemStack;
                     if (!xuiC_ItemStack.ItemStack.IsEmpty())
                     {
                         int count = itemStack.count;
@@ -233,11 +233,11 @@ namespace Quartz
                             && (moveKind == XUiM_LootContainer.EItemMoveKind.All || (moveKind == XUiM_LootContainer.EItemMoveKind.FillAndCreate && dstInventory.HasItem(itemStack.itemValue)))
                             && dstInventory.AddItem(itemStack))
                         {
-                            itemStack = global::ItemStack.Empty.Clone();
+                            itemStack = ItemStack.Empty.Clone();
                         }
                         if (itemStack.count == 0)
                         {
-                            itemStack = global::ItemStack.Empty.Clone();
+                            itemStack = ItemStack.Empty.Clone();
                         }
                         else
                         {

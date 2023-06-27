@@ -28,7 +28,7 @@ namespace Quartz
 		private const string TAG = "VehicleContainer";
         private const string lockedSlotsCvarName = "$varQuartzVehicleLockedSlots";
 
-        protected XUiC_ContainerStandardControls standardControls;
+        protected global::XUiC_ContainerStandardControls standardControls;
         protected XUiC_ComboBoxInt comboBox;
 
         protected EntityVehicle vehicle;
@@ -61,7 +61,7 @@ namespace Quartz
 				}
 			}
 
-			standardControls = GetChildByType<XUiC_ContainerStandardControls>();
+			standardControls = GetChildByType<global::XUiC_ContainerStandardControls>();
 
             if (standardControls is XUiC_ContainerStandardControls)
             {
@@ -192,7 +192,7 @@ namespace Quartz
             return count;
         }
 
-        public override void HandleSlotChangedEvent(int slotNumber, global::ItemStack stack)
+        public override void HandleSlotChangedEvent(int slotNumber, ItemStack stack)
         {
             if (slotNumber < itemControllers.Length)
             {

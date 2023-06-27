@@ -25,7 +25,7 @@ namespace Quartz
 
 		private const string lockedSlotsCvarName = "$varQuartzBackpackLockedSlots";
 
-        protected XUiC_ContainerStandardControls standardControls;
+        protected global::XUiC_ContainerStandardControls standardControls;
         protected XUiC_ComboBoxInt comboBox;
 
         protected EntityPlayer player;
@@ -43,7 +43,7 @@ namespace Quartz
 				return;
 			}
 
-			standardControls = parent.GetChildByType<XUiC_ContainerStandardControls>();
+			standardControls = parent.GetChildByType<global::XUiC_ContainerStandardControls>();
 
 			comboBox = standardControls.GetChildByType<XUiC_ComboBoxInt>();
 			if (comboBox != null)

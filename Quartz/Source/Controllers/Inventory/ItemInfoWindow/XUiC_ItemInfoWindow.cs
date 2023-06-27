@@ -17,7 +17,7 @@ namespace Quartz
 {
     public class XUiC_ItemInfoWindow : global::XUiC_ItemInfoWindow
     {
-        private global::ItemStack itemStack;
+        private ItemStack itemStack;
         private ItemDisplayEntry displayEntry;
 
         private XUiC_ItemStatEntry[] itemStatControllers;
@@ -79,7 +79,7 @@ namespace Quartz
             return base.GetBindingValue(ref value, bindingName);
         }
 
-        public void SetItemStats(global::ItemStack itemStack, ItemDisplayEntry itemDisplayEntry)
+        public void SetItemStats(ItemStack itemStack, ItemDisplayEntry itemDisplayEntry)
         {
             this.itemStack = itemStack;
             displayEntry = itemDisplayEntry;
@@ -134,7 +134,7 @@ namespace Quartz
 
         private string GetStatValueCompare(int index)
         {
-            if (CompareStack == global::ItemStack.Empty)
+            if (CompareStack == ItemStack.Empty)
             {
                 return string.Empty;
             }

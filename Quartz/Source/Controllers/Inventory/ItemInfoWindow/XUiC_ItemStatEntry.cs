@@ -20,7 +20,7 @@ namespace Quartz
 
         private XUiC_ItemInfoWindow itemInfoWindow;
 
-        private global::ItemStack itemStack;
+        private ItemStack itemStack;
 
         private string statValue;
 
@@ -85,7 +85,7 @@ namespace Quartz
             }
         }
 
-        public void SetEntry(global::ItemStack itemStack, global::DisplayInfoEntry displayInfoEntry)
+        public void SetEntry(ItemStack itemStack, global::DisplayInfoEntry displayInfoEntry)
         {
             if (this.itemStack != itemStack)
             {
@@ -157,7 +157,7 @@ namespace Quartz
 
         private string GetStatValueMain()
         {
-            if (itemStack == null || displayInfoEntry == null || itemInfoWindow.CompareStack == global::ItemStack.Empty)
+            if (itemStack == null || displayInfoEntry == null || itemInfoWindow.CompareStack == ItemStack.Empty)
             {
                 return string.Empty;
             }
@@ -173,7 +173,7 @@ namespace Quartz
 
         private string GetStatValueCompare()
         {
-            if (itemStack == null || displayInfoEntry == null || itemInfoWindow.CompareStack == global::ItemStack.Empty)
+            if (itemStack == null || displayInfoEntry == null || itemInfoWindow.CompareStack == ItemStack.Empty)
             {
                 return string.Empty;
             }
