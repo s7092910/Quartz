@@ -163,10 +163,10 @@
     <Compile Include="Source\Utils\VehicleExtensions.cs" />
     <Compile Include="Source\Views\MaskedTexture\UIMaskedTexture.cs" />
     <Compile Include="Source\Views\MaskedTexture\XUiV_MaskedTexture.cs" />
-    <Compile Include="Source\Views\UIDrawCall_Harmony.cs" />
+    <Compile Include="Source\Views\Harmony\UIDrawCall_Harmony.cs" />
     <Compile Include="Source\XUI\XUi_Harmony.cs" />
     <Compile Include="Source\Managers\FontManager.cs" />
-    <Compile Include="Source\Views\VideoPlayer\XUiV_VideoPlayer.cs" />
+    <Compile Include="Source\Views\XUiV_VideoPlayer.cs" />
     <Compile Include="Source\Controllers\XUiController_Harmony.cs" />
     <Compile Include="Source\Inputs\InventoryActions.cs" />
     <Compile Include="Source\Inputs\PlayerActionsBaseExtensions.cs" />
@@ -186,7 +186,7 @@
     <Compile Include="Source\Settings\Debugging.cs" />
     <Compile Include="Source\Settings\GlobalSettings.cs" />
     <Compile Include="Source\Utils\ColorExtensions.cs" />
-    <Compile Include="Source\Views\CurvedLabel\XUiV_CurvedLabel.cs" />
+    <Compile Include="Source\Views\XUiV_CurvedLabel.cs" />
     <Compile Include="Source\Views\ScrollView\XUiV_ScrollBar.cs" />
     <Compile Include="Source\Views\ScrollView\ScrollBar\XUiC_ScrollBar_Button.cs" />
     <Compile Include="Source\Views\ScrollView\ScrollBar\XUiC_Scrollbar_Sprite.cs" />
@@ -194,7 +194,7 @@
     <Compile Include="Source\Views\ScrollView\XUiV_ScrollView.cs" />
     <Compile Include="Source\Views\ScrollView\XUiV_ScrollViewContainer.cs" />
     <Compile Include="Source\XUI\XUiFromXml_Harmony.cs" />
-    <Compile Include="Source\Views\XUiV_Label_Harmony.cs" />
+    <Compile Include="Source\Views\Harmony\XUiV_Label_Harmony.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Source\Overhaul\Controllers\Hud\" />
