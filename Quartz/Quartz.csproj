@@ -155,7 +155,7 @@
     <Compile Include="Source\Controllers\Map\XUiC_MapArea_Harmony.cs" />
     <Compile Include="Source\Controllers\XUiC_RandomText.cs" />
     <Compile Include="Source\Controllers\XUiC_Spinner.cs" />
-    <Compile Include="Source\Controllers\VideoPlayer\XUiC_RandomVideo.cs" />
+    <Compile Include="Source\Controllers\XUiC_RandomVideo.cs" />
     <Compile Include="Source\Controllers\XUiC_CVarTimer.cs" />
     <Compile Include="Source\Models\UIDisplay\DisplayInfoEntry.cs" />
     <Compile Include="Source\Models\UIDisplay\UIDisplayInfoFromXml_Harmony.cs" />
