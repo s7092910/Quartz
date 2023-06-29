@@ -80,14 +80,14 @@ namespace Quartz
                     value = "0";
                     if (localPlayer != null && vehicle != null)
                     {
-                        value = statcurrentFormatterFloat.Format(vehicle.GetVehicle().VelocityMax * 3.6f);
+                        value = statcurrentFormatterFloat.Format(vehicle.GetVehicle().VelocityMaxForward * 3.6f);
                     }
                     return true;
                 case "maxspeedwithturbo":
                     value = "0";
                     if (localPlayer != null && vehicle != null)
                     {
-                        value = statcurrentFormatterFloat.Format(vehicle.GetVehicle().VelocityMaxTurbo * 3.6f);
+                        value = statcurrentFormatterFloat.Format(vehicle.GetVehicle().MaxPossibleSpeed * 3.6f);
                     }
                     return true;
                 case "showspeed":

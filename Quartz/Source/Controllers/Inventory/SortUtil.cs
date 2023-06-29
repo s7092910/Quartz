@@ -19,11 +19,11 @@ namespace Quartz.Inventory
     public static class SortUtil
     {
 
-        public static global::ItemStack[] CombineAndSortStacks(XUiC_ItemStackGrid grid, int ignoreSlots)
+        public static ItemStack[] CombineAndSortStacks(XUiC_ItemStackGrid grid, int ignoreSlots)
         {
             XUiController[] itemControllers = grid.GetItemStackControllers();
 
-            List<global::ItemStack> itemsList = new List<global::ItemStack>();
+            List<ItemStack> itemsList = new List<ItemStack>();
 
             for (int i = ignoreSlots; i < itemControllers.Length; i++)
             {
@@ -37,10 +37,10 @@ namespace Quartz.Inventory
                 }
             }
 
-            global::ItemStack[] items = itemsList.ToArray();
+            ItemStack[] items = itemsList.ToArray();
             items = StackSortUtil.CombineAndSortStacks(items, 0);
 
-            global::ItemStack[] slots = grid.GetSlots();
+            ItemStack[] slots = grid.GetSlots();
 
             int j = 0;
             for (int i = ignoreSlots; i < slots.Length; i++)

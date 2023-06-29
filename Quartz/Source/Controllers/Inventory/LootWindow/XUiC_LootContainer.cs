@@ -27,7 +27,7 @@ namespace Quartz
 		private const string TAG = "LootContainer";
         private const string lockedSlotsCvarName = "$varQuartzLootContainerLockedSlots";
 
-        protected XUiC_ContainerStandardControls standardControls;
+        protected global::XUiC_ContainerStandardControls standardControls;
         protected XUiC_ComboBoxInt comboBox;
 
         protected TileEntityLootContainer lootContainer;
@@ -45,7 +45,7 @@ namespace Quartz
 				return;
 			}
 
-            standardControls = parent.GetChildByType<XUiC_ContainerStandardControls>();
+            standardControls = parent.GetChildByType<global::XUiC_ContainerStandardControls>();
 
             comboBox = standardControls.GetChildByType<XUiC_ComboBoxInt>();
             if (comboBox != null)
@@ -130,7 +130,7 @@ namespace Quartz
             SaveLockedSlots();
         }
 
-        public override void HandleSlotChangedEvent(int slotNumber, global::ItemStack stack)
+        public override void HandleSlotChangedEvent(int slotNumber, ItemStack stack)
         {
             if (slotNumber < itemControllers.Length)
             {
@@ -188,7 +188,7 @@ namespace Quartz
 
         protected virtual void OnSortPressed(int ignoreSlots)
         {
-            global::ItemStack[] array = SortUtil.CombineAndSortStacks(this, ignoreSlots);
+            ItemStack[] array = SortUtil.CombineAndSortStacks(this, ignoreSlots);
             for (int i = 0; i < array.Length; i++)
             {
                 lootContainer.UpdateSlot(i, array[i]);

@@ -98,8 +98,8 @@ namespace Quartz
         public override void InitView()
         {
             base.InitView();
-            uiTexture = uiTransform.gameObject.GetComponent<UITexture>();
-            videoPlayer = uiTransform.gameObject.GetComponent<VideoPlayer>();
+            uiTexture = uiTransform.GetComponent<UITexture>();
+            videoPlayer = uiTransform.GetComponent<VideoPlayer>();
 
             videoPlayer.playOnAwake = false;
             videoPlayer.renderMode = VideoRenderMode.RenderTexture;
@@ -111,7 +111,6 @@ namespace Quartz
 
         public override void UpdateData()
         {
-            Logging.Inform(TAG, nameof(UpdateData));
             if (!isDirty)
             {
                 return;

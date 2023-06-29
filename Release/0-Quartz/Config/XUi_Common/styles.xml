@@ -27,11 +27,11 @@ limitations under the License.*/-->
 		<!-- QuartzUI GLOBAL colors. -->
 		<style_entry name="quartz_scrollbar_background"					value="0,0,0" />		<!-- This entry sets the color for: GLOBAL Scrollview scrollbar background -->
 		<style_entry name="quartz_scrollbar_background_hover"			value="7,7,7" />		<!-- This entry sets the color for: GLOBAL Scrollview scrollbar background hover (mouseover) -->
-		<style_entry name="quartz_scrollbar_handler"						value="128,128,128" />	<!-- This entry sets the color for: GLOBAL Scrollview scrollbar handler -->
+		<style_entry name="quartz_scrollbar_handler"					value="128,128,128" />	<!-- This entry sets the color for: GLOBAL Scrollview scrollbar handler -->
 		<style_entry name="quartz_scrollbar_handler_hover"				value="255,255,255" />	<!-- This entry sets the color for: GLOBAL Scrollview scrollbar handler hover (mouseover) -->
 	</append>
 
-	<!-- Curved Label-->
+	<!-- Views default styles-->
 	<append xpath="/styles">
 		<style type="curvedlabel">
 			<style_entry name="color" value="[labelColor]"/>
@@ -43,6 +43,12 @@ limitations under the License.*/-->
 			<style_entry name="text" value=""/>
 			<style_entry name="upper_case" value="false" />
 			<style_entry name="crispness" value="OnDesktop" />
+		</style>
+
+		<style type="animatedsprite">
+			<style_entry name="atlas" value="UIAtlas"/>
+			<style_entry name="sprite" value="[default_sprite]"/>
+			<style_entry name="color" value="[white]"/>
 		</style>
 	</append>
 	
