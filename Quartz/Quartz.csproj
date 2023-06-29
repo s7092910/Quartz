@@ -164,6 +164,7 @@
     <Compile Include="Source\Views\MaskedTexture\UIMaskedTexture.cs" />
     <Compile Include="Source\Views\MaskedTexture\XUiV_MaskedTexture.cs" />
     <Compile Include="Source\Views\Harmony\UIDrawCall_Harmony.cs" />
+    <Compile Include="Source\Views\XUiV_AnimatedSprite.cs" />
     <Compile Include="Source\XUI\XUi_Harmony.cs" />
     <Compile Include="Source\Managers\FontManager.cs" />
     <Compile Include="Source\Views\XUiV_VideoPlayer.cs" />

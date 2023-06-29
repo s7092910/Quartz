@@ -62,6 +62,9 @@ public class XUiFromXmlPatch
             case "maskedtexture":
                 view = new XUiV_MaskedTexture(id);
                 break;
+            case "animatedsprite":
+                view = new XUiV_AnimatedSprite(id);
+                break;
             case "scrollview":
                 view = new XUiV_ScrollViewContainer(id);
                 break;
