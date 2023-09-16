@@ -155,7 +155,7 @@ namespace Quartz
         {
             XUiC_ItemStackGrid srcGrid;
             IInventory dstInventory;
-            if (MoveAllowed(out srcGrid, out dstInventory))
+            if (MoveAllowed(out _, out srcGrid, out dstInventory))
             {
                 StashItems(srcGrid, dstInventory, ignoredLockedSlots, XUiM_LootContainer.EItemMoveKind.FillAndCreate, MoveStartBottomRight);
             }
@@ -165,7 +165,7 @@ namespace Quartz
         {
             XUiC_ItemStackGrid srcGrid;
             IInventory dstInventory;
-            if (MoveAllowed(out srcGrid, out dstInventory))
+            if (MoveAllowed(out _, out srcGrid, out dstInventory))
             {
                 StashItems(srcGrid, dstInventory, ignoredLockedSlots, XUiM_LootContainer.EItemMoveKind.FillOnly, MoveStartBottomRight);
             }
@@ -183,7 +183,7 @@ namespace Quartz
                 moveKind = XUiM_LootContainer.EItemMoveKind.FillAndCreate;
             }
 
-            if (MoveAllowed(out srcGrid, out dstInventory))
+            if (MoveAllowed(out _, out srcGrid, out dstInventory))
             {
                 StashItems(srcGrid, dstInventory, ignoredLockedSlots, moveKind, MoveStartBottomRight);
                 lastStashTime = unscaledTime;
@@ -194,7 +194,7 @@ namespace Quartz
         {
             XUiC_ItemStackGrid srcGrid;
             IInventory dstInventory;
-            if (MoveAllowed(out srcGrid, out dstInventory))
+            if (MoveAllowed(out _, out srcGrid, out dstInventory))
             {
                 ValueTuple<bool, bool> valueTuple = StashItems(srcGrid, dstInventory, ignoredLockedSlots, XUiM_LootContainer.EItemMoveKind.All, MoveStartBottomRight);
                 bool item = valueTuple.Item1;
