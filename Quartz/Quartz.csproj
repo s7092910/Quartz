@@ -181,9 +181,7 @@
     <Compile Include="Source\Overhaul\Controllers\ItemStacks\ItemStackGrid.cs" />
     <Compile Include="Source\Overhaul\Controllers\ItemStacks\SelectableEntry.cs" />
     <Compile Include="Source\Overhaul\Controllers\XUiBaseController.cs" />
-    <Compile Include="Source\QuartzLoader.cs" />
     <Compile Include="Source\QuartzMod.cs" />
-    <Compile Include="Source\QuartzGearsLoader.cs" />
     <Compile Include="Source\Settings\Debugging.cs" />
     <Compile Include="Source\Settings\GlobalSettings.cs" />
     <Compile Include="Source\Utils\ColorExtensions.cs" />

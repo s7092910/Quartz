@@ -20,7 +20,7 @@ namespace Quartz
     public class XUiV_AnimatedSprite : XUiV_Sprite
     {
 
-        private const string TAG = nameof(XUiV_AnimatedSprite);
+        private const string TAG = "AnimatedSprite";
 
         protected UISpriteAnimation animation;
 
