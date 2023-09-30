@@ -219,7 +219,7 @@ namespace Quartz
             {
                 return (false, false);
             }
-            XUiController[] itemStackControllers = srcGrid.GetItemStackControllers();
+            global::XUiC_ItemStack[] itemStackControllers = srcGrid.GetItemStackControllers();
 
             bool item = true;
             bool item2 = false;
@@ -244,7 +244,7 @@ namespace Quartz
             int num = startBottomRight ? (itemStackControllers.Length - 1) : ignoredSlots;
             while (startBottomRight ? (num >= ignoredSlots) : (num < itemStackControllers.Length))
             {
-                global::XUiC_ItemStack xuiC_ItemStack = (global::XUiC_ItemStack)itemStackControllers[num];
+                global::XUiC_ItemStack xuiC_ItemStack = itemStackControllers[num];
                 if (!xuiC_ItemStack.StackLock && (!(xuiC_ItemStack is XUiC_ItemStack quartzItemStack) || !quartzItemStack.IsALockedSlot))
                 {
                     ItemStack itemStack = xuiC_ItemStack.ItemStack;

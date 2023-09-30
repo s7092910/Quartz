@@ -21,13 +21,13 @@ namespace Quartz.Inventory
 
         public static ItemStack[] CombineAndSortStacks(XUiC_ItemStackGrid grid, int ignoreSlots)
         {
-            XUiController[] itemControllers = grid.GetItemStackControllers();
+            global::XUiC_ItemStack[] itemControllers = grid.GetItemStackControllers();
 
             List<ItemStack> itemsList = new List<ItemStack>();
 
             for (int i = ignoreSlots; i < itemControllers.Length; i++)
             {
-                global::XUiC_ItemStack itemStack = itemControllers[i] as global::XUiC_ItemStack;
+                global::XUiC_ItemStack itemStack = itemControllers[i];
                 if (itemStack != null)
                 {
                     if (!(itemStack is XUiC_ItemStack quartzItemStack) || !quartzItemStack.IsALockedSlot)
@@ -45,7 +45,7 @@ namespace Quartz.Inventory
             int j = 0;
             for (int i = ignoreSlots; i < slots.Length; i++)
             {
-                global::XUiC_ItemStack itemStack = itemControllers[i] as global::XUiC_ItemStack;
+                global::XUiC_ItemStack itemStack = itemControllers[i];
                 if (itemStack != null)
                 {
                     if (!(itemStack is XUiC_ItemStack quartzItemStack) || !quartzItemStack.IsALockedSlot)
