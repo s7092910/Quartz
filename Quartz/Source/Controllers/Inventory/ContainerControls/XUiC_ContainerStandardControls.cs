@@ -17,6 +17,7 @@ using Quartz.Inventory;
 using System;
 using System.Reflection;
 using UnityEngine;
+using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
 
 namespace Quartz
 {
@@ -153,26 +154,29 @@ namespace Quartz
 
         protected virtual void MoveSmart(XUiController sender, int mouseButton)
         {
+            XUiController srcWindow;
             XUiC_ItemStackGrid srcGrid;
             IInventory dstInventory;
-            if (MoveAllowed(out _, out srcGrid, out dstInventory))
+            if (MoveAllowed(out srcWindow, out srcGrid, out dstInventory))
             {
-                StashItems(srcGrid, dstInventory, ignoredLockedSlots, XUiM_LootContainer.EItemMoveKind.FillAndCreate, MoveStartBottomRight);
+                StashItems(srcWindow, srcGrid, dstInventory, ignoredLockedSlots, XUiM_LootContainer.EItemMoveKind.FillAndCreate, MoveStartBottomRight);
             }
         }
 
         protected virtual void MoveFillStacks(XUiController sender, int mouseButton)
         {
+            XUiController srcWindow;
             XUiC_ItemStackGrid srcGrid;
             IInventory dstInventory;
-            if (MoveAllowed(out _, out srcGrid, out dstInventory))
+            if (MoveAllowed(out srcWindow, out srcGrid, out dstInventory))
             {
-                StashItems(srcGrid, dstInventory, ignoredLockedSlots, XUiM_LootContainer.EItemMoveKind.FillOnly, MoveStartBottomRight);
+                StashItems(srcWindow, srcGrid, dstInventory, ignoredLockedSlots, XUiM_LootContainer.EItemMoveKind.FillOnly, MoveStartBottomRight);
             }
         }
 
         protected virtual void MoveFillAndSmart(XUiController sender, int mouseButton)
         {
+            XUiController srcWindow;
             XUiC_ItemStackGrid srcGrid;
             IInventory dstInventory;
 
@@ -183,20 +187,21 @@ namespace Quartz
                 moveKind = XUiM_LootContainer.EItemMoveKind.FillAndCreate;
             }
 
-            if (MoveAllowed(out _, out srcGrid, out dstInventory))
+            if (MoveAllowed(out srcWindow, out srcGrid, out dstInventory))
             {
-                StashItems(srcGrid, dstInventory, ignoredLockedSlots, moveKind, MoveStartBottomRight);
+                StashItems(srcWindow, srcGrid, dstInventory, ignoredLockedSlots, moveKind, MoveStartBottomRight);
                 lastStashTime = unscaledTime;
             }
         }
 
         protected virtual void MoveAll(XUiController sender, int mouseButton)
         {
+            XUiController srcWindow;
             XUiC_ItemStackGrid srcGrid;
             IInventory dstInventory;
-            if (MoveAllowed(out _, out srcGrid, out dstInventory))
+            if (MoveAllowed(out srcWindow, out srcGrid, out dstInventory))
             {
-                ValueTuple<bool, bool> valueTuple = StashItems(srcGrid, dstInventory, ignoredLockedSlots, XUiM_LootContainer.EItemMoveKind.All, MoveStartBottomRight);
+                ValueTuple<bool, bool> valueTuple = StashItems(srcWindow, srcGrid, dstInventory, ignoredLockedSlots, XUiM_LootContainer.EItemMoveKind.All, MoveStartBottomRight);
                 bool item = valueTuple.Item1;
                 bool item2 = valueTuple.Item2;
                 Action<bool, bool> moveAllDone = MoveAllDone;
@@ -208,7 +213,7 @@ namespace Quartz
             }
         }
 
-        private (bool allMoved, bool anyMoved) StashItems(XUiC_ItemStackGrid srcGrid, IInventory dstInventory, int ignoredSlots, XUiM_LootContainer.EItemMoveKind moveKind, bool startBottomRight)
+        private (bool allMoved, bool anyMoved) StashItems(XUiController srcWindow, XUiC_ItemStackGrid srcGrid, IInventory dstInventory, int ignoredSlots, XUiM_LootContainer.EItemMoveKind moveKind, bool startBottomRight)
         {
             if (srcGrid == null || dstInventory == null)
             {
@@ -218,6 +223,24 @@ namespace Quartz
 
             bool item = true;
             bool item2 = false;
+
+            PreferenceTracker preferenceTracker = null;
+            XUiC_LootWindow xuiC_LootWindow = srcWindow as XUiC_LootWindow;
+            if (xuiC_LootWindow != null)
+            {
+                preferenceTracker = xuiC_LootWindow.GetPreferenceTrackerFromTileEntity();
+            }
+            if (preferenceTracker != null && preferenceTracker.AnyPreferences)
+            {
+                XUiM_PlayerInventory xuiM_PlayerInventory = dstInventory as XUiM_PlayerInventory;
+                if (xuiM_PlayerInventory != null)
+                {
+                    ValueTuple<bool, bool> valueTuple = xuiM_PlayerInventory.AddItemsUsingPreferenceTracker(srcGrid, preferenceTracker);
+                    item = valueTuple.Item1;
+                    item2 = valueTuple.Item2;
+                }
+            }
+
             int num = startBottomRight ? (itemStackControllers.Length - 1) : ignoredSlots;
             while (startBottomRight ? (num >= ignoredSlots) : (num < itemStackControllers.Length))
             {
