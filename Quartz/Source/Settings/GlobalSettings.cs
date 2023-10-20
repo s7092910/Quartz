@@ -12,7 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
-using Gears.SettingsManager.Settings;
+using GearsAPI.Settings.Global;
 
 namespace Quartz.Settings
 {
@@ -20,7 +20,7 @@ namespace Quartz.Settings
     {
         internal static UILabel.Crispness textCrispness = UILabel.Crispness.OnDesktop;
 
-        public static void SetTextResolution(IModSetting setting, string newValue)
+        public static void SetTextResolution(IModGlobalSetting setting, string newValue)
         {
             if(newValue == "High")
             {
@@ -32,7 +32,7 @@ namespace Quartz.Settings
             }
         }
 
-        public static void SetDebugMode(IModSetting setting, string newValue)
+        public static void SetDebugMode(IModGlobalSetting setting, string newValue)
         {
             if(newValue == "Enabled")
             {

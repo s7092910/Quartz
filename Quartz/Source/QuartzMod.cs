@@ -12,13 +12,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
-using Gears.SettingsManager.Settings;
-using Gears.SettingsManager;
 using HarmonyLib;
 using Quartz.Inputs;
 using Quartz.Settings;
 using System;
 using System.Reflection;
+using GearsAPI.Settings;
+using GearsAPI.Settings.Global;
+using GearsAPI.Settings.World;
 
 namespace Quartz
 {
@@ -44,11 +45,11 @@ namespace Quartz
             QuartzInputManager.InitControls(modInstance.Path);
         }
 
-        public void OnMainSettingsLoaded(IModSettings modSettings)
+        public void OnGlobalSettingsLoaded(IModGlobalSettings modSettings)
         {
-            IModSettingsTab tab = modSettings.GetTab("General");
+            IModGlobalSettingsTab tab = modSettings.GetTab("General");
 
-            IModSettingsCategory cat = tab.GetCategory("General");
+            IModGlobalSettingsCategory cat = tab.GetCategory("General");
             IModValueSetting modSetting = cat.GetSetting("TextResolution") as IModValueSetting;
 
             modSetting.OnSettingChanged += GlobalSettings.SetTextResolution;
@@ -70,12 +71,12 @@ namespace Quartz
             modBinding.OnSettingChanged += ControlsSettingChanged;
         }
 
-        public void OnWorldSettingsLoaded(IModSettings modSettings)
+        public void OnWorldSettingsLoaded(IModWorldSettings modSettings)
         {
 
         }
 
-        private void ControlsSettingChanged(IModSetting setting, string newValue)
+        private void ControlsSettingChanged(IModGlobalSetting setting, string newValue)
         {
             QuartzInputManager.SaveControls();
         }

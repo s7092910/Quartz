@@ -17,7 +17,6 @@ using Quartz.Inventory;
 using System;
 using System.Reflection;
 using UnityEngine;
-using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
 
 namespace Quartz
 {
