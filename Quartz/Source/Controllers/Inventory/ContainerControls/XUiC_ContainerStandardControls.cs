@@ -85,6 +85,10 @@ namespace Quartz
         public override void OnOpen()
         {
             base.OnOpen();
+            if(comboBox != null)
+            {
+                comboBox.Value = ignoredLockedSlots;
+            }
             RefreshBindings();
         }
 

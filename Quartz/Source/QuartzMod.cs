@@ -15,7 +15,6 @@ limitations under the License.*/
 using HarmonyLib;
 using Quartz.Inputs;
 using Quartz.Settings;
-using System;
 using System.Reflection;
 using GearsAPI.Settings;
 using GearsAPI.Settings.Global;
@@ -45,18 +44,22 @@ namespace Quartz
             QuartzInputManager.InitControls(modInstance.Path);
         }
 
+        public void InitMod(IGearsMod modInstance)
+        {
+        }
+
         public void OnGlobalSettingsLoaded(IModGlobalSettings modSettings)
         {
-            IModGlobalSettingsTab tab = modSettings.GetTab("General");
+            IGlobalModSettingsTab tab = modSettings.GetTab("General");
 
-            IModGlobalSettingsCategory cat = tab.GetCategory("General");
-            IModValueSetting modSetting = cat.GetSetting("TextResolution") as IModValueSetting;
+            IGlobalModSettingsCategory cat = tab.GetCategory("General");
+            IGlobalValueSetting modSetting = cat.GetSetting("TextResolution") as IGlobalValueSetting;
 
             modSetting.OnSettingChanged += GlobalSettings.SetTextResolution;
             GlobalSettings.SetTextResolution(modSetting, modSetting.CurrentValue);
 
             cat = tab.GetCategory("Debug");
-            modSetting = cat.GetSetting("DebugMode") as IModValueSetting;
+            modSetting = cat.GetSetting("DebugMode") as IGlobalValueSetting;
 
             modSetting.OnSettingChanged += GlobalSettings.SetDebugMode;
             GlobalSettings.SetDebugMode(modSetting, modSetting.CurrentValue);
@@ -76,7 +79,7 @@ namespace Quartz
 
         }
 
-        private void ControlsSettingChanged(IModGlobalSetting setting, string newValue)
+        private void ControlsSettingChanged(IGlobalModSetting setting, string newValue)
         {
             QuartzInputManager.SaveControls();
         }

@@ -20,7 +20,7 @@ namespace Quartz.Settings
     {
         internal static UILabel.Crispness textCrispness = UILabel.Crispness.OnDesktop;
 
-        public static void SetTextResolution(IModGlobalSetting setting, string newValue)
+        public static void SetTextResolution(IGlobalModSetting setting, string newValue)
         {
             if(newValue == "High")
             {
@@ -32,7 +32,7 @@ namespace Quartz.Settings
             }
         }
 
-        public static void SetDebugMode(IModGlobalSetting setting, string newValue)
+        public static void SetDebugMode(IGlobalModSetting setting, string newValue)
         {
             if(newValue == "Enabled")
             {

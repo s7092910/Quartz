@@ -15,19 +15,21 @@ See the License for the specific language governing permissions and
 limitations under the License.*/-->
 
 <ModSettings>
-  <Tab name="General">
-    <Category name="General" displayKey="quartzSettingGeneral" tooltipKey="quartzSettingGeneralTooltip">
-      <Selector name="TextResolution" displayKey="quartzSettingTextResolution" tooltipKey="quartzSettingTextResolutionTooltip" value="High" defaultValue="High">
-		<Property type="arrayValues" allowedValues="Low,High" />
-      </Selector>
-    </Category>
-	<Category name="Debug" displayKey="quartzSettingDebug" tooltipKey="quartzSettingDebugTooltip">
-      <Switch name="DebugMode" displayKey="quartzSettingDebugMode" tooltipKey="quartzSettingDebugModeTooltip" value="Disabled" defaultValue="Disabled" leftValue="Disabled" rightValue="Enabled" />
-    </Category>
-  </Tab>
-	<Tab name="Controls">
-		<Category name="Inventory" displayKey="quartzSettingInventory" tooltipKey="quartzSettingInputInventoryTooltip">
-			<Binding name="LockedSlots" displayKey="quartzSettingInputLockedSlots" tooltipKey="quartzSettingInputLockedSlotsTooltip" />
-		</Category>
-	</Tab>
+	<Global>
+		<Tab name="General">
+			<Category name="General" displayKey="quartzSettingGeneral" tooltipKey="quartzSettingGeneralTooltip">
+			  <Selector name="TextResolution" displayKey="quartzSettingTextResolution" tooltipKey="quartzSettingTextResolutionTooltip" value="High" defaultValue="High">
+				<Property type="arrayValues" allowedValues="Low,High" />
+			  </Selector>
+			</Category>
+			<Category name="Debug" displayKey="quartzSettingDebug" tooltipKey="quartzSettingDebugTooltip">
+			  <Switch name="DebugMode" displayKey="quartzSettingDebugMode" tooltipKey="quartzSettingDebugModeTooltip" value="Disabled" defaultValue="Disabled" leftValue="Disabled" rightValue="Enabled" />
+			</Category>
+		</Tab>
+		<Tab name="Controls">
+			<Category name="Inventory" displayKey="quartzSettingInventory" tooltipKey="quartzSettingInputInventoryTooltip">
+				<Binding name="LockedSlots" displayKey="quartzSettingInputLockedSlots" tooltipKey="quartzSettingInputLockedSlotsTooltip" />
+			</Category>
+		</Tab>
+	</Global>
 </ModSettings>

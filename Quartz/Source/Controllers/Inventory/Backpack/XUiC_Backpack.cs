@@ -28,9 +28,20 @@ namespace Quartz
         protected global::XUiC_ContainerStandardControls standardControls;
         protected XUiC_ComboBoxInt comboBox;
 
-        protected EntityPlayer player;
+        protected EntityPlayerLocal player;
 
-        protected int ignoredLockedSlots;
+        protected int ignoredLockedSlots
+        {
+            get
+            {
+                return xui.playerUI.entityPlayer.bag.LockedSlots;
+            }
+
+            set
+            {
+                xui.playerUI.entityPlayer.bag.LockedSlots = value;
+            }
+        }
 
         private string searchResult;
 
@@ -190,7 +201,7 @@ namespace Quartz
                 }
             }
 
-            player.SetCVar(lockedSlotsCvarName, newValue);
+            //player.SetCVar(lockedSlotsCvarName, newValue);
             ignoredLockedSlots = (int)newValue;
 
             SaveLockedSlots();
@@ -279,7 +290,8 @@ namespace Quartz
                 }
             }
 
-            ignoredLockedSlots = (int)player.GetCVar(lockedSlotsCvarName);
+            //ignoredLockedSlots = (int)player.GetCVar(lockedSlotsCvarName);
+
         }
 
         private void FilterFromSearch(string search)
