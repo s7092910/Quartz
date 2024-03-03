@@ -31,7 +31,7 @@ public class XUiC_RequiredItemStackPatch
     public static bool CanSwap(XUiC_RequiredItemStack instance, ItemStack stack)
     {
         // its a stub so it has no initial content
-        throw new NotImplementedException(ERRORTAG + "emitHeatMapEvent()");
+        throw new NotImplementedException(ERRORTAG + "CanSwap()");
     }
 
     [HarmonyPrefix]
