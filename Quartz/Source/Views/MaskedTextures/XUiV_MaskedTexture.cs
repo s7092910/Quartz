@@ -80,8 +80,8 @@ namespace Quartz
                 if(mask != value)
                 {
                     mask = value;
+                    isDirty = true;
                 }
-                isDirty = true;
             }
         }
 
