@@ -124,6 +124,7 @@
     <Compile Include="Source\Controllers\Crafting\Workstations\XUiC_WorkstationToolGrid.cs" />
     <Compile Include="Source\Controllers\Debugging\XUiC_UiAtlasList.cs" />
     <Compile Include="Source\Controllers\Inventory\ItemStack\XUiC_RequiredItemStack_Harmony.cs" />
+    <Compile Include="Source\Controllers\Map\XUiC_MiniMap.cs" />
     <Compile Include="Source\Controllers\XUiC_DialIndicator.cs" />
     <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_AttitudeIndictator.cs" />
     <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_Speedometer.cs" />
