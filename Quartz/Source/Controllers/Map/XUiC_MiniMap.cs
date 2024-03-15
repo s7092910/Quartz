@@ -1,5 +1,5 @@
 ﻿using Audio;
-using InControl;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,9 +9,12 @@ namespace Quartz
     {
         private const string TAG = "XUiC_Minimap";
 
-        public const int MapDrawnSizeInChunks = 128;
         public const int MapDrawnSize = 1024;
-        public const int MapUpdateSizeRadius = 512;
+        public const int MapUpdateSizeRadius = 128;
+
+        public const int MapDrawnSizeInChunks = 64;
+
+        public int BufferRowLength = MapDrawnSizeInChunks * 128;
 
         private const float cMinZoomScale = 0.7f;
         private const float cMaxZoomScale = 5f;
@@ -25,13 +28,9 @@ namespace Quartz
         private const float factorScreenSizeToDTM = 2.11904764f;
         private const float dragFactorSizeOfMap = 0.471910119f;
 
-        private Texture2D mapTexture;
-
-        private byte[] mapColors;
+        private RenderTexture mapTextureRender;
 
         private const byte mapMaskTransparency = byte.MaxValue;
-
-        private byte[][] fowChunkMaskAlphas = new byte[13][];
 
         private Vector2i cTexMiddle = new Vector2i(356, 356);
 
@@ -55,18 +54,21 @@ namespace Quartz
         private EntityPlayer localPlayer;
         private XUiV_Texture xuiTexture;
 
-        private Color32 defaultColor = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
-
-        private Color32 hoverColor = new Color32(222, 206, 163, byte.MaxValue);
-
-        private Color32 disabledColor = new Color32(96, 96, 96, byte.MaxValue);
-
         private DictionarySave<long, MapObject> keyToMapObject = new DictionarySave<long, MapObject>();
         private DictionarySave<int, NavObject> keyToNavObject = new DictionarySave<int, NavObject>();
         private DictionarySave<int, GameObject> keyToNavSprite = new DictionarySave<int, GameObject>();
         private DictionarySave<long, GameObject> keyToMapSprite = new DictionarySave<long, GameObject>();
 
-        private Dictionary<long, Color32[]> existingMapChunks = new Dictionary<long, Color32[]>();
+        private Dictionary<long, uint[]> mapDataCache = new Dictionary<long, uint[]>();
+
+        private uint[] emptyChunk = new uint[128];
+
+        private uint[] mapColorsData;
+
+        private ComputeBuffer mapDataBuffer;
+        private ComputeShader mapGenShader;
+
+        private int kernelIndex;
 
         private HashSetLong navObjectsOnMapAlive = new HashSetLong();
         private HashSetLong mapObjectsOnMapAlive = new HashSetLong();
@@ -87,36 +89,35 @@ namespace Quartz
         {
             base.Init();
 
-            if (mapTexture == null)
+            //var maxSizeMb = SystemInfo.maxGraphicsBufferSize / 1024 / 1024;
+            //Logging.Inform($"Maximum graphics buffer size is {maxSizeMb} MB");
+
+            if (mapTextureRender == null)
             {
-                mapTexture = new Texture2D(MapDrawnSize, MapDrawnSize, TextureFormat.ARGB32, mipChain: false);
+                mapTextureRender = new RenderTexture(MapDrawnSize, MapDrawnSize, 0, RenderTextureFormat.ARGB32);
+                mapTextureRender.wrapMode = TextureWrapMode.Clamp;
+                mapTextureRender.enableRandomWrite = true;
+                mapTextureRender.Create();
             }
 
-            if (mapColors == null)
+            if(mapDataBuffer == null)
             {
-                if (XUiC_MapArea.poolMapColorsArray.Count == 0)
-                {
-                    //2048 * 2048 * 4 = 16777216
-                    //1024 * 1024 * 4 = 4194304
-                    mapColors = new byte[MapDrawnSize * MapDrawnSize * 4];
-                }
-                else
-                {
-                    mapColors = XUiC_MapArea.poolMapColorsArray[XUiC_MapArea.poolMapColorsArray.Count - 1];
-                    XUiC_MapArea.poolMapColorsArray.RemoveAt(XUiC_MapArea.poolMapColorsArray.Count - 1);
-                }
+                mapDataBuffer = new ComputeBuffer(MapDrawnSize * MapDrawnSize, 4, ComputeBufferType.Default);
             }
 
-            for (int i = 0; i < mapColors.Length; i += 4)
+            if(mapGenShader == null)
             {
-                mapColors[i] = 0;
-                mapColors[i + 1] = 0;
-                mapColors[i + 2] = 0;
-                mapColors[i + 3] = 0;
+                mapGenShader = LoadShader();
+                kernelIndex = mapGenShader.FindKernel("DoublePack");
+                mapGenShader.SetTexture(kernelIndex, "Minimap", mapTextureRender);
+                mapGenShader.SetBuffer(kernelIndex, "data", mapDataBuffer);
+                mapGenShader.SetInt("width", BufferRowLength);
             }
 
-            mapTexture.LoadRawTextureData(mapColors);
-            mapTexture.Apply();
+            if (mapColorsData == null)
+            {
+                mapColorsData = new uint[MapDrawnSize * MapDrawnSize/2];
+            }
 
             XUiController childById = GetChildById("mapViewTexture");
             if(childById != null)
@@ -130,7 +131,6 @@ namespace Quartz
             {
                 prefabMapSprite = o;
             });
-            initFOWChunkMaskColors();
 
             bShouldRedrawMap = true;
             initMap();
@@ -144,47 +144,6 @@ namespace Quartz
             keyToNavSprite.Remove(newNavObject.Key);
         }
 
-        private void initFOWChunkMaskColors()
-        {
-            xui.LoadData("Textures/UI/fow_chunkMask", delegate (Texture2D o)
-            {
-                Color32[] pixels = o.GetPixels32();
-                for (int i = 0; i < 3; i++)
-                {
-                    for (int j = 0; j < 3; j++)
-                    {
-                        byte[] array = new byte[256];
-                        int num = 0;
-                        for (int k = i * 16; k < (i + 1) * 16; k++)
-                        {
-                            for (int l = j * 16; l < (j + 1) * 16; l++)
-                            {
-                                array[num++] = pixels[k * o.width + l].r;
-                            }
-                        }
-
-                        fowChunkMaskAlphas[i * 3 + j] = array;
-                    }
-                }
-
-                int num2 = 3;
-                for (int m = 0; m < 4; m++)
-                {
-                    byte[] array2 = new byte[256];
-                    int num3 = 0;
-                    for (int n = num2 * 16; n < (num2 + 1) * 16; n++)
-                    {
-                        for (int num4 = m * 16; num4 < (m + 1) * 16; num4++)
-                        {
-                            array2[num3++] = pixels[n * o.width + num4].r;
-                        }
-                    }
-
-                    fowChunkMaskAlphas[num2 * 3 + m] = array2;
-                }
-            });
-        }
-
         public override void OnOpen()
         {
             base.OnOpen();
@@ -192,7 +151,6 @@ namespace Quartz
             {
                 isOpen = true;
                 localPlayer = xui.playerUI.entityPlayer;
-                bFowMaskEnabled = !GameManager.Instance.IsEditMode();
                 initMap();
                 updateFullMap();
                 LocalPlayerCamera localPlayerCamera = xui.playerUI.GetComponentInParent<LocalPlayerCamera>();
@@ -266,7 +224,7 @@ namespace Quartz
             {
                 localPlayer = xui.playerUI.entityPlayer;
                 bMapInitialized = true;
-                xuiTexture.Material.SetTexture("_MainTex", mapTexture);
+                xuiTexture.Material.SetTexture("_MainTex", mapTextureRender);
                 cTexMiddle = xuiTexture.Size / 2;
             }
         }
@@ -283,16 +241,21 @@ namespace Quartz
             //    return;
             //}
 
-            Logging.Inform(TAG, "updateFullMap Called");
-
             mapMiddlePosChunks = middlePosChunk;
 
             int mapStartX = (int)mapMiddlePosChunks.x - MapUpdateSizeRadius;
             int mapEndX = (int)mapMiddlePosChunks.x + MapUpdateSizeRadius;
             int mapStartZ = (int)mapMiddlePosChunks.y - MapUpdateSizeRadius;
             int mapEndZ = (int)mapMiddlePosChunks.y + MapUpdateSizeRadius;
-            mapTexture.LoadRawTextureData(mapColors);
-            updateMapSection(mapStartX, mapStartZ, mapEndX, mapEndZ, (MapDrawnSize/2) - MapUpdateSizeRadius, (MapDrawnSize / 2) - MapUpdateSizeRadius, 512, 512);
+
+            MicroStopwatch stopwatch = new MicroStopwatch();
+            stopwatch.Start();
+
+            updateMapSectionCompute(mapStartX, mapStartZ, mapEndX, mapEndZ, (MapDrawnSize / 2) - MapUpdateSizeRadius, (MapDrawnSize / 2) - MapUpdateSizeRadius, 512, 512);
+
+            stopwatch.Stop();
+
+            Logging.Inform(TAG, "updateFullMap Called, time taken = " + (stopwatch.ElapsedMicroseconds * 0.001d));
 
             mapScrollTextureOffset.x = 0f;
             mapScrollTextureOffset.y = 0f;
@@ -301,119 +264,71 @@ namespace Quartz
 
             PositionMapAtPlayer();
 
-            //mapTexture.LoadRawTextureData(mapColors);
-            mapTexture.Apply();
 
             SendMapPositionToServer();
         }
 
-        private void updateMapSection(int mapStartX, int mapStartZ, int mapEndX, int mapEndZ, int drawnMapStartX, int drawnMapStartZ, int drawnMapEndX, int drawnMapEndZ)
+        private void updateMapSectionCompute(int mapStartX, int mapStartY, int mapEndX, int mapEndY, int drawnMapStartX, int drawnMapStartY, int drawnMapEndX, int drawnMapEndY)
         {
             MapChunkDatabase mapDatabase = localPlayer.ChunkObserver.mapDatabase;
-            int num = mapStartZ;
-            int num2 = drawnMapStartZ;
-            while (num < mapEndZ)
+            int num = mapStartY;
+            int y = drawnMapStartY;
+            while (num < mapEndY)
             {
                 int num3 = mapStartX;
-                int num4 = drawnMapStartX;
+                int x = drawnMapStartX;
                 while (num3 < mapEndX)
                 {
                     int num5 = World.toChunkXZ(num3);
                     int num6 = World.toChunkXZ(num);
 
                     long chunkKey = WorldChunkCache.MakeChunkKey(num5, num6);
-                    ushort[] array = mapDatabase.GetMapColors(chunkKey);
-                    if (array != null)
+                    ushort[] mapColors = mapDatabase.GetMapColors(chunkKey);
+                    int indexBuffer = ((y / 16) * BufferRowLength) + ((x / 16) * 128);
+                    if (mapColors != null)
                     {
-                        if (existingMapChunks.ContainsKey(chunkKey))
+                        uint[] cachedChunk;
+                        if (!mapDataCache.TryGetValue(chunkKey, out cachedChunk))
                         {
-                            Color32[] chunkColors = existingMapChunks[chunkKey];
+                            cachedChunk = new uint[128];
+                            uint value;
 
-                            mapTexture.SetPixels32(num4, num2, 16, 16, chunkColors);
+                            int textureOffset = 0;
+                            for (int i = 0; i < 128; i++, textureOffset +=2)
+                            {
+                                value = PackShorts(mapColors[textureOffset], mapColors[textureOffset + 1]);
+                                mapColorsData[indexBuffer + i] = value;
+                                cachedChunk[i] = value;
+                            }
+                            //for (int m = 0; m < 256; m++)
+                            //{
+                            //    value = PackShorts(255, mapColors[m]);
+                            //    mapColorsData[index + m] = value;
+                            //    cachedChunk[m] = value;
+                            //}
+
+                            mapDataCache.Add(chunkKey, cachedChunk);
                         }
                         else
                         {
-
-                            bool flag2 = mapDatabase.Contains(WorldChunkCache.MakeChunkKey(num5, num6 + 1));
-                            bool flag3 = mapDatabase.Contains(WorldChunkCache.MakeChunkKey(num5, num6 - 1));
-                            bool flag4 = mapDatabase.Contains(WorldChunkCache.MakeChunkKey(num5 - 1, num6));
-                            bool flag5 = mapDatabase.Contains(WorldChunkCache.MakeChunkKey(num5 + 1, num6));
-                            int num19 = 0;
-                            if (flag2 && flag3 && flag4 && flag5)
-                            {
-                                bool flag6 = mapDatabase.Contains(WorldChunkCache.MakeChunkKey(num5 - 1, num6 + 1));
-                                bool flag7 = mapDatabase.Contains(WorldChunkCache.MakeChunkKey(num5 + 1, num6 + 1));
-                                bool flag8 = mapDatabase.Contains(WorldChunkCache.MakeChunkKey(num5 - 1, num6 - 1));
-                                bool flag9 = mapDatabase.Contains(WorldChunkCache.MakeChunkKey(num5 + 1, num6 - 1));
-                                num19 = ((!flag6) ? 9 : ((!flag7) ? 10 : ((!flag9) ? 11 : (flag8 ? 4 : 12))));
-                            }
-                            else
-                            {
-                                if (flag3 && !flag2)
-                                {
-                                    num19 += 6;
-                                }
-                                else if (flag3 && flag2)
-                                {
-                                    num19 += 3;
-                                }
-
-                                if (flag5 && flag4)
-                                {
-                                    num19++;
-                                }
-                                else if (flag4)
-                                {
-                                    num19 += 2;
-                                }
-                            }
-
-                            byte[] array2 = fowChunkMaskAlphas[num19];
-                            if (!bFowMaskEnabled)
-                            {
-                                array2 = fowChunkMaskAlphas[4];
-                            }
-
-                            Color32[] newChunkColors = new Color32[256];
-
-                            for (int i = 0; i < 256; i++)
-                            {
-                                Color32 color = global::Utils.FromColor5To32(array[i]);
-                                color.a = array2[i];
-                                newChunkColors[i] = color;
-
-                            }
-
-                            existingMapChunks.Add(chunkKey, newChunkColors);
-                            mapTexture.SetPixels32(num4, num2, 16, 16, newChunkColors);
-
-                            //for (int row = 0; row < 16; row++)
-                            //{
-                            //    int num22 = (num2 + row) * MapDrawnSize;
-                            //    int num25 = row * 16;
-                            //    for (int col = 0; col < 16; col++)
-                            //    {
-                            //        int num23 = num4 + col;
-                            //        int num24 = (num22 + num23) * 4;
-                            //        int arrayIndex = num25 + col;
-                            //        mapColors[num24] = array2[arrayIndex];
-                            //        Color32 color = global::Utils.FromColor5To32(array[arrayIndex]);
-                            //        mapColors[num24 + 1] = color.r;
-                            //        mapColors[num24 + 2] = color.g;
-                            //        mapColors[num24 + 3] = color.b;
-                            //    }
-
-                            //}
+                            Array.Copy(cachedChunk, 0, mapColorsData, indexBuffer, 128);
                         }
+                    }
+                    else
+                    {
+                        Array.Copy(emptyChunk, 0, mapColorsData, indexBuffer, 128);
                     }
 
                     num3 += 16;
-                    num4 = (num4 + 16) % MapDrawnSize;
+                    x = (x + 16) % MapDrawnSize;
                 }
 
                 num += 16;
-                num2 = (num2 + 16) % MapDrawnSize;
+                y = (y + 16) % MapDrawnSize;
             }
+
+            mapDataBuffer.SetData(mapColorsData);
+            mapGenShader.Dispatch(kernelIndex, MapDrawnSizeInChunks, MapDrawnSizeInChunks, 1);
         }
 
         private void SendMapPositionToServer()
@@ -621,6 +536,16 @@ namespace Quartz
             return new Vector3((_worldPos.x - mapMiddlePosPixel.x) * 2.11904764f / zoomScale + (float)cTexMiddle.x, (_worldPos.z - mapMiddlePosPixel.y) * 2.11904764f / zoomScale - (float)cTexMiddle.y, 0f);
         }
 
+        public uint PackShorts(ushort first, ushort second)
+        {
+            return ((uint)first << 16) + second;
+        }
+
+        public ushort ToColor5(float r, float g, float b)
+        {
+            return (ushort)(((int)(r * 31f + 0.5f) << 10) | ((int)(g * 31f + 0.5f) << 5) | (int)(b * 31f + 0.5f));
+        }
+
         public void PositionMapAtPlayer()
         {
             Vector3 worldPos = localPlayer.GetPosition();
@@ -633,11 +558,19 @@ namespace Quartz
         public override void Cleanup()
         {
             base.Cleanup();
-            UnityEngine.Object.Destroy(mapTexture);
-            if (mapColors != null && XUiC_MapArea.poolMapColorsArray.Count < 10)
-            {
-                XUiC_MapArea.poolMapColorsArray.Add(mapColors);
-            }
+
+            mapTextureRender.Release();
+            mapDataBuffer.Release();
+            UnityEngine.Object.Destroy(mapTextureRender);
+
+            mapTextureRender = null;
+            mapDataBuffer = null;
+            mapDataCache.Clear();
+        }
+
+        private ComputeShader LoadShader()
+        {
+            return DataLoader.LoadAsset<ComputeShader>("#@modfolder(Quartz)://Resources/quartzshaders.unity3d?Assets/MaskedTexture/MinimapCreation.compute");
         }
     }
 }
