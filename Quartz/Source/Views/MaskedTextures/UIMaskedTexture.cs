@@ -26,7 +26,6 @@ namespace Quartz.Views
         private Vector4 mBorder = Vector4.zero;
         private bool mFixedAspect = false;
 
-        //TODO: Test Unlit/Transparent Masked instead
         private Texture mMaskTexture;
         private bool mRebuildMaterial = true;
         private bool mFixMaskUV = true;

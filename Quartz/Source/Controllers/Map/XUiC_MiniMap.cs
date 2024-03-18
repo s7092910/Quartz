@@ -1,7 +1,9 @@
 ﻿using Audio;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Quartz
 {
@@ -13,6 +15,19 @@ namespace Quartz
         public const int MapUpdateSizeRadius = 128;
 
         public const int MapDrawnSizeInChunks = 64;
+
+        private Texture2D MaskTexture
+        {
+            set
+            {
+                if (maskTexture != value)
+                {
+                    maskTexture = value;
+                    IsDirty = true;
+                    xuiTexture.Material.SetTexture("_Mask", maskTexture);
+                }
+            }
+        }
 
         public int BufferRowLength = MapDrawnSizeInChunks * 128;
 
@@ -29,8 +44,7 @@ namespace Quartz
         private const float dragFactorSizeOfMap = 0.471910119f;
 
         private RenderTexture mapTextureRender;
-
-        private const byte mapMaskTransparency = byte.MaxValue;
+        private Texture2D maskTexture;
 
         private Vector2i cTexMiddle = new Vector2i(356, 356);
 
@@ -77,6 +91,10 @@ namespace Quartz
 
         private Transform transformSpritesParent;
 
+        protected string maskPathName;
+        private UnityWebRequest wwwMask;
+        private bool wwwAssignedMask;
+
         private bool isOpen;
         private float mapScale = 1f;
 
@@ -107,7 +125,7 @@ namespace Quartz
 
             if(mapGenShader == null)
             {
-                mapGenShader = LoadShader();
+                mapGenShader = LoadComputeShader();
                 kernelIndex = mapGenShader.FindKernel("DoublePack");
                 mapGenShader.SetTexture(kernelIndex, "Minimap", mapTextureRender);
                 mapGenShader.SetBuffer(kernelIndex, "data", mapDataBuffer);
@@ -125,8 +143,7 @@ namespace Quartz
                 xuiTexture = childById.ViewComponent as XUiV_Texture;
             }
             transformSpritesParent = GetChildById("clippingPanel").ViewComponent.UiTransform;
-            zoomScale = 5f;
-            targetZoomScale = 5f;
+            zoomScale = mapScale;
             xui.LoadData("Prefabs/MapSpriteEntity", delegate (GameObject o)
             {
                 prefabMapSprite = o;
@@ -187,6 +204,19 @@ namespace Quartz
                 return;
             }
 
+            if (!wwwAssignedMask && !string.IsNullOrEmpty(maskPathName) && maskPathName.Contains("@"))
+            {
+                if (!wwwMask.isDone)
+                {
+                    return;
+                }
+
+                Texture2D texture2D = ((DownloadHandlerTexture)wwwMask.downloadHandler).texture;
+                texture2D.requestedMipmapLevel = 0;
+                MaskTexture = texture2D;
+                wwwAssignedMask = true;
+            }
+
             if (!bMapInitialized)
             {
                 initMap();
@@ -218,6 +248,59 @@ namespace Quartz
             updateMapObjects();
         }
 
+        public override bool ParseAttribute(string attribute, string value, XUiController _parent)
+        {
+            switch (attribute)
+            {
+                case "mask":
+                    if (maskPathName == value)
+                    {
+                        return true;
+                    }
+
+                    maskPathName = value;
+                    try
+                    {
+                        wwwAssignedMask = false;
+                        string text = ModManager.PatchModPathString(maskPathName);
+                        if (text != null)
+                        {
+                            fetchWwwMask("file://" + text);
+                        }
+                        else if (maskPathName[0] == '@')
+                        {
+                            string text2 = maskPathName.Substring(1);
+                            if (text2.StartsWith("file:", StringComparison.OrdinalIgnoreCase))
+                            {
+                                string text3 = text2.Substring(5);
+                                if (text3[0] != '/' && text3[0] != '\\')
+                                {
+                                    text2 = new Uri(((Application.platform == RuntimePlatform.OSXPlayer) ? (Application.dataPath + "/../../") : (Application.dataPath + "/../")) + text3).AbsoluteUri;
+                                }
+                            }
+
+                            fetchWwwMask(text2);
+                        }
+                        else
+                        {
+                            xui.LoadData(maskPathName, delegate (Texture2D o)
+                            {
+                                MaskTexture = o;
+                            });
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error("[XUi] Could not load mask texture: " + maskPathName);
+                        Log.Exception(e);
+                    }
+
+                    return true;
+                default:
+                    return base.ParseAttribute(attribute, value, _parent);
+            }
+        }
+
         private void initMap()
         {
             if (xui.playerUI.entityPlayer != null)
@@ -225,6 +308,13 @@ namespace Quartz
                 localPlayer = xui.playerUI.entityPlayer;
                 bMapInitialized = true;
                 xuiTexture.Material.SetTexture("_MainTex", mapTextureRender);
+                xuiTexture.Material.shader = LoadMinimapShader();
+
+                if (maskTexture != null)
+                {
+                    xuiTexture.Material.SetTexture("_Mask", maskTexture);
+                }
+
                 cTexMiddle = xuiTexture.Size / 2;
             }
         }
@@ -300,12 +390,6 @@ namespace Quartz
                                 mapColorsData[indexBuffer + i] = value;
                                 cachedChunk[i] = value;
                             }
-                            //for (int m = 0; m < 256; m++)
-                            //{
-                            //    value = PackShorts(255, mapColors[m]);
-                            //    mapColorsData[index + m] = value;
-                            //    cachedChunk[m] = value;
-                            //}
 
                             mapDataCache.Add(chunkKey, cachedChunk);
                         }
@@ -568,9 +652,35 @@ namespace Quartz
             mapDataCache.Clear();
         }
 
-        private ComputeShader LoadShader()
+        private ComputeShader LoadComputeShader()
         {
             return DataLoader.LoadAsset<ComputeShader>("#@modfolder(Quartz)://Resources/quartzshaders.unity3d?Assets/MaskedTexture/MinimapCreation.compute");
+        }
+
+        private Shader LoadMinimapShader()
+        {
+            return DataLoader.LoadAsset<Shader>("#@modfolder(Quartz)://Resources/quartzshaders.unity3d?Assets/MaskedTexture/MaskedMinimap.shader");
+        }
+
+        private void fetchWwwMask(string _uri)
+        {
+            _uri = _uri.Replace("#", "%23").Replace("+", "%2B");
+            wwwMask = UnityWebRequestTexture.GetTexture(_uri);
+            wwwMask.SendWebRequest();
+            ThreadManager.StartCoroutine(waitForWwwMaskData());
+        }
+
+        private IEnumerator waitForWwwMaskData()
+        {
+            while (wwwMask != null && !wwwMask.isDone)
+            {
+                yield return null;
+            }
+
+            if (wwwMask != null)
+            {
+                IsDirty = true;
+            }
         }
     }
 }
