@@ -16,19 +16,6 @@ namespace Quartz
 
         public const int MapDrawnSizeInChunks = 64;
 
-        private Texture2D MaskTexture
-        {
-            set
-            {
-                if (maskTexture != value)
-                {
-                    maskTexture = value;
-                    IsDirty = true;
-                    xuiTexture.Material.SetTexture("_Mask", maskTexture);
-                }
-            }
-        }
-
         public int BufferRowLength = MapDrawnSizeInChunks * 128;
 
         private const float cMinZoomScale = 0.7f;
@@ -66,7 +53,7 @@ namespace Quartz
         private float targetZoomScale;
 
         private EntityPlayer localPlayer;
-        private XUiV_Texture xuiTexture;
+        private XUiView xuiTexture;
 
         private DictionarySave<long, MapObject> keyToMapObject = new DictionarySave<long, MapObject>();
         private DictionarySave<int, NavObject> keyToNavObject = new DictionarySave<int, NavObject>();
@@ -91,10 +78,6 @@ namespace Quartz
 
         private Transform transformSpritesParent;
 
-        protected string maskPathName;
-        private UnityWebRequest wwwMask;
-        private bool wwwAssignedMask;
-
         private bool isOpen;
         private float mapScale = 1f;
 
@@ -113,6 +96,7 @@ namespace Quartz
             if (mapTextureRender == null)
             {
                 mapTextureRender = new RenderTexture(MapDrawnSize, MapDrawnSize, 0, RenderTextureFormat.ARGB32);
+                mapTextureRender.name = "MinimapRT";
                 mapTextureRender.wrapMode = TextureWrapMode.Clamp;
                 mapTextureRender.enableRandomWrite = true;
                 mapTextureRender.Create();
@@ -140,8 +124,9 @@ namespace Quartz
             XUiController childById = GetChildById("mapViewTexture");
             if(childById != null)
             {
-                xuiTexture = childById.ViewComponent as XUiV_Texture;
+                xuiTexture = childById.ViewComponent;
             }
+
             transformSpritesParent = GetChildById("clippingPanel").ViewComponent.UiTransform;
             zoomScale = mapScale;
             xui.LoadData("Prefabs/MapSpriteEntity", delegate (GameObject o)
@@ -204,19 +189,6 @@ namespace Quartz
                 return;
             }
 
-            if (!wwwAssignedMask && !string.IsNullOrEmpty(maskPathName) && maskPathName.Contains("@"))
-            {
-                if (!wwwMask.isDone)
-                {
-                    return;
-                }
-
-                Texture2D texture2D = ((DownloadHandlerTexture)wwwMask.downloadHandler).texture;
-                texture2D.requestedMipmapLevel = 0;
-                MaskTexture = texture2D;
-                wwwAssignedMask = true;
-            }
-
             if (!bMapInitialized)
             {
                 initMap();
@@ -248,71 +220,22 @@ namespace Quartz
             updateMapObjects();
         }
 
-        public override bool ParseAttribute(string attribute, string value, XUiController _parent)
-        {
-            switch (attribute)
-            {
-                case "mask":
-                    if (maskPathName == value)
-                    {
-                        return true;
-                    }
-
-                    maskPathName = value;
-                    try
-                    {
-                        wwwAssignedMask = false;
-                        string text = ModManager.PatchModPathString(maskPathName);
-                        if (text != null)
-                        {
-                            fetchWwwMask("file://" + text);
-                        }
-                        else if (maskPathName[0] == '@')
-                        {
-                            string text2 = maskPathName.Substring(1);
-                            if (text2.StartsWith("file:", StringComparison.OrdinalIgnoreCase))
-                            {
-                                string text3 = text2.Substring(5);
-                                if (text3[0] != '/' && text3[0] != '\\')
-                                {
-                                    text2 = new Uri(((Application.platform == RuntimePlatform.OSXPlayer) ? (Application.dataPath + "/../../") : (Application.dataPath + "/../")) + text3).AbsoluteUri;
-                                }
-                            }
-
-                            fetchWwwMask(text2);
-                        }
-                        else
-                        {
-                            xui.LoadData(maskPathName, delegate (Texture2D o)
-                            {
-                                MaskTexture = o;
-                            });
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error("[XUi] Could not load mask texture: " + maskPathName);
-                        Log.Exception(e);
-                    }
-
-                    return true;
-                default:
-                    return base.ParseAttribute(attribute, value, _parent);
-            }
-        }
-
         private void initMap()
         {
             if (xui.playerUI.entityPlayer != null)
             {
                 localPlayer = xui.playerUI.entityPlayer;
                 bMapInitialized = true;
-                xuiTexture.Material.SetTexture("_MainTex", mapTextureRender);
-                xuiTexture.Material.shader = LoadMinimapShader();
-
-                if (maskTexture != null)
+                if(xuiTexture is XUiV_Texture texture)
                 {
-                    xuiTexture.Material.SetTexture("_Mask", maskTexture);
+                    texture.Material.SetTexture("_MainTex", mapTextureRender);
+                    texture.Material.shader = LoadMinimapShader();
+                }
+
+                if (xuiTexture is XUiV_MaskedTexture maskedTexture)
+                {
+                    maskedTexture.Material.SetTexture("_MainTex", mapTextureRender);
+                    maskedTexture.Material.shader = LoadMinimapShader();
                 }
 
                 cTexMiddle = xuiTexture.Size / 2;
@@ -660,27 +583,6 @@ namespace Quartz
         private Shader LoadMinimapShader()
         {
             return DataLoader.LoadAsset<Shader>("#@modfolder(Quartz)://Resources/quartzshaders.unity3d?Assets/MaskedTexture/MaskedMinimap.shader");
-        }
-
-        private void fetchWwwMask(string _uri)
-        {
-            _uri = _uri.Replace("#", "%23").Replace("+", "%2B");
-            wwwMask = UnityWebRequestTexture.GetTexture(_uri);
-            wwwMask.SendWebRequest();
-            ThreadManager.StartCoroutine(waitForWwwMaskData());
-        }
-
-        private IEnumerator waitForWwwMaskData()
-        {
-            while (wwwMask != null && !wwwMask.isDone)
-            {
-                yield return null;
-            }
-
-            if (wwwMask != null)
-            {
-                IsDirty = true;
-            }
         }
     }
 }
