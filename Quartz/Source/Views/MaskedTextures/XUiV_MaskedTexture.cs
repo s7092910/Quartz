@@ -270,6 +270,7 @@ namespace Quartz
             uiTexture.flip = flip;
             uiTexture.centerType = (fillCenter ? UIBasicSprite.AdvancedType.Sliced : UIBasicSprite.AdvancedType.Invisible);
             uiTexture.fillDirection = fillDirection;
+            uiTexture.material = material;
             if (globalOpacityModifier != 0f && xui.ForegroundGlobalOpacity < 1f)
             {
                 float a = Mathf.Clamp01(color.a * (globalOpacityModifier * xui.ForegroundGlobalOpacity));

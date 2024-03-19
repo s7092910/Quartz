@@ -34,12 +34,27 @@ namespace Quartz.Views
         {
             get
             {
-                return mTexture;
+                if (mTexture != null)
+                {
+                    return mTexture;
+                }
+                if (mMat != null)
+                {
+                    return mMat.mainTexture;
+                }
+                return null;
             }
             set
             {
                 if (mTexture != value)
                 {
+                    if (drawCall != null && drawCall.widgetCount == 1 && mMat == null)
+                    {
+                        mTexture = value;
+                        drawCall.mainTexture = value;
+                        return;
+                    }
+
                     RemoveFromPanel();
 
                     mTexture = value;
@@ -69,7 +84,7 @@ namespace Quartz.Views
             }
         }
 
-        public bool isRebuildMaterial
+        public bool RebuildMaterial
         {
             get { return mRebuildMaterial; }
             set { mRebuildMaterial = value; }
@@ -79,17 +94,19 @@ namespace Quartz.Views
         {
             get
             {
-                UpdateMaterial();
                 return mMat;
             }
             set
             {
-                RemoveFromPanel();
+                if (mMat != value)
+                {
+                    RemoveFromPanel();
+                    mMat = value;
+                    mShader = null;
+                    UpdateMaterial();
 
-                mMat = value;
-                UpdateMaterial();
-
-                MarkAsChanged();
+                    MarkAsChanged();
+                }
             }
         }
 
@@ -97,6 +114,10 @@ namespace Quartz.Views
         {
             get
             {
+                if(mMat != null)
+                {
+                    return mMat.shader;
+                }
                 if (mShader == null)
                 {
                     mShader = LoadShader();
@@ -392,11 +413,19 @@ namespace Quartz.Views
 
         void CreateMaterial()
         {
-            if(mShader == null)
+
+            if (mShader == null)
             {
+                if(mMat != null)
+                {
+                    mShader = mMat.shader;
+                    return;
+                }
+
                 mShader = LoadShader();
             }
-            if (mMat == null)
+
+            if(mMat == null)
             {
                 mMat = new Material(mShader);
             }
