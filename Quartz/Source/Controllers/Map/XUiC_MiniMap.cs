@@ -102,12 +102,12 @@ namespace Quartz
                 mapTextureRender.Create();
             }
 
-            if(mapDataBuffer == null)
+            if (mapDataBuffer == null)
             {
                 mapDataBuffer = new ComputeBuffer(MapDrawnSize * MapDrawnSize, 4, ComputeBufferType.Default);
             }
 
-            if(mapGenShader == null)
+            if (mapGenShader == null)
             {
                 mapGenShader = LoadComputeShader();
                 kernelIndex = mapGenShader.FindKernel("DoublePack");
@@ -118,11 +118,11 @@ namespace Quartz
 
             if (mapColorsData == null)
             {
-                mapColorsData = new uint[MapDrawnSize * MapDrawnSize/2];
+                mapColorsData = new uint[MapDrawnSize * MapDrawnSize / 2];
             }
 
             XUiController childById = GetChildById("mapViewTexture");
-            if(childById != null)
+            if (childById != null)
             {
                 xuiTexture = childById.ViewComponent;
             }
@@ -137,6 +137,15 @@ namespace Quartz
             bShouldRedrawMap = true;
             initMap();
             NavObjectManager.Instance.OnNavObjectRemoved += Instance_OnNavObjectRemoved;
+
+            ushort a = 1 << 15;
+            uint emptyBlocks = PackShorts(a, a);
+            for (int i = 0; i < emptyChunk.Length; i++)
+            {
+                emptyChunk[i] = emptyBlocks;
+            }
+
+            ResetMapColorsData();
         }
 
         private void Instance_OnNavObjectRemoved(NavObject newNavObject)
@@ -367,9 +376,6 @@ namespace Quartz
         {
             float xScale = xuiTexture.Size.x / 712f;
             float yScale = xuiTexture.Size.y / 712f;
-            //Material mapMat = xuiTexture.Material;
-            //mapMat.SetVector("_MainMapPosAndScale", new Vector4(mapPos.x, mapPos.y, mapScale * xScale, mapScale * yScale));
-            //mapMat.SetVector("_MainMapBGPosAndScale", new Vector4(mapBGPos.x, mapBGPos.y, mapScale * xScale, mapScale * yScale));
             Shader.SetGlobalVector("_MainMapPosAndScale", new Vector4(mapPos.x, mapPos.y, mapScale * xScale, mapScale * yScale));
             Shader.SetGlobalVector("_MainMapBGPosAndScale", new Vector4(mapBGPos.x, mapBGPos.y, mapScale * xScale, mapScale * yScale));
         }
@@ -560,6 +566,14 @@ namespace Quartz
             mapMiddlePosPixel.y = worldPos.z;
 
             positionMap();
+        }
+
+        private void ResetMapColorsData()
+        {
+            for (int i = 0; i < mapColorsData.Length; i += 128)
+            {
+                Array.Copy(emptyChunk, 0, mapColorsData, i, 128);
+            }
         }
 
         public override void Cleanup()
