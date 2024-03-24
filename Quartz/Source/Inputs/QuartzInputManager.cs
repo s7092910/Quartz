@@ -20,11 +20,14 @@ namespace Quartz.Inputs
     {
         private const string TAG = "QuartzInputManager";
         private const string saveName = "/ActionSetSaves.pref";
+        private const string endChar = "-";
+        private const string currentVersion = "2";
 
         private static string saveFile;
         private static bool initCalled;
 
         public static InventoryActions inventoryActions;
+        public static MinimapActions minimapActions;
 
         public static void InitControls(string ModPath)
         {
@@ -45,6 +48,7 @@ namespace Quartz.Inputs
         private static void LoadActionSets()
         {
             inventoryActions = new InventoryActions();
+            minimapActions = new MinimapActions();
         }
 
         private static void LoadControlSaves()
@@ -61,7 +65,27 @@ namespace Quartz.Inputs
                 return;
             }
 
-            inventoryActions.Load(ActionSetData[0]);
+            // Legacy Version 1
+            if(ActionSetData.Length == 2 ) 
+            {
+                inventoryActions.Load(ActionSetData[0]);
+                return;
+            }
+
+            int version;
+            if(!int.TryParse(ActionSetData[0], out version))
+            {
+                Logging.Inform("ActionSets file version not found");
+                return;
+            }
+
+            Logging.Inform("ActionSets file version: " + version);
+
+            if (version >= 2)
+            {
+                inventoryActions.Load(ActionSetData[2]);
+                minimapActions.Load(ActionSetData[3]);
+            }
         }
 
         public static void SaveControls()
@@ -71,9 +95,12 @@ namespace Quartz.Inputs
                 return;
             }
 
-            string[] actionSetSaveData = new string[2];
-            actionSetSaveData[0] = inventoryActions.Save();
-            actionSetSaveData[1] = "-";
+            string[] actionSetSaveData = new string[5];
+            actionSetSaveData[0] = currentVersion;
+            actionSetSaveData[1] = endChar;
+            actionSetSaveData[2] = inventoryActions.Save();
+            actionSetSaveData[3] = minimapActions.Save();
+            actionSetSaveData[4] = endChar;
 
             string saveData = string.Join(";", actionSetSaveData);
             File.WriteAllText(saveFile, saveData);
