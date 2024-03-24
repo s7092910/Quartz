@@ -21,6 +21,8 @@ namespace Quartz.Inputs
         private const string TAG = "QuartzInputManager";
         private const string saveName = "/ActionSetSaves.pref";
         private const string endChar = "-";
+
+        //Increment currentVersion if more action sets have been added
         private const string currentVersion = "2";
 
         private static string saveFile;
@@ -86,6 +88,8 @@ namespace Quartz.Inputs
                 inventoryActions.Load(ActionSetData[2]);
                 minimapActions.Load(ActionSetData[3]);
             }
+
+            //Increment currentVersion if more action sets have been added
         }
 
         public static void SaveControls()
