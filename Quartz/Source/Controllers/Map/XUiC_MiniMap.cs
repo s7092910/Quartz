@@ -1,9 +1,12 @@
 ﻿using Audio;
+using Quartz.Inputs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
+using XMLData.Parsers;
 
 namespace Quartz
 {
@@ -12,45 +15,43 @@ namespace Quartz
         private const string TAG = "XUiC_Minimap";
 
         public const int MapDrawnSize = 1024;
-        public const int MapUpdateSizeRadius = 128;
-
         public const int MapDrawnSizeInChunks = 64;
+        public const int MapUpdateRadiusDefault = 128;
 
-        public int BufferRowLength = MapDrawnSizeInChunks * 128;
+        private const float maxZoomScale = 5f;
+        private const float minZoomScale = 0.5f;
 
-        private const float cMinZoomScale = 0.7f;
-        private const float cMaxZoomScale = 5f;
+        public int bufferRowLength = MapDrawnSizeInChunks * 128;
+        public int mapUpdateSizeRadius = 512;
 
         private int cSpriteScale = 50;
 
-        private const int MapOnScreenSize = 712;
-        private const int MapSizeFull = 2048;
-        private const int MapSizeZoom1 = 336;
-
-        private const float factorScreenSizeToDTM = 2.11904764f;
-        private const float dragFactorSizeOfMap = 0.471910119f;
+        private const float MapOnScreenSize = 300f;
+        private const float MapDefaultZoom = 150f; //Vanilla 336
 
         private RenderTexture mapTextureRender;
-        private Texture2D maskTexture;
 
         private Vector2i cTexMiddle = new Vector2i(356, 356);
-
-        private Vector2 mapScrollTextureOffset;
-        private int mapScrollTextureChunksOffsetX;
-        private int mapScrollTextureChunksOffsetZ;
 
         private bool bMapInitialized;
 
         private bool bShouldRedrawMap;
         private float timeToRedrawMap;
-        private bool bFowMaskEnabled;
 
         private Vector2 mapMiddlePosChunks;
         private Vector2 mapMiddlePosPixel;
         private Vector2 mapMiddlePosChunksToServer;
 
+        private Vector2 mapPos;
+
         private float zoomScale;
         private float targetZoomScale;
+
+        private float smoothTime = 0.3f;
+        private float velocity;
+
+        private int targetZoomIndex = 1;
+        private float[] zoomSteps = new float[] {0.5f, 1f, 2f, 5f};
 
         private EntityPlayer localPlayer;
         private XUiView xuiTexture;
@@ -63,7 +64,6 @@ namespace Quartz
         private Dictionary<long, uint[]> mapDataCache = new Dictionary<long, uint[]>();
 
         private uint[] emptyChunk = new uint[128];
-
         private uint[] mapColorsData;
 
         private ComputeBuffer mapDataBuffer;
@@ -80,11 +80,6 @@ namespace Quartz
 
         private bool isOpen;
         private float mapScale = 1f;
-
-        private Vector2 mapPos;
-        private Vector2 mapBGPos;
-
-        private const float ZOOM_SPEED = 5f;
 
         public override void Init()
         {
@@ -113,7 +108,7 @@ namespace Quartz
                 kernelIndex = mapGenShader.FindKernel("DoublePack");
                 mapGenShader.SetTexture(kernelIndex, "Minimap", mapTextureRender);
                 mapGenShader.SetBuffer(kernelIndex, "data", mapDataBuffer);
-                mapGenShader.SetInt("width", BufferRowLength);
+                mapGenShader.SetInt("width", bufferRowLength);
             }
 
             if (mapColorsData == null)
@@ -128,14 +123,19 @@ namespace Quartz
             }
 
             transformSpritesParent = GetChildById("clippingPanel").ViewComponent.UiTransform;
+
             zoomScale = mapScale;
+            targetZoomScale = mapScale;
+
+            UpdateMapUpdateRadius(zoomScale);
+
             xui.LoadData("Prefabs/MapSpriteEntity", delegate (GameObject o)
             {
                 prefabMapSprite = o;
             });
 
             bShouldRedrawMap = true;
-            initMap();
+            InitMap();
             NavObjectManager.Instance.OnNavObjectRemoved += Instance_OnNavObjectRemoved;
 
             ushort a = 1 << 15;
@@ -162,8 +162,11 @@ namespace Quartz
             {
                 isOpen = true;
                 localPlayer = xui.playerUI.entityPlayer;
-                initMap();
-                updateFullMap();
+
+                QuartzInputManager.minimapActions.Enabled = true;
+
+                InitMap();
+                UpdateFullMap();
                 LocalPlayerCamera localPlayerCamera = xui.playerUI.GetComponentInParent<LocalPlayerCamera>();
 
                 if (localPlayerCamera != null)
@@ -180,6 +183,8 @@ namespace Quartz
             {
                 isOpen = false;
                 bShouldRedrawMap = false;
+
+                QuartzInputManager.minimapActions.Enabled = false;
 
                 LocalPlayerCamera localPlayerCamera = xui.playerUI.GetComponentInParent<LocalPlayerCamera>();
                 
@@ -200,12 +205,24 @@ namespace Quartz
 
             if (!bMapInitialized)
             {
-                initMap();
+                InitMap();
             }
+
+            if(QuartzInputManager.minimapActions.MinimapZoomIn.WasPressed)
+            {
+                MapZoomed(targetZoomIndex - 1);
+            }
+
+            if(QuartzInputManager.minimapActions.MinimapZoomOut.WasPressed)
+            {
+                MapZoomed(targetZoomIndex + 1);
+            }
+
+            SetZoomLevel();
 
             if (bShouldRedrawMap)
             {
-                updateFullMap();
+                UpdateFullMap();
                 bShouldRedrawMap = false;
             }
 
@@ -226,10 +243,50 @@ namespace Quartz
             }
 
             PositionMapAtPlayer();
-            updateMapObjects();
+            UpdateMapObjects();
         }
 
-        private void initMap()
+        public override bool ParseAttribute(string attribute, string value, XUiController _parent)
+        {
+            switch (attribute)
+            {
+                case "zoomsteps":
+                    HashSet<float> zoomStepsSet = new HashSet<float>();
+                    string[] zoomStepsStrings = value.Split(',');
+
+                    for (int i = 0; i < zoomStepsStrings.Length; i++)
+                    {
+                        if (float.TryParse(zoomStepsStrings[i], out float result))
+                        {
+                            if(minZoomScale <= result && result <= maxZoomScale)
+                            {
+                                zoomStepsSet.Add(result);
+                            }
+                        }
+                    }
+
+                    zoomStepsSet.Add(1f);
+
+                    zoomSteps = zoomStepsSet.ToArray();
+                    Array.Sort(zoomSteps);
+
+                    for (int i = 0; i < zoomSteps.Length; i++)
+                    {
+                        if (zoomSteps[i] == 1f)
+                        {
+                            targetZoomIndex = i;
+                            break;
+                        }
+                    }
+
+                    return true;
+                default:
+                    return base.ParseAttribute(attribute, value, _parent);
+            }
+        }
+
+
+        private void InitMap()
         {
             if (xui.playerUI.entityPlayer != null)
             {
@@ -251,7 +308,7 @@ namespace Quartz
             }
         }
 
-        private void updateFullMap()
+        private void UpdateFullMap()
         {
             Vector3 worldPos = localPlayer.GetPosition();
             int worldPosX = (int)worldPos.x;
@@ -265,32 +322,25 @@ namespace Quartz
 
             mapMiddlePosChunks = middlePosChunk;
 
-            int mapStartX = (int)mapMiddlePosChunks.x - MapUpdateSizeRadius;
-            int mapEndX = (int)mapMiddlePosChunks.x + MapUpdateSizeRadius;
-            int mapStartZ = (int)mapMiddlePosChunks.y - MapUpdateSizeRadius;
-            int mapEndZ = (int)mapMiddlePosChunks.y + MapUpdateSizeRadius;
+            int mapStartX = (int)mapMiddlePosChunks.x - mapUpdateSizeRadius;
+            int mapEndX = (int)mapMiddlePosChunks.x + mapUpdateSizeRadius;
+            int mapStartZ = (int)mapMiddlePosChunks.y - mapUpdateSizeRadius;
+            int mapEndZ = (int)mapMiddlePosChunks.y + mapUpdateSizeRadius;
 
             MicroStopwatch stopwatch = new MicroStopwatch();
             stopwatch.Start();
 
-            updateMapSectionCompute(mapStartX, mapStartZ, mapEndX, mapEndZ, (MapDrawnSize / 2) - MapUpdateSizeRadius, (MapDrawnSize / 2) - MapUpdateSizeRadius, 512, 512);
+            UpdateMapSectionCompute(mapStartX, mapStartZ, mapEndX, mapEndZ, (MapDrawnSize / 2) - mapUpdateSizeRadius, (MapDrawnSize / 2) - mapUpdateSizeRadius, 512, 512);
 
             stopwatch.Stop();
 
             Logging.Inform(TAG, "updateFullMap Called, time taken = " + (stopwatch.ElapsedMicroseconds * 0.001d));
 
-            mapScrollTextureOffset.x = 0f;
-            mapScrollTextureOffset.y = 0f;
-            mapScrollTextureChunksOffsetX = 0;
-            mapScrollTextureChunksOffsetZ = 0;
-
             PositionMapAtPlayer();
-
-
             SendMapPositionToServer();
         }
 
-        private void updateMapSectionCompute(int mapStartX, int mapStartY, int mapEndX, int mapEndY, int drawnMapStartX, int drawnMapStartY, int drawnMapEndX, int drawnMapEndY)
+        private void UpdateMapSectionCompute(int mapStartX, int mapStartY, int mapEndX, int mapEndY, int drawnMapStartX, int drawnMapStartY, int drawnMapEndX, int drawnMapEndY)
         {
             MapChunkDatabase mapDatabase = localPlayer.ChunkObserver.mapDatabase;
             int num = mapStartY;
@@ -306,7 +356,7 @@ namespace Quartz
 
                     long chunkKey = WorldChunkCache.MakeChunkKey(num5, num6);
                     ushort[] mapColors = mapDatabase.GetMapColors(chunkKey);
-                    int indexBuffer = ((y / 16) * BufferRowLength) + ((x / 16) * 128);
+                    int indexBuffer = ((y / 16) * bufferRowLength) + ((x / 16) * 128);
                     if (mapColors != null)
                     {
                         uint[] cachedChunk;
@@ -343,6 +393,8 @@ namespace Quartz
                 y = (y + 16) % MapDrawnSize;
             }
 
+
+            //TODO: Move out of this method to be excuted on the next frame?
             mapDataBuffer.SetData(mapColorsData);
             mapGenShader.Dispatch(kernelIndex, MapDrawnSizeInChunks, MapDrawnSizeInChunks, 1);
         }
@@ -356,58 +408,131 @@ namespace Quartz
             }
         }
 
-        private void positionMap()
+        private void PositionMap()
         {
-            float xScale = xuiTexture.Size.x / 712f;
-            float yScale = xuiTexture.Size.y / 712f;
+            //float xScale = xuiTexture.Size.x / MapOnScreenSize;
+            //float yScale = xuiTexture.Size.y / MapOnScreenSize;
 
-            float numX = (MapDrawnSize - (336f * xScale) * zoomScale) / 2f;
-            float numY = (MapDrawnSize - (336f * yScale) * zoomScale) / 2f;
+            float yScale = xuiTexture.Size.y / (float) xuiTexture.Size.x;
 
-            mapScale = 336f * zoomScale / MapDrawnSize;
-            float num2 = (numX + (mapMiddlePosPixel.x - mapMiddlePosChunks.x)) / MapDrawnSize;
-            float num3 = (numY + (mapMiddlePosPixel.y - mapMiddlePosChunks.y)) / MapDrawnSize;
-            mapPos = new Vector3(num2 + mapScrollTextureOffset.x, num3 + mapScrollTextureOffset.y, 0f);
-            mapBGPos.x = (numX + mapMiddlePosPixel.x) / MapDrawnSize;
-            mapBGPos.y = (numY + mapMiddlePosPixel.y) / MapDrawnSize;
+            //float numX = (MapDrawnSize - (MapDefaultZoom * xScale) * zoomScale) / 2f;
+            float numX = (MapDrawnSize - MapDefaultZoom * zoomScale) / 2f;
+            float numY = (MapDrawnSize - (MapDefaultZoom * yScale) * zoomScale) / 2f;
+
+            mapScale = MapDefaultZoom * zoomScale / MapDrawnSize;
+            float x = (numX + (mapMiddlePosPixel.x - mapMiddlePosChunks.x)) / MapDrawnSize;
+            float y = (numY + (mapMiddlePosPixel.y - mapMiddlePosChunks.y)) / MapDrawnSize;
+            mapPos = new Vector3(x, y, 0f);
         }
 
         private void OnPreRender(LocalPlayerCamera _localPlayerCamera)
-        {
-            float xScale = xuiTexture.Size.x / 712f;
-            float yScale = xuiTexture.Size.y / 712f;
-            Shader.SetGlobalVector("_MainMapPosAndScale", new Vector4(mapPos.x, mapPos.y, mapScale * xScale, mapScale * yScale));
-            Shader.SetGlobalVector("_MainMapBGPosAndScale", new Vector4(mapBGPos.x, mapBGPos.y, mapScale * xScale, mapScale * yScale));
+        {   
+            //float xScale = xuiTexture.Size.x / MapOnScreenSize;
+            //float yScale = xuiTexture.Size.y / MapOnScreenSize;
+
+            float yScale = xuiTexture.Size.y / (float)xuiTexture.Size.x;
+
+            //Shader.SetGlobalVector("_MainMapPosAndScale", new Vector4(mapPos.x, mapPos.y, mapScale * xScale, mapScale * yScale));
+            Shader.SetGlobalVector("_MainMapPosAndScale", new Vector4(mapPos.x, mapPos.y, mapScale, mapScale * yScale));
         }
 
-        private void onMapScrolled(XUiController sender, float delta)
+        private void MapZoomIn()
         {
-            float x = xuiTexture.Size.x / 712f;
-            float y = xuiTexture.Size.y / 712f;
-
-            float sizeMax = Mathf.Max(x, y);
-
-            float num = 6f;
-            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+            if(targetZoomScale == minZoomScale)
             {
-                num = 5f * zoomScale;
+                return;
             }
 
-            float min = 0.7f;
-            float max = 6.15f / sizeMax;
-            targetZoomScale = global::Utils.FastClamp(zoomScale - delta * num, min, max);
-            if (delta < 0f)
+            targetZoomScale = targetZoomScale != 1f ? targetZoomScale - 1f : 0.5f;
+
+            int newMapUpdateSizeRadius = (int)(MapUpdateRadiusDefault * targetZoomScale);
+            if (newMapUpdateSizeRadius > (MapDrawnSize / 2))
+            {
+                newMapUpdateSizeRadius = MapDrawnSize / 2;
+            }
+
+            bShouldRedrawMap = newMapUpdateSizeRadius != mapUpdateSizeRadius;
+            mapUpdateSizeRadius = newMapUpdateSizeRadius;
+
+            Manager.PlayInsidePlayerHead("map_zoom_in");
+        }
+
+        private void MapZoomOut()
+        {
+            if (targetZoomScale == maxZoomScale)
+            {
+                return;
+            }
+
+            targetZoomScale = targetZoomScale != 0.5f ? targetZoomScale + 1f : 1f;
+
+            int newMapUpdateSizeRadius = (int)(MapUpdateRadiusDefault * targetZoomScale);
+            if (newMapUpdateSizeRadius > (MapDrawnSize/2))
+            {
+                newMapUpdateSizeRadius = MapDrawnSize / 2;
+            }
+
+            bShouldRedrawMap = newMapUpdateSizeRadius != mapUpdateSizeRadius;
+            mapUpdateSizeRadius = newMapUpdateSizeRadius;
+
+            Manager.PlayInsidePlayerHead("map_zoom_out");
+        }
+
+        private void MapZoomed(int newZoomIndex)
+        {
+            if(newZoomIndex < 0 || newZoomIndex >= zoomSteps.Length)
+            {
+                return;
+            }
+
+            bool zoomingOut = targetZoomIndex < newZoomIndex;
+
+            targetZoomIndex = global::Utils.FastClamp(newZoomIndex, 0, zoomSteps.Length - 1);
+            targetZoomScale = zoomSteps[targetZoomIndex];
+
+            if(zoomingOut)
+            {
+                UpdateMapUpdateRadius(targetZoomScale);
+                Manager.PlayInsidePlayerHead("map_zoom_out");
+            } 
+            else
             {
                 Manager.PlayInsidePlayerHead("map_zoom_in");
             }
-            else
-            {
-                Manager.PlayInsidePlayerHead("map_zoom_out");
-            }
-
         }
 
-        private void updateMapObject(EnumMapObjectType _type, long _key, string _name, Vector3 _position, Vector3 _size, GameObject _prefab)
+        private void SetZoomLevel()
+        {
+            if(zoomScale == targetZoomScale)
+            {
+                return;
+            }
+
+            zoomScale = Mathf.SmoothDamp(zoomScale, targetZoomScale, ref velocity, smoothTime);
+            float diff = Math.Abs(targetZoomScale - zoomScale);
+            if ((diff / targetZoomScale) < 0.005)
+            {
+                zoomScale = targetZoomScale;
+                velocity = 0;
+
+                ResetMapColorsData();
+                UpdateMapUpdateRadius(zoomScale);
+            }
+        }
+
+        private void UpdateMapUpdateRadius(float zoomScale)
+        {
+            int newMapUpdateSizeRadius = (int)(MapUpdateRadiusDefault * zoomScale);
+            if (newMapUpdateSizeRadius > (MapDrawnSize / 2))
+            {
+                newMapUpdateSizeRadius = MapDrawnSize / 2;
+            }
+
+            bShouldRedrawMap = newMapUpdateSizeRadius != mapUpdateSizeRadius;
+            mapUpdateSizeRadius = newMapUpdateSizeRadius;
+        }
+
+        private void UpdateMapObject(EnumMapObjectType _type, long _key, string _name, Vector3 _position, Vector3 _size, GameObject _prefab)
         {
             if (!keyToMapSprite.TryGetValue(_key, out var _value))
             {
@@ -426,7 +551,7 @@ namespace Quartz
                 component.width = (int)(_size.x * num);
                 component.height = (int)(_size.z * num);
                 Transform transform = _value.transform;
-                transform.localPosition = worldPosToScreenPos(_position);
+                transform.localPosition = WorldPosToScreenPos(_position);
                 transform.localRotation = Quaternion.identity;
                 mapObjectsOnMapAlive.Add(_key);
             }
@@ -437,7 +562,7 @@ namespace Quartz
             return global::Utils.FastClamp(1f / (zoomScale * 2f), 0.02f, 20f);
         }
 
-        private void updateNavObjectList()
+        private void UpdateNavObjectList()
         {
             List<NavObject> navObjectList = NavObjectManager.Instance.NavObjectList;
             navObjectsOnMapAlive.Clear();
@@ -487,7 +612,7 @@ namespace Quartz
                     uISprite.height = Mathf.Clamp((int)(cSpriteScale * vector.y), 9, 100);
                     uISprite.color = (navObject.hiddenOnCompass ? Color.grey : (navObject.UseOverrideColor ? navObject.OverrideColor : currentMapSettings.Color));
                     uISprite.gameObject.transform.localEulerAngles = new Vector3(0f, 0f, 0f - navObject.Rotation.y);
-                    gameObject.transform.localPosition = worldPosToScreenPos(navObject.GetPosition() + Origin.position);
+                    gameObject.transform.localPosition = WorldPosToScreenPos(navObject.GetPosition() + Origin.position);
                     if (currentMapSettings.AdjustCenter)
                     {
                         gameObject.transform.localPosition += new Vector3(uISprite.width / 2, uISprite.height / 2, 0f);
@@ -498,13 +623,13 @@ namespace Quartz
             }
         }
 
-        protected virtual void updateMapObjects()
+        protected virtual void UpdateMapObjects()
         {
             World world = GameManager.Instance.World;
             navObjectsOnMapAlive.Clear();
             mapObjectsOnMapAlive.Clear();
 
-            updateNavObjectList();
+            UpdateNavObjectList();
             foreach (KeyValuePair<int, NavObject> item in keyToNavObject.Dict)
             {
                 if (!navObjectsOnMapAlive.Contains(item.Key))
@@ -544,7 +669,7 @@ namespace Quartz
             localPlayer.selectedSpawnPointKey = -1L;
         }
 
-        private Vector3 worldPosToScreenPos(Vector3 _worldPos)
+        private Vector3 WorldPosToScreenPos(Vector3 _worldPos)
         {
             return new Vector3((_worldPos.x - mapMiddlePosPixel.x) * 2.11904764f / zoomScale + (float)cTexMiddle.x, (_worldPos.z - mapMiddlePosPixel.y) * 2.11904764f / zoomScale - (float)cTexMiddle.y, 0f);
         }
@@ -565,7 +690,7 @@ namespace Quartz
             mapMiddlePosPixel.x = worldPos.x;
             mapMiddlePosPixel.y = worldPos.z;
 
-            positionMap();
+            PositionMap();
         }
 
         private void ResetMapColorsData()
