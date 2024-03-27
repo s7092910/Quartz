@@ -90,6 +90,8 @@ namespace Quartz
         private bool isOpen;
         private float mapScale = 1f;
 
+        private bool playerFacesTop = true;
+
         public override void Init()
         {
             base.Init();
@@ -132,6 +134,7 @@ namespace Quartz
             }
 
             transformSpritesParent = GetChildById("clippingPanel").ViewComponent.UiTransform;
+            UIPanel panel = transformSpritesParent.GetComponent<UIPanel>();
 
             zoomScale = mapScale;
             targetZoomScale = mapScale;
@@ -259,6 +262,15 @@ namespace Quartz
 
             PositionMapAtPlayer();
             UpdateMapObjects();
+
+            if(playerFacesTop)
+            {
+                Shader.SetGlobalFloat("_MapRotation", -localPlayer.rotation.y * Mathf.Deg2Rad);
+            } 
+            else
+            {
+                Shader.SetGlobalFloat("_MapRotation", 0f);
+            }
         }
 
         public override bool ParseAttribute(string attribute, string value, XUiController _parent)
@@ -541,6 +553,9 @@ namespace Quartz
         {
             List<NavObject> navObjectList = NavObjectManager.Instance.NavObjectList;
             navObjectsOnMapAlive.Clear();
+
+            Vector3 middlePos = transformSpritesParent.TransformPoint(WorldPosToScreenPos(localPlayer.position));
+
             for (int i = 0; i < navObjectList.Count; i++)
             {
                 NavObject navObject = navObjectList[i];
@@ -583,11 +598,27 @@ namespace Quartz
                     mapObject.sprite.width = Mathf.Clamp((int)(cSpriteScale * vector.x), 9, 75);
                     mapObject.sprite.height = Mathf.Clamp((int)(cSpriteScale * vector.y), 9, 75);
                     mapObject.sprite.color = (navObject.hiddenOnCompass ? Color.grey : (navObject.UseOverrideColor ? navObject.OverrideColor : currentMapSettings.Color));
-                    mapObject.spriteTransform.localEulerAngles = new Vector3(0f, 0f, 0f - navObject.Rotation.y);
-                    mapObject.transform.localPosition = WorldPosToScreenPos(navObject.GetPosition() + Origin.position);
+
+
+                    if(playerFacesTop && navObject.TrackedEntity == localPlayer)
+                    {
+                        mapObject.spriteTransform.localEulerAngles = new Vector3(0f, 0f, 0f);
+                    } 
+                    else
+                    {
+                        mapObject.spriteTransform.localEulerAngles = new Vector3(0f, 0f, 0f - navObject.Rotation.y);
+                    }
+
                     if (currentMapSettings.AdjustCenter)
                     {
                         mapObject.spriteTransform.localPosition += new Vector3(mapObject.sprite.width / 2, mapObject.sprite.height / 2, 0f);
+                    }
+                    mapObject.transform.localPosition = WorldPosToScreenPos(navObject.GetPosition() + Origin.position);
+
+                    if (playerFacesTop)
+                    {
+                        mapObject.transform.localEulerAngles = new Vector3(0f, 0f, -localPlayer.rotation.y);
+                        mapObject.transform.RotateAround(middlePos, new Vector3(0, 0, 1), localPlayer.rotation.y);
                     }
 
                     navObjectsOnMapAlive.Add(key);
@@ -678,6 +709,8 @@ namespace Quartz
 
             public UILabel label;
 
+            public Vector3 labelPosition;
+
             public MinimapObject(GameObject gameObject)
             {
                 this.gameObject = gameObject;
@@ -687,7 +720,7 @@ namespace Quartz
                 spriteTransform = sprite.transform;
 
                 label = transform.Find("Name").GetComponent<UILabel>();
-
+                labelPosition = label.transform.localPosition;
             }
 
             public void Clear()
