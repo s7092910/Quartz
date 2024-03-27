@@ -1,12 +1,26 @@
-﻿using Audio;
+﻿/*Copyright 2024 Christopher Beda
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/
+
+using Audio;
+using InControl;
 using Quartz.Inputs;
+using Quartz.Map;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using UnityEngine;
-using UnityEngine.Networking;
-using XMLData.Parsers;
 
 namespace Quartz
 {
@@ -56,12 +70,8 @@ namespace Quartz
         private EntityPlayer localPlayer;
         private XUiView xuiTexture;
 
-        private DictionarySave<long, MapObject> keyToMapObject = new DictionarySave<long, MapObject>();
         private DictionarySave<int, NavObject> keyToNavObject = new DictionarySave<int, NavObject>();
-        private DictionarySave<int, GameObject> keyToNavSprite = new DictionarySave<int, GameObject>();
-        private DictionarySave<long, GameObject> keyToMapSprite = new DictionarySave<long, GameObject>();
-
-        private Dictionary<long, uint[]> mapDataCache = new Dictionary<long, uint[]>();
+        private DictionarySave<int, MinimapObject> keyToNavSprite = new DictionarySave<int, MinimapObject>();
 
         private uint[] emptyChunk = new uint[128];
         private uint[] mapColorsData;
@@ -72,7 +82,6 @@ namespace Quartz
         private int kernelIndex;
 
         private HashSetLong navObjectsOnMapAlive = new HashSetLong();
-        private HashSetLong mapObjectsOnMapAlive = new HashSetLong();
 
         private GameObject prefabMapSprite;
 
@@ -139,7 +148,7 @@ namespace Quartz
             NavObjectManager.Instance.OnNavObjectRemoved += Instance_OnNavObjectRemoved;
 
             ushort a = 1 << 15;
-            uint emptyBlocks = PackShorts(a, a);
+            uint emptyBlocks = MapColorDatabase.PackShorts(a, a);
             for (int i = 0; i < emptyChunk.Length; i++)
             {
                 emptyChunk[i] = emptyBlocks;
@@ -150,7 +159,13 @@ namespace Quartz
 
         private void Instance_OnNavObjectRemoved(NavObject newNavObject)
         {
-            UnityEngine.Object.Destroy(keyToNavSprite[newNavObject.Key]);
+            MinimapObject gameObject = keyToNavSprite[newNavObject.Key];
+            if(gameObject == null)
+            {
+                return;
+            }
+
+            gameObject.Clear();
             keyToNavObject.Remove(newNavObject.Key);
             keyToNavSprite.Remove(newNavObject.Key);
         }
@@ -351,34 +366,15 @@ namespace Quartz
                 int x = drawnMapStartX;
                 while (num3 < mapEndX)
                 {
-                    int num5 = World.toChunkXZ(num3);
-                    int num6 = World.toChunkXZ(num);
+                    int chunkX = World.toChunkXZ(num3);
+                    int chunkZ = World.toChunkXZ(num);
 
-                    long chunkKey = WorldChunkCache.MakeChunkKey(num5, num6);
-                    ushort[] mapColors = mapDatabase.GetMapColors(chunkKey);
+                    uint[] mapColors = mapDatabase.GetPackedMapColors(chunkX, chunkZ);
+
                     int indexBuffer = ((y / 16) * bufferRowLength) + ((x / 16) * 128);
                     if (mapColors != null)
                     {
-                        uint[] cachedChunk;
-                        if (!mapDataCache.TryGetValue(chunkKey, out cachedChunk))
-                        {
-                            cachedChunk = new uint[128];
-                            uint value;
-
-                            int textureOffset = 0;
-                            for (int i = 0; i < 128; i++, textureOffset +=2)
-                            {
-                                value = PackShorts(mapColors[textureOffset], mapColors[textureOffset + 1]);
-                                mapColorsData[indexBuffer + i] = value;
-                                cachedChunk[i] = value;
-                            }
-
-                            mapDataCache.Add(chunkKey, cachedChunk);
-                        }
-                        else
-                        {
-                            Array.Copy(cachedChunk, 0, mapColorsData, indexBuffer, 128);
-                        }
+                        Array.Copy(mapColors, 0, mapColorsData, indexBuffer, 128);
                     }
                     else
                     {
@@ -392,7 +388,6 @@ namespace Quartz
                 num += 16;
                 y = (y + 16) % MapDrawnSize;
             }
-
 
             //TODO: Move out of this method to be excuted on the next frame?
             mapDataBuffer.SetData(mapColorsData);
@@ -522,6 +517,11 @@ namespace Quartz
 
         private void UpdateMapUpdateRadius(float zoomScale)
         {
+            if(zoomScale < 1f)
+            {
+                zoomScale = 1f;
+            }
+
             int newMapUpdateSizeRadius = (int)(MapUpdateRadiusDefault * zoomScale);
             if (newMapUpdateSizeRadius > (MapDrawnSize / 2))
             {
@@ -530,31 +530,6 @@ namespace Quartz
 
             bShouldRedrawMap = newMapUpdateSizeRadius != mapUpdateSizeRadius;
             mapUpdateSizeRadius = newMapUpdateSizeRadius;
-        }
-
-        private void UpdateMapObject(EnumMapObjectType _type, long _key, string _name, Vector3 _position, Vector3 _size, GameObject _prefab)
-        {
-            if (!keyToMapSprite.TryGetValue(_key, out var _value))
-            {
-                _value = transformSpritesParent.gameObject.AddChild(_prefab);
-                _value.GetComponent<UISprite>().depth = 20;
-                _value.name = _name;
-                _value.GetComponent<UISprite>().depth = 1;
-                keyToMapObject[_key] = new MapObject(_type, _position, _key, null, _bSelectable: true);
-                keyToMapSprite[_key] = _value;
-            }
-
-            if ((bool)_value)
-            {
-                float num = getSpriteZoomScaleFac() * 4.3f;
-                UISprite component = _value.GetComponent<UISprite>();
-                component.width = (int)(_size.x * num);
-                component.height = (int)(_size.z * num);
-                Transform transform = _value.transform;
-                transform.localPosition = WorldPosToScreenPos(_position);
-                transform.localRotation = Quaternion.identity;
-                mapObjectsOnMapAlive.Add(_key);
-            }
         }
 
         private float getSpriteZoomScaleFac()
@@ -573,49 +548,46 @@ namespace Quartz
                 if (navObject.HasRequirements && navObject.NavObjectClass.IsOnMap(navObject.IsActive))
                 {
                     NavObjectMapSettings currentMapSettings = navObject.CurrentMapSettings;
-                    GameObject gameObject = null;
-                    UISprite uISprite = null;
+                    MinimapObject mapObject;
                     if (!keyToNavObject.ContainsKey(key))
                     {
-                        gameObject = transformSpritesParent.gameObject.AddChild(prefabMapSprite);
-                        uISprite = gameObject.transform.Find("Sprite").GetComponent<UISprite>();
+                        mapObject = new MinimapObject(transformSpritesParent.gameObject.AddChild(prefabMapSprite));
                         string spriteName = navObject.GetSpriteName(currentMapSettings);
-                        uISprite.atlas = base.xui.GetAtlasByName(((UnityEngine.Object)uISprite.atlas).name, spriteName);
-                        uISprite.spriteName = spriteName;
-                        uISprite.depth = currentMapSettings.Layer;
+                        mapObject.sprite.atlas = xui.GetAtlasByName(((UnityEngine.Object)mapObject.sprite.atlas).name, spriteName);
+                        mapObject.sprite.spriteName = spriteName;
+                        mapObject.sprite.depth = currentMapSettings.Layer;
+                        mapObject.label.font = xui.GetUIFontByName("ReferenceFont");
                         keyToNavObject[key] = navObject;
-                        keyToNavSprite[key] = gameObject;
+                        keyToNavSprite[key] = mapObject;
                     }
                     else
                     {
-                        gameObject = keyToNavSprite[key];
+                        mapObject = keyToNavSprite[key];
                     }
 
                     string displayName = navObject.DisplayName;
                     if (!string.IsNullOrEmpty(displayName))
                     {
-                        UILabel component = gameObject.transform.Find("Name").GetComponent<UILabel>();
-                        component.text = displayName;
-                        component.font = xui.GetUIFontByName("ReferenceFont");
-                        component.gameObject.SetActive(value: true);
-                        component.color = (navObject.UseOverrideColor ? navObject.OverrideColor : currentMapSettings.Color);
+                        mapObject.label.text = displayName;
+                        mapObject.label.gameObject.SetActive(true);
+                        mapObject.label.color = (navObject.UseOverrideColor ? navObject.OverrideColor : currentMapSettings.Color);
                     }
                     else
                     {
-                        gameObject.transform.Find("Name").GetComponent<UILabel>().text = "";
+                        mapObject.label.text = "";
+                        mapObject.label.gameObject.SetActive(false);
                     }
 
                     float spriteZoomScaleFac = getSpriteZoomScaleFac();
-                    uISprite = gameObject.transform.Find("Sprite").GetComponent<UISprite>();
                     Vector3 vector = currentMapSettings.IconScaleVector * spriteZoomScaleFac;
-                    uISprite.width = Mathf.Clamp((int)(cSpriteScale * vector.x), 9, 100);
-                    uISprite.height = Mathf.Clamp((int)(cSpriteScale * vector.y), 9, 100);
-                    uISprite.color = (navObject.hiddenOnCompass ? Color.grey : (navObject.UseOverrideColor ? navObject.OverrideColor : currentMapSettings.Color));
-                    uISprite.gameObject.transform.localEulerAngles = new Vector3(0f, 0f, 0f - navObject.Rotation.y);
-                    gameObject.transform.localPosition = WorldPosToScreenPos(navObject.GetPosition() + Origin.position);
+                    mapObject.sprite.width = Mathf.Clamp((int)(cSpriteScale * vector.x), 9, 75);
+                    mapObject.sprite.height = Mathf.Clamp((int)(cSpriteScale * vector.y), 9, 75);
+                    mapObject.sprite.color = (navObject.hiddenOnCompass ? Color.grey : (navObject.UseOverrideColor ? navObject.OverrideColor : currentMapSettings.Color));
+                    mapObject.spriteTransform.localEulerAngles = new Vector3(0f, 0f, 0f - navObject.Rotation.y);
+                    mapObject.transform.localPosition = WorldPosToScreenPos(navObject.GetPosition() + Origin.position);
                     if (currentMapSettings.AdjustCenter)
                     {
-                        gameObject.transform.localPosition += new Vector3(uISprite.width / 2, uISprite.height / 2, 0f);
+                        mapObject.spriteTransform.localPosition += new Vector3(mapObject.sprite.width / 2, mapObject.sprite.height / 2, 0f);
                     }
 
                     navObjectsOnMapAlive.Add(key);
@@ -627,7 +599,6 @@ namespace Quartz
         {
             World world = GameManager.Instance.World;
             navObjectsOnMapAlive.Clear();
-            mapObjectsOnMapAlive.Clear();
 
             UpdateNavObjectList();
             foreach (KeyValuePair<int, NavObject> item in keyToNavObject.Dict)
@@ -639,14 +610,6 @@ namespace Quartz
                 }
             }
 
-            foreach (KeyValuePair<long, MapObject> item2 in keyToMapObject.Dict)
-            {
-                if (!mapObjectsOnMapAlive.Contains(item2.Key))
-                {
-                    keyToMapObject.MarkToRemove(item2.Key);
-                    keyToMapSprite.MarkToRemove(item2.Key);
-                }
-            }
 
             keyToNavObject.RemoveAllMarked(delegate (int _key)
             {
@@ -654,34 +617,16 @@ namespace Quartz
             });
             keyToNavSprite.RemoveAllMarked(delegate (int _key)
             {
-                UnityEngine.Object.Destroy(keyToNavSprite[_key]);
+                keyToNavSprite[_key].Clear();
                 keyToNavSprite.Remove(_key);
             });
-            keyToMapObject.RemoveAllMarked(delegate (long _key)
-            {
-                keyToMapObject.Remove(_key);
-            });
-            keyToMapSprite.RemoveAllMarked(delegate (long _key)
-            {
-                UnityEngine.Object.Destroy(keyToMapSprite[_key]);
-                keyToMapSprite.Remove(_key);
-            });
+
             localPlayer.selectedSpawnPointKey = -1L;
         }
 
         private Vector3 WorldPosToScreenPos(Vector3 _worldPos)
         {
             return new Vector3((_worldPos.x - mapMiddlePosPixel.x) * 2.11904764f / zoomScale + (float)cTexMiddle.x, (_worldPos.z - mapMiddlePosPixel.y) * 2.11904764f / zoomScale - (float)cTexMiddle.y, 0f);
-        }
-
-        public uint PackShorts(ushort first, ushort second)
-        {
-            return ((uint)first << 16) + second;
-        }
-
-        public ushort ToColor5(float r, float g, float b)
-        {
-            return (ushort)(((int)(r * 31f + 0.5f) << 10) | ((int)(g * 31f + 0.5f) << 5) | (int)(b * 31f + 0.5f));
         }
 
         public void PositionMapAtPlayer()
@@ -711,7 +656,6 @@ namespace Quartz
 
             mapTextureRender = null;
             mapDataBuffer = null;
-            mapDataCache.Clear();
         }
 
         private ComputeShader LoadComputeShader()
@@ -722,6 +666,38 @@ namespace Quartz
         private Shader LoadMinimapShader()
         {
             return DataLoader.LoadAsset<Shader>("#@modfolder(Quartz)://Resources/quartzshaders.unity3d?Assets/MaskedTexture/MaskedMinimap.shader");
+        }
+
+        private class MinimapObject
+        {
+            public GameObject gameObject;
+            public Transform transform;
+
+            public UISprite sprite;
+            public Transform spriteTransform;
+
+            public UILabel label;
+
+            public MinimapObject(GameObject gameObject)
+            {
+                this.gameObject = gameObject;
+                transform = gameObject.transform;
+
+                sprite = transform.Find("Sprite").GetComponent<UISprite>();
+                spriteTransform = sprite.transform;
+
+                label = transform.Find("Name").GetComponent<UILabel>();
+
+            }
+
+            public void Clear()
+            {
+                UnityEngine.Object.Destroy(gameObject);
+                transform = null;
+                sprite = null;
+                spriteTransform = null;
+                label = null;
+            }
         }
     }
 }
