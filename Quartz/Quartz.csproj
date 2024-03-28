@@ -169,6 +169,7 @@
     <Compile Include="Source\Inputs\MinimapActions.cs" />
     <Compile Include="Source\Models\UIDisplay\DisplayInfoEntry.cs" />
     <Compile Include="Source\Models\UIDisplay\UIDisplayInfoFromXml_Harmony.cs" />
+    <Compile Include="Source\Settings\MinimapSettings.cs" />
     <Compile Include="Source\Utils\TextureExtensions.cs" />
     <Compile Include="Source\Utils\VehicleExtensions.cs" />
     <Compile Include="Source\Views\MaskedTextures\UIMaskedTexture.cs" />
@@ -193,7 +194,7 @@
     <Compile Include="Source\Overhaul\Controllers\ItemStacks\SelectableEntry.cs" />
     <Compile Include="Source\Overhaul\Controllers\XUiBaseController.cs" />
     <Compile Include="Source\QuartzMod.cs" />
-    <Compile Include="Source\Settings\Debugging.cs" />
+    <Compile Include="Source\Settings\DebuggingSettings.cs" />
     <Compile Include="Source\Settings\GlobalSettings.cs" />
     <Compile Include="Source\Utils\ColorExtensions.cs" />
     <Compile Include="Source\Views\XUiV_CurvedLabel.cs" />

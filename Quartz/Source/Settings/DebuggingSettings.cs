@@ -12,11 +12,25 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
+using GearsAPI.Settings.Global;
+
 namespace Quartz.Settings
 {
-    public static class Debugging
+    public static class DebuggingSettings
     {
         public static bool IsDebugEnabled { get; private set; } = false;
+
+        public static void SetDebugMode(IGlobalModSetting setting, string newValue)
+        {
+            if (newValue == "Enabled")
+            {
+                EnableDebugging();
+            }
+            else
+            {
+                DisableDebugging();
+            }
+        }
 
         public static bool ToggleDebugging()
         {

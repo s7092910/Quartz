@@ -61,8 +61,8 @@ namespace Quartz
             cat = tab.GetCategory("Debug");
             modSetting = cat.GetSetting("DebugMode") as IGlobalValueSetting;
 
-            modSetting.OnSettingChanged += GlobalSettings.SetDebugMode;
-            GlobalSettings.SetDebugMode(modSetting, modSetting.CurrentValue);
+            modSetting.OnSettingChanged += DebuggingSettings.SetDebugMode;
+            DebuggingSettings.SetDebugMode(modSetting, modSetting.CurrentValue);
 
             //Controls Tab Settings
             tab = modSettings.GetTab("Controls");

@@ -31,17 +31,5 @@ namespace Quartz.Settings
                 textCrispness = UILabel.Crispness.Never;
             }
         }
-
-        public static void SetDebugMode(IGlobalModSetting setting, string newValue)
-        {
-            if(newValue == "Enabled")
-            {
-                Debugging.EnableDebugging();
-            }
-            else
-            {
-                Debugging.DisableDebugging();
-            }
-        }
     }
 }
