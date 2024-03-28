@@ -91,8 +91,6 @@ namespace Quartz
         private bool isOpen;
         private float mapScale = 1f;
 
-        private bool playerFacesTop = true;
-
         public override void Init()
         {
             base.Init();
@@ -283,7 +281,7 @@ namespace Quartz
             PositionMapAtPlayer();
             UpdateMapObjects();
 
-            if(playerFacesTop)
+            if(MinimapSettings.FollowPlayerView)
             {
                 Shader.SetGlobalFloat("_MapRotation", -localPlayer.rotation.y * Mathf.Deg2Rad);
             } 
@@ -620,7 +618,7 @@ namespace Quartz
                     mapObject.sprite.color = (navObject.hiddenOnCompass ? Color.grey : (navObject.UseOverrideColor ? navObject.OverrideColor : currentMapSettings.Color));
 
 
-                    if(playerFacesTop && navObject.TrackedEntity == localPlayer)
+                    if(MinimapSettings.FollowPlayerView && navObject.TrackedEntity == localPlayer)
                     {
                         mapObject.spriteTransform.localEulerAngles = new Vector3(0f, 0f, 0f);
                     } 
@@ -635,7 +633,8 @@ namespace Quartz
                     }
                     mapObject.transform.localPosition = WorldPosToScreenPos(navObject.GetPosition() + Origin.position);
 
-                    if (playerFacesTop)
+                    //Rotates the mapObject around the player's position in the minimap
+                    if (MinimapSettings.FollowPlayerView)
                     {
                         mapObject.transform.localEulerAngles = new Vector3(0f, 0f, -localPlayer.rotation.y);
                         mapObject.transform.RotateAround(middlePos, new Vector3(0, 0, 1), localPlayer.rotation.y);
