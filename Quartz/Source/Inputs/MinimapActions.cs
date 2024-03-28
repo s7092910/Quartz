@@ -44,13 +44,13 @@ namespace Quartz.Inputs
         protected override void CreateActions()
         {
             MinimapZoomIn = CreatePlayerAction("Minimap Zoom In");
-            MinimapZoomIn.UserData = new PlayerActionData.ActionUserData("quartzSettingInputMinimapZoomIn", "quartzSettingInputMinimapZoomInTooltip", PlayerActionData.GroupUI, PlayerActionData.EAppliesToInputType.KbdMouseOnly, true);
+            MinimapZoomIn.UserData = new PlayerActionData.ActionUserData("quartzSettingInputMinimapZoomIn2", "quartzSettingInputMinimapZoomInTooltip", PlayerActionData.GroupUI, PlayerActionData.EAppliesToInputType.KbdMouseOnly, true);
 
             MinimapZoomOut = CreatePlayerAction("Minimap Zoom Out");
-            MinimapZoomOut.UserData = new PlayerActionData.ActionUserData("quartzSettingInputMinimapZoomOut", "quartzSettingInputMinimapZoomOutTooltip", PlayerActionData.GroupUI, PlayerActionData.EAppliesToInputType.KbdMouseOnly, true);
+            MinimapZoomOut.UserData = new PlayerActionData.ActionUserData("quartzSettingInputMinimapZoomOut2", "quartzSettingInputMinimapZoomOutTooltip", PlayerActionData.GroupUI, PlayerActionData.EAppliesToInputType.KbdMouseOnly, true);
 
             MinimapToggle = CreatePlayerAction("Minimap Visibility Toggle");
-            MinimapToggle.UserData = new PlayerActionData.ActionUserData("quartzSettingInputMinimapZoomOut", "quartzSettingInputMinimapZoomOutTooltip", PlayerActionData.GroupUI, PlayerActionData.EAppliesToInputType.KbdMouseOnly, true);
+            MinimapToggle.UserData = new PlayerActionData.ActionUserData("quartzSettingInputMinimapToggle", "quartzSettingInputMinimapToggleTooltip", PlayerActionData.GroupUI, PlayerActionData.EAppliesToInputType.KbdMouseOnly, true);
         }
 
         protected override void CreateDefaultJoystickBindings()

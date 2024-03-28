@@ -50,28 +50,45 @@ namespace Quartz
 
         public void OnGlobalSettingsLoaded(IModGlobalSettings modSettings)
         {
+            //General Tab Settings
             IGlobalModSettingsTab tab = modSettings.GetTab("General");
-
             IGlobalModSettingsCategory cat = tab.GetCategory("General");
             IGlobalValueSetting modSetting = cat.GetSetting("TextResolution") as IGlobalValueSetting;
 
             modSetting.OnSettingChanged += GlobalSettings.SetTextResolution;
             GlobalSettings.SetTextResolution(modSetting, modSetting.CurrentValue);
 
+            //Minimap
+            tab = modSettings.GetTab("Minimap");
+            cat = tab.GetCategory("KeyBindings");
+
+            IControlBindingSetting modBinding = cat.GetSetting("EnabledKeyBinding") as IControlBindingSetting;
+            modBinding.PlayerAction = QuartzInputManager.minimapActions.MinimapToggle;
+            modBinding.OnSettingChanged += ControlsSettingChanged;
+
+            modBinding = cat.GetSetting("ZoomInKeyBinding") as IControlBindingSetting;
+            modBinding.PlayerAction = QuartzInputManager.minimapActions.MinimapZoomIn;
+            modBinding.OnSettingChanged += ControlsSettingChanged;
+
+            modBinding = cat.GetSetting("ZoomOutKeyBinding") as IControlBindingSetting;
+            modBinding.PlayerAction = QuartzInputManager.minimapActions.MinimapZoomOut;
+            modBinding.OnSettingChanged += ControlsSettingChanged;
+
+            //Inventory Tab Settings
+            tab = modSettings.GetTab("Inventory");
+            cat = tab.GetCategory("KeyBindings");
+            modBinding = cat.GetSetting("LockedSlots") as IControlBindingSetting;
+
+            modBinding.PlayerAction = QuartzInputManager.inventoryActions.LockSlot;
+            modBinding.OnSettingChanged += ControlsSettingChanged;
+
+            //Dev Tools Tab
+            tab = modSettings.GetTab("Dev Tools");
             cat = tab.GetCategory("Debug");
             modSetting = cat.GetSetting("DebugMode") as IGlobalValueSetting;
 
             modSetting.OnSettingChanged += DebuggingSettings.SetDebugMode;
             DebuggingSettings.SetDebugMode(modSetting, modSetting.CurrentValue);
-
-            //Controls Tab Settings
-            tab = modSettings.GetTab("Controls");
-            cat = tab.GetCategory("Inventory");
-
-            IControlBindingSetting modBinding = cat.GetSetting("LockedSlots") as IControlBindingSetting;
-
-            modBinding.PlayerAction = QuartzInputManager.inventoryActions.LockSlot;
-            modBinding.OnSettingChanged += ControlsSettingChanged;
         }
 
         public void OnWorldSettingsLoaded(IModWorldSettings modSettings)

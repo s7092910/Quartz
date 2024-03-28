@@ -8,10 +8,19 @@ quartzSettingTextResolution,UI,Menu,x,,Text Resolution
 quartzSettingTextResolutionTooltip,UI,Menu,x,,"Sets the Text resolution. If set to high, may cause flickering of the UI every so often"
 quartzSettingDebugMode,UI,Menu,x,,Debug Mode
 quartzSettingDebugModeTooltip,UI,Menu,x,,Enables or disable Quartz debug mode
-quartzSettingInventory,UI,Menu,x,,Inventory
-quartzSettingInputInventoryTooltip,UI,Menu,x,,Inventory Player Control Bindings
+quartzSettingKeybinding,UI,Menu,x,,Key Bindings
+quartzSettingInputInventoryKeybindingTooltip,UI,Menu,x,,Inventory Player Key Bindings
 quartzSettingInputLockedSlots,UI,Menu,x,,Lock Slots
 quartzSettingInputLockedSlotsTooltip,UI,Menu,x,,Locks or Unlocks inventory slot when the slot is clicked on
+quartzSettingInputMinimapKeybindingTooltip,UI,Menu,x,,Minimap Player Key Bindings
+quartzSettingInputMinimapToggle,UI,Menu,x,,Toggle Minimap
+quartzSettingInputMinimapToggleTooltip,UI,Menu,x,,Toggle the minimap on or off
+quartzSettingInputMinimapZoomIn,UI,Menu,x,,Zoom In
+quartzSettingInputMinimapZoomIn2,UI,Menu,x,,Minimap Zoom In
+quartzSettingInputMinimapZoomInTooltip,UI,Menu,x,,Zooms in on the minimap
+quartzSettingInputMinimapZoomOut,UI,Menu,x,,Zoom Out
+quartzSettingInputMinimapZoomOut2,UI,Menu,x,,Minimap Zoom Out
+quartzSettingInputMinimapZoomOutTooltip,UI,Menu,x,,Zooms out on the minimap
 quartzUiSpriteWindowHeader,UI,Menu,x,,UIAtlas Sprites
 quartzXuiExport,UI,Menu,x,,Export Sprites
 quartzXuiExplorer,UI,Menu,x,,Open Export Folder
