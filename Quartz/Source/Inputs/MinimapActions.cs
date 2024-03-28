@@ -23,6 +23,8 @@ namespace Quartz.Inputs
         public PlayerAction MinimapZoomIn;
         public PlayerAction MinimapZoomOut;
 
+        public PlayerAction MinimapToggle;
+
         public MinimapActions()
         {
             Name = "minimapActions";
@@ -46,6 +48,9 @@ namespace Quartz.Inputs
 
             MinimapZoomOut = CreatePlayerAction("Minimap Zoom Out");
             MinimapZoomOut.UserData = new PlayerActionData.ActionUserData("quartzSettingInputMinimapZoomOut", "quartzSettingInputMinimapZoomOutTooltip", PlayerActionData.GroupUI, PlayerActionData.EAppliesToInputType.KbdMouseOnly, true);
+
+            MinimapToggle = CreatePlayerAction("Minimap Visibility Toggle");
+            MinimapToggle.UserData = new PlayerActionData.ActionUserData("quartzSettingInputMinimapZoomOut", "quartzSettingInputMinimapZoomOutTooltip", PlayerActionData.GroupUI, PlayerActionData.EAppliesToInputType.KbdMouseOnly, true);
         }
 
         protected override void CreateDefaultJoystickBindings()
@@ -62,6 +67,11 @@ namespace Quartz.Inputs
             MinimapZoomOut.AddDefaultBinding(new Key[]
             {
                 Key.PadMinus
+            });
+
+            MinimapToggle.AddDefaultBinding(new Key[]
+            {
+                Key.PadEnter
             });
         }
     }

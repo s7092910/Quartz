@@ -16,10 +16,10 @@ using Audio;
 using InControl;
 using Quartz.Inputs;
 using Quartz.Map;
+using Quartz.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
 using UnityEngine;
 
 namespace Quartz
@@ -69,6 +69,7 @@ namespace Quartz
 
         private EntityPlayer localPlayer;
         private XUiView xuiTexture;
+        private XUiView clippingPanel;
 
         private DictionarySave<int, NavObject> keyToNavObject = new DictionarySave<int, NavObject>();
         private DictionarySave<int, MinimapObject> keyToNavSprite = new DictionarySave<int, MinimapObject>();
@@ -131,10 +132,16 @@ namespace Quartz
             if (childById != null)
             {
                 xuiTexture = childById.ViewComponent;
+                xuiTexture.IsVisible = MinimapSettings.Enabled;
             }
 
-            transformSpritesParent = GetChildById("clippingPanel").ViewComponent.UiTransform;
-            UIPanel panel = transformSpritesParent.GetComponent<UIPanel>();
+            childById = GetChildById("clippingPanel");
+            if (childById != null)
+            {
+                clippingPanel = childById.ViewComponent;
+                clippingPanel.IsVisible = MinimapSettings.Enabled;
+                transformSpritesParent = clippingPanel.UiTransform;
+            }
 
             zoomScale = mapScale;
             targetZoomScale = mapScale;
@@ -224,6 +231,19 @@ namespace Quartz
             if (!bMapInitialized)
             {
                 InitMap();
+            }
+
+            if(QuartzInputManager.minimapActions.MinimapToggle.WasPressed)
+            {
+                MinimapSettings.Enabled = !MinimapSettings.Enabled;
+                bShouldRedrawMap |= true;
+                xuiTexture.IsVisible = MinimapSettings.Enabled;
+                clippingPanel.IsVisible = MinimapSettings.Enabled;
+            }
+
+            if (!MinimapSettings.Enabled)
+            {
+                return;
             }
 
             if(QuartzInputManager.minimapActions.MinimapZoomIn.WasPressed)
