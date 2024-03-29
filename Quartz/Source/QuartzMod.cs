@@ -27,6 +27,8 @@ namespace Quartz
 
         private const string ModName = "com.Quartz.Mod";
 
+        private static IModGlobalSettings modGlobalSettings;
+
         public void InitMod(Mod modInstance)
         {
             //If patches have already been loaded, skip.
@@ -50,6 +52,8 @@ namespace Quartz
 
         public void OnGlobalSettingsLoaded(IModGlobalSettings modSettings)
         {
+            modGlobalSettings = modSettings;
+
             //General Tab Settings
             IGlobalModSettingsTab tab = modSettings.GetTab("General");
             IGlobalModSettingsCategory cat = tab.GetCategory("General");
@@ -60,6 +64,39 @@ namespace Quartz
 
             //Minimap
             tab = modSettings.GetTab("Minimap");
+
+            cat = tab.GetCategory("Minimap");
+
+            modSetting = cat.GetSetting("MinimapShowOrHide") as IGlobalValueSetting;
+            modSetting.OnSettingChanged += MinimapSettings.SetMinimapEnabled;
+            MinimapSettings.SetMinimapEnabled(modSetting, modSetting.CurrentValue);
+            MinimapSettings.enableMinimapSetting = modSetting;
+
+            modSetting = cat.GetSetting("IconsShowOrHide") as IGlobalValueSetting;
+            modSetting.OnSettingChanged += MinimapSettings.SetIconsEnabled;
+            MinimapSettings.SetIconsEnabled(modSetting, modSetting.CurrentValue);
+
+            modSetting = cat.GetSetting("TextShowOrHide") as IGlobalValueSetting;
+            modSetting.OnSettingChanged += MinimapSettings.SetTextEnabled;
+            MinimapSettings.SetTextEnabled(modSetting, modSetting.CurrentValue);
+
+            modSetting = cat.GetSetting("RotateWithPlayer") as IGlobalValueSetting;
+            modSetting.OnSettingChanged += MinimapSettings.SetMinimapFollowsPlayerView;
+            MinimapSettings.SetMinimapFollowsPlayerView(modSetting, modSetting.CurrentValue);
+
+            modSetting = cat.GetSetting("IconScale") as IGlobalValueSetting;
+            modSetting.OnSettingChanged += MinimapSettings.SetIconScaleModifer;
+            MinimapSettings.SetIconScaleModifer(modSetting, modSetting.CurrentValue);
+
+            modSetting = cat.GetSetting("IconOpacity") as IGlobalValueSetting;
+            modSetting.OnSettingChanged += MinimapSettings.SetIconOpacity;
+            MinimapSettings.SetIconOpacity(modSetting, modSetting.CurrentValue);
+
+            modSetting = cat.GetSetting("TextureOpacity") as IGlobalValueSetting;
+            modSetting.OnSettingChanged += MinimapSettings.SetTextureOpacity;
+            MinimapSettings.SetTextureOpacity(modSetting, modSetting.CurrentValue);
+
+            //Minimap KeyBindings
             cat = tab.GetCategory("KeyBindings");
 
             IControlBindingSetting modBinding = cat.GetSetting("EnabledKeyBinding") as IControlBindingSetting;
@@ -99,6 +136,14 @@ namespace Quartz
         private void ControlsSettingChanged(IGlobalModSetting setting, string newValue)
         {
             QuartzInputManager.SaveControls();
+        }
+
+        public static void SaveModSettings()
+        {
+            if(modGlobalSettings != null)
+            {
+                modGlobalSettings.SaveSettings();
+            }
         }
     }
 }

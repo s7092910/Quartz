@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using XMLData.Parsers;
 
 namespace Quartz
 {
@@ -38,7 +39,9 @@ namespace Quartz
         public int bufferRowLength = MapDrawnSizeInChunks * 128;
         public int mapUpdateSizeRadius = 512;
 
-        private int cSpriteScale = 50;
+        private int spriteSize = 50;
+        private int spriteMax = 100;
+        private int spriteMin = 10;
 
         private const float MapOnScreenSize = 300f;
         private const float MapDefaultZoom = 150f; //Vanilla 336
@@ -58,6 +61,7 @@ namespace Quartz
 
         private Vector2 mapPos;
 
+        private float mapScale = 1f;
         private float zoomScale;
         private float targetZoomScale;
 
@@ -70,9 +74,11 @@ namespace Quartz
         private EntityPlayer localPlayer;
         private XUiView xuiTexture;
         private XUiView clippingPanel;
+        private Transform transformSpritesParent;
 
         private DictionarySave<int, NavObject> keyToNavObject = new DictionarySave<int, NavObject>();
         private DictionarySave<int, MinimapObject> keyToNavSprite = new DictionarySave<int, MinimapObject>();
+        private HashSetLong navObjectsOnMapAlive = new HashSetLong();
 
         private uint[] emptyChunk = new uint[128];
         private uint[] mapColorsData;
@@ -82,14 +88,11 @@ namespace Quartz
 
         private int kernelIndex;
 
-        private HashSetLong navObjectsOnMapAlive = new HashSetLong();
-
         private GameObject prefabMapSprite;
 
-        private Transform transformSpritesParent;
-
         private bool isOpen;
-        private float mapScale = 1f;
+
+        private bool forceTextOff = false;
 
         public override void Init()
         {
@@ -280,22 +283,13 @@ namespace Quartz
 
             PositionMapAtPlayer();
             UpdateMapObjects();
-
-            if(MinimapSettings.FollowPlayerView)
-            {
-                Shader.SetGlobalFloat("_MapRotation", -localPlayer.rotation.y * Mathf.Deg2Rad);
-            } 
-            else
-            {
-                Shader.SetGlobalFloat("_MapRotation", 0f);
-            }
         }
 
-        public override bool ParseAttribute(string attribute, string value, XUiController _parent)
+        public override bool ParseAttribute(string attribute, string value, XUiController parent)
         {
             switch (attribute)
             {
-                case "zoomsteps":
+                case "zoomscalesteps":
                     HashSet<float> zoomStepsSet = new HashSet<float>();
                     string[] zoomStepsStrings = value.Split(',');
 
@@ -325,11 +319,33 @@ namespace Quartz
                     }
 
                     return true;
+                case "iconscalemax":
+                    if(int.TryParse(value, out int max)) {
+                        spriteMax = max;
+                    }
+                    return true;
+                case "iconscalemin":
+                    if (int.TryParse(value, out int min))
+                    {
+                        spriteMin = min;
+                    }
+                    return true;
+                case "iconsize":
+                    if (int.TryParse(value, out int scale))
+                    {
+                        spriteSize = scale;
+                    }
+                    return true;
+                case "forceicontextoff":
+                    if (bool.TryParse(value, out bool force))
+                    {
+                        forceTextOff = force;
+                    }
+                    return true;
                 default:
-                    return base.ParseAttribute(attribute, value, _parent);
+                    return base.ParseAttribute(attribute, value, parent);
             }
         }
-
 
         private void InitMap()
         {
@@ -350,6 +366,9 @@ namespace Quartz
                 }
 
                 cTexMiddle = xuiTexture.Size / 2;
+
+                xuiTexture.IsVisible = MinimapSettings.Enabled;
+                clippingPanel.IsVisible = MinimapSettings.Enabled;
             }
         }
 
@@ -451,56 +470,18 @@ namespace Quartz
         }
 
         private void OnPreRender(LocalPlayerCamera _localPlayerCamera)
-        {   
+        {
             //float xScale = xuiTexture.Size.x / MapOnScreenSize;
             //float yScale = xuiTexture.Size.y / MapOnScreenSize;
 
             float yScale = xuiTexture.Size.y / (float)xuiTexture.Size.x;
+            float rotation = MinimapSettings.FollowPlayerView ? -localPlayer.rotation.y * Mathf.Deg2Rad : 0f;
 
             //Shader.SetGlobalVector("_MainMapPosAndScale", new Vector4(mapPos.x, mapPos.y, mapScale * xScale, mapScale * yScale));
             Shader.SetGlobalVector("_MainMapPosAndScale", new Vector4(mapPos.x, mapPos.y, mapScale, mapScale * yScale));
-        }
+            Shader.SetGlobalFloat("_MapRotation", rotation);
+            Shader.SetGlobalFloat("_MapOpacity", MinimapSettings.TextureOpacity);
 
-        private void MapZoomIn()
-        {
-            if(targetZoomScale == minZoomScale)
-            {
-                return;
-            }
-
-            targetZoomScale = targetZoomScale != 1f ? targetZoomScale - 1f : 0.5f;
-
-            int newMapUpdateSizeRadius = (int)(MapUpdateRadiusDefault * targetZoomScale);
-            if (newMapUpdateSizeRadius > (MapDrawnSize / 2))
-            {
-                newMapUpdateSizeRadius = MapDrawnSize / 2;
-            }
-
-            bShouldRedrawMap = newMapUpdateSizeRadius != mapUpdateSizeRadius;
-            mapUpdateSizeRadius = newMapUpdateSizeRadius;
-
-            Manager.PlayInsidePlayerHead("map_zoom_in");
-        }
-
-        private void MapZoomOut()
-        {
-            if (targetZoomScale == maxZoomScale)
-            {
-                return;
-            }
-
-            targetZoomScale = targetZoomScale != 0.5f ? targetZoomScale + 1f : 1f;
-
-            int newMapUpdateSizeRadius = (int)(MapUpdateRadiusDefault * targetZoomScale);
-            if (newMapUpdateSizeRadius > (MapDrawnSize/2))
-            {
-                newMapUpdateSizeRadius = MapDrawnSize / 2;
-            }
-
-            bShouldRedrawMap = newMapUpdateSizeRadius != mapUpdateSizeRadius;
-            mapUpdateSizeRadius = newMapUpdateSizeRadius;
-
-            Manager.PlayInsidePlayerHead("map_zoom_out");
         }
 
         private void MapZoomed(int newZoomIndex)
@@ -562,7 +543,7 @@ namespace Quartz
             mapUpdateSizeRadius = newMapUpdateSizeRadius;
         }
 
-        private float getSpriteZoomScaleFac()
+        private float GetSpriteZoomScaleFactor()
         {
             return global::Utils.FastClamp(1f / (zoomScale * 2f), 0.02f, 20f);
         }
@@ -573,6 +554,9 @@ namespace Quartz
             navObjectsOnMapAlive.Clear();
 
             Vector3 middlePos = transformSpritesParent.TransformPoint(WorldPosToScreenPos(localPlayer.position));
+            Color opacity = new Color(1f, 1f, 1f, MinimapSettings.IconOpacity);
+            float spriteScale = spriteSize * MinimapSettings.IconScaleModifer;
+            float spriteZoomScale = GetSpriteZoomScaleFactor();
 
             for (int i = 0; i < navObjectList.Count; i++)
             {
@@ -599,11 +583,11 @@ namespace Quartz
                     }
 
                     string displayName = navObject.DisplayName;
-                    if (!string.IsNullOrEmpty(displayName))
+                    if (!forceTextOff && !string.IsNullOrEmpty(displayName) && MinimapSettings.ShowText)
                     {
                         mapObject.label.text = displayName;
                         mapObject.label.gameObject.SetActive(true);
-                        mapObject.label.color = (navObject.UseOverrideColor ? navObject.OverrideColor : currentMapSettings.Color);
+                        mapObject.label.color = (navObject.UseOverrideColor ? navObject.OverrideColor : currentMapSettings.Color) * opacity;
                     }
                     else
                     {
@@ -611,14 +595,12 @@ namespace Quartz
                         mapObject.label.gameObject.SetActive(false);
                     }
 
-                    float spriteZoomScaleFac = getSpriteZoomScaleFac();
-                    Vector3 vector = currentMapSettings.IconScaleVector * spriteZoomScaleFac;
-                    mapObject.sprite.width = Mathf.Clamp((int)(cSpriteScale * vector.x), 9, 75);
-                    mapObject.sprite.height = Mathf.Clamp((int)(cSpriteScale * vector.y), 9, 75);
-                    mapObject.sprite.color = (navObject.hiddenOnCompass ? Color.grey : (navObject.UseOverrideColor ? navObject.OverrideColor : currentMapSettings.Color));
+                    Vector3 vector = currentMapSettings.IconScaleVector * spriteZoomScale;
+                    mapObject.sprite.width = Mathf.Clamp((int)(spriteScale * vector.x), spriteMin, spriteMax);
+                    mapObject.sprite.height = Mathf.Clamp((int)(spriteScale * vector.y), spriteMin, spriteMax);
+                    mapObject.sprite.color = (navObject.hiddenOnCompass ? Color.grey : (navObject.UseOverrideColor ? navObject.OverrideColor : currentMapSettings.Color)) * opacity;
 
-
-                    if(MinimapSettings.FollowPlayerView && navObject.TrackedEntity == localPlayer)
+                    if (MinimapSettings.FollowPlayerView && navObject.TrackedEntity == localPlayer)
                     {
                         mapObject.spriteTransform.localEulerAngles = new Vector3(0f, 0f, 0f);
                     } 
@@ -650,7 +632,11 @@ namespace Quartz
             World world = GameManager.Instance.World;
             navObjectsOnMapAlive.Clear();
 
-            UpdateNavObjectList();
+            if(MinimapSettings.ShowIcons)
+            {
+                UpdateNavObjectList();
+            }
+
             foreach (KeyValuePair<int, NavObject> item in keyToNavObject.Dict)
             {
                 if (!navObjectsOnMapAlive.Contains(item.Key))
@@ -659,7 +645,6 @@ namespace Quartz
                     keyToNavSprite.MarkToRemove(item.Key);
                 }
             }
-
 
             keyToNavObject.RemoveAllMarked(delegate (int _key)
             {
