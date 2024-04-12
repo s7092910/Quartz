@@ -13,13 +13,10 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using HarmonyLib;
-using InControl;
 using Quartz;
 using Quartz.Map;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 
 [HarmonyPatch(typeof(MapChunkDatabase))]
 public class MapChunkDatabasePatch

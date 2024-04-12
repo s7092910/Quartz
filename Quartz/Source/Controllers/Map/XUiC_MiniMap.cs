@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using Audio;
+using InControl;
 using Quartz.Inputs;
 using Quartz.Map;
 using Quartz.Settings;
@@ -73,8 +74,8 @@ namespace Quartz
         private XUiView clippingPanel;
         private Transform transformSpritesParent;
 
-        private DictionarySave<int, NavObject> keyToNavObject = new DictionarySave<int, NavObject>();
-        private DictionarySave<int, MinimapObject> keyToNavSprite = new DictionarySave<int, MinimapObject>();
+        private HashSetLong navKeys = new HashSetLong();
+        private DictionarySave<int, MinimapMarker> keyToNavSprite = new DictionarySave<int, MinimapMarker>();
         private HashSetLong navObjectsOnMapAlive = new HashSetLong();
 
         private uint[] emptyChunk = new uint[128];
@@ -167,14 +168,14 @@ namespace Quartz
 
         private void Instance_OnNavObjectRemoved(NavObject newNavObject)
         {
-            MinimapObject gameObject = keyToNavSprite[newNavObject.Key];
+            MinimapMarker gameObject = keyToNavSprite[newNavObject.Key];
             if(gameObject == null)
             {
                 return;
             }
 
             gameObject.Clear();
-            keyToNavObject.Remove(newNavObject.Key);
+            navKeys.Remove(newNavObject.Key);
             keyToNavSprite.Remove(newNavObject.Key);
         }
 
@@ -570,19 +571,19 @@ namespace Quartz
             {
                 NavObject navObject = navObjectList[i];
                 int key = navObject.Key;
-                if (navObject.HasRequirements && navObject.NavObjectClass.IsOnMap(navObject.IsActive))
+                if (navObject.HasRequirements && navObject.NavObjectClass.IsOnMiniMap(navObject.IsActive))
                 {
                     NavObjectMapSettings currentMapSettings = navObject.CurrentMapSettings;
-                    MinimapObject mapObject;
-                    if (!keyToNavObject.ContainsKey(key))
+                    MinimapMarker mapObject;
+                    if (!keyToNavSprite.ContainsKey(key))
                     {
-                        mapObject = new MinimapObject(transformSpritesParent.gameObject.AddChild(prefabMapSprite));
+                        mapObject = new MinimapMarker(transformSpritesParent.gameObject.AddChild(prefabMapSprite));
                         string spriteName = navObject.GetSpriteName(currentMapSettings);
                         mapObject.sprite.atlas = xui.GetAtlasByName(((UnityEngine.Object)mapObject.sprite.atlas).name, spriteName);
                         mapObject.sprite.spriteName = spriteName;
                         mapObject.sprite.depth = currentMapSettings.Layer;
                         mapObject.label.font = xui.GetUIFontByName("ReferenceFont");
-                        keyToNavObject[key] = navObject;
+                        navKeys.Add(key);
                         keyToNavSprite[key] = mapObject;
                     }
                     else
@@ -608,10 +609,14 @@ namespace Quartz
                     mapObject.sprite.height = Mathf.Clamp((int)(spriteScale * vector.y), spriteMin, spriteMax);
                     mapObject.sprite.color = (navObject.hiddenOnCompass ? Color.grey : (navObject.UseOverrideColor ? navObject.OverrideColor : currentMapSettings.Color)) * opacity;
 
-                    if (MinimapSettings.FollowPlayerView && navObject.TrackedEntity == localPlayer)
+                    //if (MinimapSettings.FollowPlayerView && navObject.TrackedEntity == localPlayer)
+                    //{
+                    //    mapObject.spriteTransform.localEulerAngles = new Vector3(0f, 0f, 0f);
+                    //}
+                    if (MinimapSettings.FollowPlayerView && navObject.NavObjectClass.RequirementType == NavObjectClass.RequirementTypes.IsPlayer)
                     {
                         mapObject.spriteTransform.localEulerAngles = new Vector3(0f, 0f, 0f);
-                    } 
+                    }
                     else
                     {
                         mapObject.spriteTransform.localEulerAngles = new Vector3(0f, 0f, 0f - navObject.Rotation.y);
@@ -645,26 +650,21 @@ namespace Quartz
                 UpdateNavObjectList();
             }
 
-            foreach (KeyValuePair<int, NavObject> item in keyToNavObject.Dict)
-            {
-                if (!navObjectsOnMapAlive.Contains(item.Key))
-                {
-                    keyToNavObject.MarkToRemove(item.Key);
-                    keyToNavSprite.MarkToRemove(item.Key);
-                }
-            }
-
-            keyToNavObject.RemoveAllMarked(delegate (int _key)
-            {
-                keyToNavObject.Remove(_key);
-            });
-            keyToNavSprite.RemoveAllMarked(delegate (int _key)
-            {
-                keyToNavSprite[_key].Clear();
-                keyToNavSprite.Remove(_key);
-            });
+            navKeys.RemoveWhere(removeNavSprite);
 
             localPlayer.selectedSpawnPointKey = -1L;
+        }
+
+        private bool removeNavSprite(long key)
+        {
+            if(!navObjectsOnMapAlive.Contains(key))
+            {
+                keyToNavSprite[(int)key].Clear();
+                keyToNavSprite.Remove((int)key);
+                return true;
+            }
+
+            return false;
         }
 
         private Vector3 WorldPosToScreenPos(Vector3 _worldPos)
@@ -711,7 +711,7 @@ namespace Quartz
             return DataLoader.LoadAsset<Shader>("#@modfolder(Quartz)://Resources/quartzshaders.unity3d?Assets/MaskedTexture/MaskedMinimap.shader");
         }
 
-        private class MinimapObject
+        private class MinimapMarker
         {
             public GameObject gameObject;
             public Transform transform;
@@ -721,7 +721,7 @@ namespace Quartz
 
             public UILabel label;
 
-            public MinimapObject(GameObject gameObject)
+            public MinimapMarker(GameObject gameObject)
             {
                 this.gameObject = gameObject;
                 transform = gameObject.transform;
