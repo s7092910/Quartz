@@ -128,6 +128,7 @@
     <Compile Include="Source\Controllers\Map\MapColorDatabase\MapColorDatabase.cs" />
     <Compile Include="Source\Controllers\Map\MapColorDatabase\MapChunkDatabase_Harmony.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MiniMap.cs" />
+    <Compile Include="Source\Controllers\Map\XUiC_MinimapStats.cs" />
     <Compile Include="Source\Controllers\XUiC_DialIndicator.cs" />
     <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_AttitudeIndictator.cs" />
     <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_Speedometer.cs" />

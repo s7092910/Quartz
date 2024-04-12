@@ -13,7 +13,6 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using Audio;
-using InControl;
 using Quartz.Inputs;
 using Quartz.Map;
 using Quartz.Settings;
@@ -21,11 +20,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using XMLData.Parsers;
 
 namespace Quartz
 {
-    public class XUiC_MiniMap : XUiController
+    public class XUiC_MiniMap : XUiC_MinimapStats
     {
         private const string TAG = "XUiC_Minimap";
 
@@ -71,7 +69,6 @@ namespace Quartz
         private int targetZoomIndex = 1;
         private float[] zoomSteps = new float[] {0.5f, 1f, 2f, 5f};
 
-        private EntityPlayer localPlayer;
         private XUiView xuiTexture;
         private XUiView clippingPanel;
         private Transform transformSpritesParent;
@@ -397,8 +394,7 @@ namespace Quartz
             UpdateMapSectionCompute(mapStartX, mapStartZ, mapEndX, mapEndZ, (MapDrawnSize / 2) - mapUpdateSizeRadius, (MapDrawnSize / 2) - mapUpdateSizeRadius, 512, 512);
 
             stopwatch.Stop();
-
-            Logging.Inform(TAG, "updateFullMap Called, time taken = " + (stopwatch.ElapsedMicroseconds * 0.001d));
+            Logging.Out(TAG, "updateFullMap Called, time taken = " + (stopwatch.ElapsedMicroseconds * 0.001d));
 
             PositionMapAtPlayer();
             SendMapPositionToServer();
@@ -454,9 +450,6 @@ namespace Quartz
 
         private void PositionMap()
         {
-            //float xScale = xuiTexture.Size.x / MapOnScreenSize;
-            //float yScale = xuiTexture.Size.y / MapOnScreenSize;
-
             float yScale = xuiTexture.Size.y / (float) xuiTexture.Size.x;
 
             //float numX = (MapDrawnSize - (MapDefaultZoom * xScale) * zoomScale) / 2f;
@@ -471,16 +464,31 @@ namespace Quartz
 
         private void OnPreRender(LocalPlayerCamera _localPlayerCamera)
         {
-            //float xScale = xuiTexture.Size.x / MapOnScreenSize;
-            //float yScale = xuiTexture.Size.y / MapOnScreenSize;
 
             float yScale = xuiTexture.Size.y / (float)xuiTexture.Size.x;
             float rotation = MinimapSettings.FollowPlayerView ? -localPlayer.rotation.y * Mathf.Deg2Rad : 0f;
 
-            //Shader.SetGlobalVector("_MainMapPosAndScale", new Vector4(mapPos.x, mapPos.y, mapScale * xScale, mapScale * yScale));
-            Shader.SetGlobalVector("_MainMapPosAndScale", new Vector4(mapPos.x, mapPos.y, mapScale, mapScale * yScale));
-            Shader.SetGlobalFloat("_MapRotation", rotation);
-            Shader.SetGlobalFloat("_MapOpacity", MinimapSettings.TextureOpacity);
+            UIDrawCall drawCall = null;
+            if (xuiTexture is XUiV_Texture texture)
+            {
+                drawCall = texture.UITexture.drawCall;
+            }
+
+            if (xuiTexture is XUiV_MaskedTexture maskedTexture)
+            {
+                drawCall = maskedTexture.UITexture.drawCall;
+            }
+
+            if (drawCall != null)
+            {
+                drawCall.dynamicMaterial.SetVector("_MainMapPosAndScale", new Vector4(mapPos.x, mapPos.y, mapScale, mapScale * yScale));
+                drawCall.dynamicMaterial.SetFloat("_MapRotation", rotation);
+                drawCall.dynamicMaterial.SetFloat("_MapOpacity", MinimapSettings.TextureOpacity);
+            }
+
+            //Shader.SetGlobalVector("_MainMapPosAndScale", new Vector4(mapPos.x, mapPos.y, mapScale, mapScale * yScale));
+            //Shader.SetGlobalFloat("_MapRotation", rotation);
+            //Shader.SetGlobalFloat("_MapOpacity", MinimapSettings.TextureOpacity);
 
         }
 
@@ -713,8 +721,6 @@ namespace Quartz
 
             public UILabel label;
 
-            public Vector3 labelPosition;
-
             public MinimapObject(GameObject gameObject)
             {
                 this.gameObject = gameObject;
@@ -724,7 +730,6 @@ namespace Quartz
                 spriteTransform = sprite.transform;
 
                 label = transform.Find("Name").GetComponent<UILabel>();
-                labelPosition = label.transform.localPosition;
             }
 
             public void Clear()
