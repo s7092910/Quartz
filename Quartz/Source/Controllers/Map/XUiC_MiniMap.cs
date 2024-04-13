@@ -231,7 +231,9 @@ namespace Quartz
                 InitMap();
             }
 
-            if(QuartzInputManager.minimapActions.MinimapToggle.WasPressed)
+            bool allowMinimapActions = !xui.playerUI.windowManager.IsInputActive();
+
+            if (QuartzInputManager.minimapActions.MinimapToggle.WasPressed && allowMinimapActions)
             {
                 MinimapSettings.Enabled = !MinimapSettings.Enabled;
                 bShouldRedrawMap |= true;
@@ -244,12 +246,12 @@ namespace Quartz
                 return;
             }
 
-            if(QuartzInputManager.minimapActions.MinimapZoomIn.WasPressed)
+            if(QuartzInputManager.minimapActions.MinimapZoomIn.WasPressed && allowMinimapActions)
             {
                 MapZoomed(targetZoomIndex - 1);
             }
 
-            if(QuartzInputManager.minimapActions.MinimapZoomOut.WasPressed)
+            if(QuartzInputManager.minimapActions.MinimapZoomOut.WasPressed && allowMinimapActions)
             {
                 MapZoomed(targetZoomIndex + 1);
             }
