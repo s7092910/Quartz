@@ -27,6 +27,8 @@ namespace Quartz
 
         private const string ModName = "com.Quartz.Mod";
 
+        private static IModGlobalSettings modGlobalSettings;
+
         public void InitMod(Mod modInstance)
         {
             //If patches have already been loaded, skip.
@@ -50,28 +52,84 @@ namespace Quartz
 
         public void OnGlobalSettingsLoaded(IModGlobalSettings modSettings)
         {
-            IGlobalModSettingsTab tab = modSettings.GetTab("General");
+            modGlobalSettings = modSettings;
 
+            //General Tab Settings
+            IGlobalModSettingsTab tab = modSettings.GetTab("General");
             IGlobalModSettingsCategory cat = tab.GetCategory("General");
             IGlobalValueSetting modSetting = cat.GetSetting("TextResolution") as IGlobalValueSetting;
 
             modSetting.OnSettingChanged += GlobalSettings.SetTextResolution;
             GlobalSettings.SetTextResolution(modSetting, modSetting.CurrentValue);
 
-            cat = tab.GetCategory("Debug");
-            modSetting = cat.GetSetting("DebugMode") as IGlobalValueSetting;
+            //Minimap
+            tab = modSettings.GetTab("Minimap");
 
-            modSetting.OnSettingChanged += GlobalSettings.SetDebugMode;
-            GlobalSettings.SetDebugMode(modSetting, modSetting.CurrentValue);
+            cat = tab.GetCategory("Minimap");
 
-            //Controls Tab Settings
-            tab = modSettings.GetTab("Controls");
-            cat = tab.GetCategory("Inventory");
+            modSetting = cat.GetSetting("MinimapShowOrHide") as IGlobalValueSetting;
+            modSetting.OnSettingChanged += MinimapSettings.SetMinimapEnabled;
+            MinimapSettings.SetMinimapEnabled(modSetting, modSetting.CurrentValue);
+            MinimapSettings.enableMinimapSetting = modSetting;
 
-            IControlBindingSetting modBinding = cat.GetSetting("LockedSlots") as IControlBindingSetting;
+            modSetting = cat.GetSetting("IconsShowOrHide") as IGlobalValueSetting;
+            modSetting.OnSettingChanged += MinimapSettings.SetIconsEnabled;
+            MinimapSettings.SetIconsEnabled(modSetting, modSetting.CurrentValue);
+
+            modSetting = cat.GetSetting("MinimapIconsShowOrHide") as IGlobalValueSetting;
+            modSetting.OnSettingChanged += MinimapSettings.SetMinimapOnlyIconsEnabled;
+            MinimapSettings.SetMinimapOnlyIconsEnabled(modSetting, modSetting.CurrentValue);
+
+            modSetting = cat.GetSetting("TextShowOrHide") as IGlobalValueSetting;
+            modSetting.OnSettingChanged += MinimapSettings.SetTextEnabled;
+            MinimapSettings.SetTextEnabled(modSetting, modSetting.CurrentValue);
+
+            modSetting = cat.GetSetting("RotateWithPlayer") as IGlobalValueSetting;
+            modSetting.OnSettingChanged += MinimapSettings.SetMinimapFollowsPlayerView;
+            MinimapSettings.SetMinimapFollowsPlayerView(modSetting, modSetting.CurrentValue);
+
+            modSetting = cat.GetSetting("IconScale") as IGlobalValueSetting;
+            modSetting.OnSettingChanged += MinimapSettings.SetIconScaleModifer;
+            MinimapSettings.SetIconScaleModifer(modSetting, modSetting.CurrentValue);
+
+            modSetting = cat.GetSetting("IconOpacity") as IGlobalValueSetting;
+            modSetting.OnSettingChanged += MinimapSettings.SetIconOpacity;
+            MinimapSettings.SetIconOpacity(modSetting, modSetting.CurrentValue);
+
+            modSetting = cat.GetSetting("TextureOpacity") as IGlobalValueSetting;
+            modSetting.OnSettingChanged += MinimapSettings.SetTextureOpacity;
+            MinimapSettings.SetTextureOpacity(modSetting, modSetting.CurrentValue);
+
+            //Minimap KeyBindings
+            cat = tab.GetCategory("KeyBindings");
+
+            IControlBindingSetting modBinding = cat.GetSetting("EnabledKeyBinding") as IControlBindingSetting;
+            modBinding.PlayerAction = QuartzInputManager.minimapActions.MinimapToggle;
+            modBinding.OnSettingChanged += ControlsSettingChanged;
+
+            modBinding = cat.GetSetting("ZoomInKeyBinding") as IControlBindingSetting;
+            modBinding.PlayerAction = QuartzInputManager.minimapActions.MinimapZoomIn;
+            modBinding.OnSettingChanged += ControlsSettingChanged;
+
+            modBinding = cat.GetSetting("ZoomOutKeyBinding") as IControlBindingSetting;
+            modBinding.PlayerAction = QuartzInputManager.minimapActions.MinimapZoomOut;
+            modBinding.OnSettingChanged += ControlsSettingChanged;
+
+            //Inventory Tab Settings
+            tab = modSettings.GetTab("Inventory");
+            cat = tab.GetCategory("KeyBindings");
+            modBinding = cat.GetSetting("LockedSlots") as IControlBindingSetting;
 
             modBinding.PlayerAction = QuartzInputManager.inventoryActions.LockSlot;
             modBinding.OnSettingChanged += ControlsSettingChanged;
+
+            //Dev Tools Tab
+            tab = modSettings.GetTab("Dev Tools");
+            cat = tab.GetCategory("Debug");
+            modSetting = cat.GetSetting("DebugMode") as IGlobalValueSetting;
+
+            modSetting.OnSettingChanged += DebuggingSettings.SetDebugMode;
+            DebuggingSettings.SetDebugMode(modSetting, modSetting.CurrentValue);
         }
 
         public void OnWorldSettingsLoaded(IModWorldSettings modSettings)
@@ -82,6 +140,14 @@ namespace Quartz
         private void ControlsSettingChanged(IGlobalModSetting setting, string newValue)
         {
             QuartzInputManager.SaveControls();
+        }
+
+        public static void SaveModSettings()
+        {
+            if(modGlobalSettings != null)
+            {
+                modGlobalSettings.SaveSettings();
+            }
         }
     }
 }

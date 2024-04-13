@@ -108,7 +108,7 @@ public class ConsoleCmdQuartz : ConsoleCmdAbstract
             return;
         }
 
-        bool enable = !Debugging.IsDebugEnabled;
+        bool enable = !DebuggingSettings.IsDebugEnabled;
         if(_params.Count == 2)
         {
             if (!ParseBool(_params[1], ref enable))
@@ -120,14 +120,14 @@ public class ConsoleCmdQuartz : ConsoleCmdAbstract
 
         if(enable)
         {
-            Debugging.EnableDebugging();
+            DebuggingSettings.EnableDebugging();
         }
         else
         {
-            Debugging.DisableDebugging();
+            DebuggingSettings.DisableDebugging();
         }
 
-        SdtdConsole.Instance.Output("Quartz Debug " + (Debugging.IsDebugEnabled ? "on":"off"));
+        SdtdConsole.Instance.Output("Quartz Debug " + (DebuggingSettings.IsDebugEnabled ? "on":"off"));
     }
 
     private bool ParseBool(string value, ref bool _return)

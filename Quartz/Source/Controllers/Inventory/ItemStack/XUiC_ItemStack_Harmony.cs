@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using HarmonyLib;
+using UnityEngine;
 
 [HarmonyPatch(typeof(XUiC_ItemStack))]
 public class XUiC_ItemStackPatch
@@ -24,6 +25,31 @@ public class XUiC_ItemStackPatch
     public static bool updateBorderColor(XUiC_ItemStack __instance)
     {
         return !(__instance is Quartz.XUiC_ItemStack);
+    }
+
+[HarmonyPostfix]
+    [HarmonyPatch("OnHovered")]
+    public static void OnHovered(XUiC_ItemStack __instance, bool _isOver, ref bool ___isOver, TweenScale ___tweenScale)
+    {
+        ___isOver = _isOver;
+        if (___tweenScale != null && ___tweenScale.from == Vector3.one)
+        {
+            ___tweenScale.to = Vector3.one * __instance.HoverIconGrow;
+        } 
+        else
+        {
+            ___tweenScale.from = Vector3.one * __instance.HoverIconGrow;
+        }
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("ResetTweenScale")]
+    public static void ResetTweenScale(XUiC_ItemStack __instance, TweenScale ___tweenScale)
+    {
+        if(___tweenScale != null && ___tweenScale.value != Vector3.one)
+        {
+            ___tweenScale.from = Vector3.one * __instance.HoverIconGrow;
+        }
     }
 
 }

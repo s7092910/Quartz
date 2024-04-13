@@ -22,13 +22,38 @@ limitations under the License.*/-->
 				<Property type="arrayValues" allowedValues="Low,High" />
 			  </Selector>
 			</Category>
-			<Category name="Debug" displayKey="quartzSettingDebug" tooltipKey="quartzSettingDebugTooltip">
-			  <Switch name="DebugMode" displayKey="quartzSettingDebugMode" tooltipKey="quartzSettingDebugModeTooltip" value="Disabled" defaultValue="Disabled" leftValue="Disabled" rightValue="Enabled" />
+		</Tab>
+		<Tab name="Minimap">
+			<Category name="Minimap" displayKey="quartzSettingMinimap" tooltipKey="quartzSettingMinimapTooltip">
+				<Switch name="MinimapShowOrHide" displayKey="quartzSettingMinimapShow" tooltipKey="quartzSettingMinimapShowTooltip" value="Show" defaultValue="Show" leftValue="Hide" rightValue="Show" />
+				<Switch name="IconsShowOrHide" displayKey="quartzSettingMinimapIconsShow" tooltipKey="quartzSettingMinimapIconsShowTooltip" value="Show" defaultValue="Show" leftValue="Hide" rightValue="Show" />
+				<Switch name="TextShowOrHide" displayKey="quartzSettingMinimapTextShow" tooltipKey="quartzSettingMinimapTextShowTooltip" value="Show" defaultValue="Show" leftValue="Hide" rightValue="Show" />
+				<Switch name="MinimapIconsShowOrHide" displayKey="quartzSettingMinimapIconsOnlyShow" tooltipKey="quartzSettingMinimapIconsOnlyShowTooltip" value="Show" defaultValue="Show" leftValue="Hide" rightValue="Show" />
+				<Switch name="RotateWithPlayer" displayKey="quartzSettingMinimapRotateWithPlayer" tooltipKey="quartzSettingMinimapRotateWithPlayerTooltip" value="Off" defaultValue="Off" leftValue="Off" rightValue="On" />
+				<Slider name="IconScale" displayKey="quartzSettingMinimapIconScale" tooltipKey="quartzSettingMinimapIconScaleTooltip" value="100" defaultValue="100">
+					<Property type="incrementalValuesInt" increment="1" minValue="50" maxValue="200"/>
+				</Slider>
+				<Slider name="IconOpacity" displayKey="quartzSettingMinimapIconOpacity" tooltipKey="quartzSettingMinimapIconOpacityTooltip" value="100" defaultValue="100">
+					<Property type="incrementalValuesInt" increment="1" minValue="0" maxValue="100"/>
+				</Slider>
+				<Slider name="TextureOpacity" displayKey="quartzSettingMinimapTextureOpacity" tooltipKey="quartzSettingMinimapTextureOpacityTooltip" value="100" defaultValue="100">
+					<Property type="incrementalValuesInt" increment="1" minValue="0" maxValue="100"/>
+				</Slider>
+			</Category>
+			<Category name="KeyBindings" displayKey="quartzSettingKeybinding" tooltipKey="quartzSettingInputMinimapKeybindingTooltip">
+				<Binding name="EnabledKeyBinding" displayKey="quartzSettingInputMinimapToggle" tooltipKey="quartzSettingInputMinimapToggleTooltip" />
+				<Binding name="ZoomInKeyBinding" displayKey="quartzSettingInputMinimapZoomIn" tooltipKey="quartzSettingInputMinimapZoomInTooltip" />
+				<Binding name="ZoomOutKeyBinding" displayKey="quartzSettingInputMinimapZoomOut" tooltipKey="quartzSettingInputMinimapZoomOutTooltip" />
 			</Category>
 		</Tab>
-		<Tab name="Controls">
-			<Category name="Inventory" displayKey="quartzSettingInventory" tooltipKey="quartzSettingInputInventoryTooltip">
+		<Tab name="Inventory">
+			<Category name="KeyBindings" displayKey="quartzSettingKeybinding" tooltipKey="quartzSettingInputInventoryKeybindingTooltip">
 				<Binding name="LockedSlots" displayKey="quartzSettingInputLockedSlots" tooltipKey="quartzSettingInputLockedSlotsTooltip" />
+			</Category>
+		</Tab>
+		<Tab name="Dev Tools">
+			<Category name="Debug" displayKey="quartzSettingDebug" tooltipKey="quartzSettingDebugTooltip">
+				<Switch name="DebugMode" displayKey="quartzSettingDebugMode" tooltipKey="quartzSettingDebugModeTooltip" value="Disabled" defaultValue="Disabled" leftValue="Disabled" rightValue="Enabled" />
 			</Category>
 		</Tab>
 	</Global>

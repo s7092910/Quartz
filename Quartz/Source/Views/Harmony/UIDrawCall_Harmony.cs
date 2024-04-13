@@ -24,7 +24,7 @@ namespace Quartz.Views
         [HarmonyPatch("CreateMaterial")]
         public static void CreateMaterial(UIDrawCall __instance, ref Shader ___mShader)
         {
-            if(__instance.baseMaterial != null && __instance.baseMaterial.name.Contains("Transparent FixableMask") && __instance.dynamicMaterial.shader != __instance.baseMaterial.shader)
+            if(__instance.baseMaterial != null && (__instance.baseMaterial.name.Contains("Transparent FixableMask") || __instance.baseMaterial.shader.name.Equals("Unlit/MaskedMinimap")) && __instance.dynamicMaterial.shader != __instance.baseMaterial.shader)
             {
                 __instance.dynamicMaterial.shader = __instance.baseMaterial.shader;
                 ___mShader = __instance.baseMaterial.shader;

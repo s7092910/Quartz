@@ -1,4 +1,4 @@
-﻿/*Copyright 2022 Christopher Beda
+﻿/*Copyright 2024 Christopher Beda
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,24 +12,27 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
-using GearsAPI.Settings.Global;
+using Quartz.Settings;
 
-namespace Quartz.Settings
+namespace Quartz.Map
 {
-    public class GlobalSettings
+    public static class NavObjectClassExtensions
     {
-        internal static UILabel.Crispness textCrispness = UILabel.Crispness.OnDesktop;
-
-        public static void SetTextResolution(IGlobalModSetting setting, string newValue)
+        public static bool IsOnMiniMap(this NavObjectClass instance, bool isActive)
         {
-            if(newValue == "High")
+            NavObjectMapSettings mapSettings = instance.GetMapSettings(isActive);
+
+            if(mapSettings == null)
             {
-                textCrispness = UILabel.Crispness.OnDesktop;
-            } 
-            else
-            {
-                textCrispness = UILabel.Crispness.Never;
+                return false;
             }
+
+            if(!mapSettings.Properties.Contains("minimap_only"))
+            {
+                return true;
+            }
+
+            return MinimapSettings.ShowMinimapOnlyIcons || !mapSettings.Properties.GetBool("minimap_only");
         }
     }
 }

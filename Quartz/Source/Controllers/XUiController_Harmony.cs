@@ -29,4 +29,13 @@ public static class XUiControllerPatch
         // its a stub so it has no initial content
         throw new NotImplementedException(TAG + "Update()");
     }
+
+    [HarmonyReversePatch]
+    [HarmonyPatch("OnHovered")]
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public static void OnHovered(XUiController instance, bool _isOver)
+    {
+        // its a stub so it has no initial content
+        throw new NotImplementedException(TAG + "OnHovered()");
+    }
 }
