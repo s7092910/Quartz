@@ -12,13 +12,27 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
+using Quartz.Settings;
+
 namespace Quartz.Map
 {
     public static class NavObjectClassExtensions
     {
         public static bool IsOnMiniMap(this NavObjectClass instance, bool isActive)
         {
-            return instance.GetMapSettings(isActive) != null;
+            NavObjectMapSettings mapSettings = instance.GetMapSettings(isActive);
+
+            if(mapSettings == null)
+            {
+                return false;
+            }
+
+            if(!mapSettings.Properties.Contains("minimap_only"))
+            {
+                return true;
+            }
+
+            return MinimapSettings.ShowMinimapOnlyIcons || !mapSettings.Properties.GetBool("minimap_only");
         }
     }
 }

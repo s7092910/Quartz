@@ -29,6 +29,8 @@ quartzSettingMinimapIconsShow,UI,Menu,x,,Show Minimap Icons
 quartzSettingMinimapIconsShowTooltip,UI,Menu,x,,Show or hide the minimap icons
 quartzSettingMinimapTextShow,UI,Menu,x,,Show Icon Names
 quartzSettingMinimapTextShowTooltip,UI,Menu,x,,Show or Hide the icons Names on the minimap
+quartzSettingMinimapIconsOnlyShow,UI,Menu,x,,Show Minimap Only Icons
+quartzSettingMinimapIconsOnlyShowTooltip,UI,Menu,x,,Show or Hide minimap only icons, these icons only show up on the minimap and not on the main map
 quartzSettingMinimapRotateWithPlayer,UI,Menu,x,,Rotate With View
 quartzSettingMinimapRotateWithPlayerTooltip,UI,Menu,x,,Rotates the minimap to follow the player's view, so the player is always facing to the top of the minimap
 quartzSettingMinimapIconScale,UI,Menu,x,,Minimap Icons Scale

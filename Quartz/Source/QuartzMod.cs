@@ -76,6 +76,10 @@ namespace Quartz
             modSetting.OnSettingChanged += MinimapSettings.SetIconsEnabled;
             MinimapSettings.SetIconsEnabled(modSetting, modSetting.CurrentValue);
 
+            modSetting = cat.GetSetting("MinimapIconsShowOrHide") as IGlobalValueSetting;
+            modSetting.OnSettingChanged += MinimapSettings.SetMinimapOnlyIconsEnabled;
+            MinimapSettings.SetMinimapOnlyIconsEnabled(modSetting, modSetting.CurrentValue);
+
             modSetting = cat.GetSetting("TextShowOrHide") as IGlobalValueSetting;
             modSetting.OnSettingChanged += MinimapSettings.SetTextEnabled;
             MinimapSettings.SetTextEnabled(modSetting, modSetting.CurrentValue);

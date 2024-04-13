@@ -47,7 +47,10 @@ namespace Quartz.Settings
 
         public static bool ShowIcons { get; set; } = true;
 
+        public static bool ShowMinimapOnlyIcons { get; set; } = true;
+
         public static bool ShowText { get; set; } = true;
+
 
         public static float IconScaleModifer { get; set; } = 1f;
 
@@ -69,6 +72,12 @@ namespace Quartz.Settings
         {
             ShowIcons = newValue == "Show";
         }
+
+        public static void SetMinimapOnlyIconsEnabled(IGlobalModSetting setting, string newValue)
+        {
+            ShowMinimapOnlyIcons = newValue == "Show";
+        }
+
 
         public static void SetTextEnabled(IGlobalModSetting setting, string newValue)
         {

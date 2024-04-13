@@ -28,6 +28,7 @@ limitations under the License.*/-->
 				<Switch name="MinimapShowOrHide" displayKey="quartzSettingMinimapShow" tooltipKey="quartzSettingMinimapShowTooltip" value="Show" defaultValue="Show" leftValue="Hide" rightValue="Show" />
 				<Switch name="IconsShowOrHide" displayKey="quartzSettingMinimapIconsShow" tooltipKey="quartzSettingMinimapIconsShowTooltip" value="Show" defaultValue="Show" leftValue="Hide" rightValue="Show" />
 				<Switch name="TextShowOrHide" displayKey="quartzSettingMinimapTextShow" tooltipKey="quartzSettingMinimapTextShowTooltip" value="Show" defaultValue="Show" leftValue="Hide" rightValue="Show" />
+				<Switch name="MinimapIconsShowOrHide" displayKey="quartzSettingMinimapIconsOnlyShow" tooltipKey="quartzSettingMinimapIconsOnlyShowTooltip" value="Show" defaultValue="Show" leftValue="Hide" rightValue="Show" />
 				<Switch name="RotateWithPlayer" displayKey="quartzSettingMinimapRotateWithPlayer" tooltipKey="quartzSettingMinimapRotateWithPlayerTooltip" value="Off" defaultValue="Off" leftValue="Off" rightValue="On" />
 				<Slider name="IconScale" displayKey="quartzSettingMinimapIconScale" tooltipKey="quartzSettingMinimapIconScaleTooltip" value="100" defaultValue="100">
 					<Property type="incrementalValuesInt" increment="1" minValue="50" maxValue="200"/>
