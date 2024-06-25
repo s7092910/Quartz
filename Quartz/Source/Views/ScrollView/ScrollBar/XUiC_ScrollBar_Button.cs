@@ -21,8 +21,6 @@ namespace Quartz
     {
         private const string TAG = "ScrollBar Button";
 
-        private AudioClip xuiSound;
-
         public XUiC_ScrollBar_Button(string _id) : base(_id)
         {
         }
@@ -71,7 +69,7 @@ namespace Quartz
             return false;
         }
 
-        private void OnPress(GameObject go, bool pressed)
+        private new void OnPress(GameObject go, bool pressed)
         {
             if (enabled && pressed)
             {

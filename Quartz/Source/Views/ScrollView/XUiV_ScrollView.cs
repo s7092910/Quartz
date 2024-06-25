@@ -200,7 +200,7 @@ namespace Quartz.Views
             }
         }
 
-        protected override void CreateComponents(GameObject go)
+        public override void CreateComponents(GameObject go)
         {
             go.AddComponent<UIPanel>();
             go.AddComponent<UIScrollView>();
@@ -212,7 +212,7 @@ namespace Quartz.Views
             opened = true;
         }
 
-        public void OnScroll(GameObject go, float delta)
+        public new void OnScroll(GameObject go, float delta)
         {
             uiScrollView.Scroll(delta);
             controller.Scrolled(delta);

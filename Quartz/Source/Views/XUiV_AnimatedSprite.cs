@@ -79,7 +79,7 @@ namespace Quartz
         {
         }
 
-        protected override void CreateComponents(GameObject go)
+        public override void CreateComponents(GameObject go)
         {
             base.CreateComponents(go);
             go.AddComponent<UISpriteAnimation>();

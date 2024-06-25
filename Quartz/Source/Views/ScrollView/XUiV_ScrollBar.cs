@@ -263,7 +263,7 @@ namespace Quartz.Views
         }
 
 
-        protected override void CreateComponents(GameObject _go)
+        public override void CreateComponents(GameObject _go)
         {
             _go.AddComponent<UIScrollBar>();
             _go.AddComponent<UIPanel>();

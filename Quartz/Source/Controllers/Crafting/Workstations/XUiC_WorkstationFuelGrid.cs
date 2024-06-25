@@ -241,7 +241,7 @@ namespace Quartz
             return false;
         }
 
-        private void CycleStacks()
+        private new void CycleStacks()
         {
             for (int i = itemControllers.Length - 1; i > 0; i--)
             {

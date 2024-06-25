@@ -20,12 +20,13 @@ namespace Quartz.Map
     {
         public static Dictionary<int, uint[]> mapDataCache = new Dictionary<int, uint[]>();
 
-        public static uint[] GetPackedMapColors(this MapChunkDatabase database, int x, int y)
+        public static uint[] GetPackedMapColors(this IMapChunkDatabase database, int x, int y)
         {
-            int key = ToChunkKey(x, y);
+            int key = IMapChunkDatabase.ToChunkDBKey(x, y);
             if (!mapDataCache.TryGetValue(key, out uint[] cachedChunk))
             {
-                ushort[] mapColors = database.GetDS(key);
+                long mapKey = WorldChunkCache.MakeChunkKey(x, y);
+                ushort[] mapColors = database.GetMapColors(mapKey);
                 if (mapColors == null)
                 {
                     return null;
@@ -54,11 +55,6 @@ namespace Quartz.Map
         public static uint PackShorts(ushort first, ushort second)
         {
             return ((uint)first << 16) + second;
-        }
-
-        public static int ToChunkKey(int x, int y)
-        {
-            return ((y & 65535) << 16) | (x & 65535);
         }
     }
 }

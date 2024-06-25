@@ -42,7 +42,7 @@ namespace QuartzOverhaul
 
         }
 
-        protected override sealed void OnDoubleClicked(int mouseButton)
+        public override sealed void OnDoubleClicked(int mouseButton)
         {
             base.OnDoubleClicked(mouseButton);
             DispatchOnClicked(this, mouseButton);
@@ -53,7 +53,7 @@ namespace QuartzOverhaul
             return false;
         }
 
-        protected override sealed void OnDragged(EDragType dragType, Vector2 mousePositionDelta)
+        public override sealed void OnDragged(EDragType dragType, Vector2 mousePositionDelta)
         {
             base.OnDragged(dragType, mousePositionDelta);
             DispatchOnDragged(this, dragType, mousePositionDelta);
@@ -64,7 +64,7 @@ namespace QuartzOverhaul
             return false;
         }
 
-        protected override sealed void OnHovered(bool hovered)
+        public override sealed void OnHovered(bool hovered)
         {
             base.OnHovered(hovered);
             DispatchOnHovered(this, hovered);
@@ -75,7 +75,7 @@ namespace QuartzOverhaul
             return false;
         }
 
-        protected override sealed void OnPressed(int mouseButton)
+        public override sealed void OnPressed(int mouseButton)
         {
             base.OnPressed(mouseButton);
             DispatchOnPressed(this, mouseButton);
@@ -86,7 +86,7 @@ namespace QuartzOverhaul
             return false;
         }
 
-        protected override sealed void OnScrolled(float delta)
+        public override sealed void OnScrolled(float delta)
         {
             base.OnScrolled(delta);
             DispatchOnScrolled(this, delta);
@@ -97,7 +97,7 @@ namespace QuartzOverhaul
             return false;
         }
 
-        protected override sealed void OnSelected(bool selected)
+        public override sealed void OnSelected(bool selected)
         {
             base.OnSelected(selected);
             DispatchOnSelected(this, selected);
