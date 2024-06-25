@@ -22,17 +22,17 @@ public class ChunkCluster_Harmony
 
     [HarmonyPostfix]
     [HarmonyPatch("SetBlock")]
-    [HarmonyPatch(new Type[] { typeof(Vector3i), typeof(bool), typeof(BlockValue), typeof(bool), typeof(sbyte), typeof(bool), typeof(bool), typeof(bool), typeof(bool) })]
-    public static void SetBlock(Vector3i _pos, bool _isChangeBV, BlockValue _bv, bool _isChangeDensity, sbyte _density, bool _isNotify, bool _isUpdateLight, bool _isForceDensity, bool _wasChild, World ___world)
+    [HarmonyPatch(new Type[] { typeof(Vector3i), typeof(bool), typeof(BlockValue), typeof(bool), typeof(sbyte), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(int) })]
+    public static void SetBlock(ChunkCluster __instance, Vector3i _pos, bool _isChangeBV, BlockValue _bv, bool _isChangeDensity, sbyte _density, bool _isNotify, bool _isUpdateLight, bool _isForceDensity, bool _wasChild, int _changedByEntityId)
     {
         int x = World.toChunkXZ(_pos.x);
         int z = World.toChunkXZ(_pos.z);
 
-        Chunk chunk = (Chunk)___world.GetChunkSync(x, z);
+        Chunk chunk = __instance.GetChunkSync(x, z);
 
         if (chunk != null && !chunk.NeedsDecoration)
         {
-            int key = MapColorDatabase.ToChunkKey(x , z);
+            int key = IMapChunkDatabase.ToChunkDBKey(x , z);
             MapColorDatabase.AddPackedMapColors(key, chunk.GetMapColors());
         }
     }

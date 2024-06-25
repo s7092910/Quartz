@@ -170,7 +170,7 @@ namespace Quartz
             return count;
         }
 
-        protected override void SetStacks(global::ItemStack[] stackList)
+        public override void SetStacks(global::ItemStack[] stackList)
         {
             base.SetStacks(stackList);
             FilterFromSearch(searchResult);

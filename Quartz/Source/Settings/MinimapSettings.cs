@@ -51,7 +51,6 @@ namespace Quartz.Settings
 
         public static bool ShowText { get; set; } = true;
 
-
         public static float IconScaleModifer { get; set; } = 1f;
 
         public static float IconOpacity {  get; set; } = 1f;

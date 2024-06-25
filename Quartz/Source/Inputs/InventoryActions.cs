@@ -38,17 +38,17 @@ namespace Quartz.Inputs
             playerActionsLocal.GUIActions.AddBindingConflictWithActionSet(this);
         }
 
-        protected override void CreateActions()
+        public override void CreateActions()
         {
             LockSlot = CreatePlayerAction("Inventory Lock Slot");
             LockSlot.UserData = new PlayerActionData.ActionUserData("quartzSettingInputLockedSlots", "quartzSettingInputLockedSlotsTooltip", PlayerActionData.GroupUI, PlayerActionData.EAppliesToInputType.KbdMouseOnly, true);
         }
 
-        protected override void CreateDefaultJoystickBindings()
+        public override void CreateDefaultJoystickBindings()
         {
         }
 
-        protected override void CreateDefaultKeyboardBindings()
+        public override void CreateDefaultKeyboardBindings()
         {
             LockSlot.AddDefaultBinding(new Key[]
             {

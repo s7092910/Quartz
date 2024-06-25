@@ -24,10 +24,7 @@ namespace Quartz
         private bool matchesSearch;
         private bool isSearchActive;
 
-        protected bool isOver;
-
         protected Color32 lockedSlotColor = new Color32(96, 96, 96, byte.MaxValue);
-        protected Color32 selectColor = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
         protected Color32 searchColor = new Color32(96, 96, 96, byte.MaxValue);
         protected Color32 noMatchTintColor = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
 
@@ -38,8 +35,6 @@ namespace Quartz
         protected new Color32 selectionBorderColor;
 
         private readonly CachedStringFormatterXuiRgbaColor colorFormatter = new CachedStringFormatterXuiRgbaColor();
-
-        private readonly CachedStringFormatter<int> itemcountFormatter = new CachedStringFormatter<int>((int i) => i.ToString());
 
         public bool IsALockedSlot
         {
@@ -199,18 +194,18 @@ namespace Quartz
             }
         }
 
-        protected override void OnHovered(bool isOver)
+        public override void OnHovered(bool isOver)
         {
             this.isOver = isOver;
             base.OnHovered(isOver);
         }
 
-        protected override void SelectedChanged(bool _isSelected)
+        public override void SelectedChanged(bool _isSelected)
         {
             
         }
 
-        protected virtual void updateBorderColor()
+        protected new virtual void updateBorderColor()
         {
             if (IsDragAndDrop)
             {

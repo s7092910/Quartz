@@ -404,7 +404,7 @@ namespace Quartz
 
         private void UpdateMapSectionCompute(int mapStartX, int mapStartY, int mapEndX, int mapEndY, int drawnMapStartX, int drawnMapStartY, int drawnMapEndX, int drawnMapEndY)
         {
-            MapChunkDatabase mapDatabase = localPlayer.ChunkObserver.mapDatabase;
+            IMapChunkDatabase mapDatabase = localPlayer.ChunkObserver.mapDatabase;
             int num = mapStartY;
             int y = drawnMapStartY;
             while (num < mapEndY)

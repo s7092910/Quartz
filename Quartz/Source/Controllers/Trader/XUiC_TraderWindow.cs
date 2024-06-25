@@ -16,8 +16,6 @@ namespace Quartz
 {
     public class XUiC_TraderWindow : global::XUiC_TraderWindow
     {
-        private XUiC_CategoryList categoryList;
-
         private string categoryDisplayName = "";
         private string categorySpriteName = "";
 
@@ -25,8 +23,6 @@ namespace Quartz
         private string secretStash = Localization.Get("xuiSecretStash");
         private string emptyVendingMachine = Localization.Get("xuiEmptyVendingMachine");
         private string ownedVendingMachine = Localization.Get("xuiVendingWithOwner");
-
-        private bool isSecretStash;
 
         public override void Init()
         {
@@ -54,7 +50,7 @@ namespace Quartz
             }
         }
 
-        private void HandleCategoryChanged(XUiC_CategoryEntry categoryEntry)
+        public new void HandleCategoryChanged(XUiC_CategoryEntry categoryEntry)
         { 
             string text = categoryEntry.CategoryName;
             if (text == "SECRET STASH")
@@ -81,7 +77,7 @@ namespace Quartz
                 {
                     if (tileEntityVendingMachine.GetOwner() != null)
                     {
-                        string playerName = GameManager.Instance.persistentPlayers.GetPlayerData(tileEntityVendingMachine.GetOwner()).PlayerName;
+                        string playerName = GameManager.Instance.persistentPlayers.GetPlayerData(tileEntityVendingMachine.GetOwner()).PlayerName.DisplayName;
                         return string.Format(ownedVendingMachine, playerName);
                     }
                     else

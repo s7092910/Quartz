@@ -13,6 +13,8 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using GearsAPI.Settings.Global;
+using Quartz.Debugging;
+using UnityEngine;
 
 namespace Quartz.Settings
 {
@@ -55,7 +57,7 @@ namespace Quartz.Settings
 
             IsDebugEnabled = true;
 
-            LocalPlayerUI.primaryUI.uiCamera.debug = true;
+            QuartzDebug.DebugRaycast = true;
             Logging.enabled = true;
         }
 
@@ -68,8 +70,50 @@ namespace Quartz.Settings
 
             IsDebugEnabled = false;
 
-            LocalPlayerUI.primaryUI.uiCamera.debug = false;
+            QuartzDebug.DebugRaycast = true;
             Logging.enabled = false;
+        }
+
+        public static void SetFontSize(int fontSize)
+        {
+            QuartzDebug.FontSize = fontSize;
+        }
+
+        public static void SetFontColor(string fontColor)
+        {
+            Color color = Color.white;
+            switch (fontColor.ToLower()) 
+            {
+                case "red":
+                    color = Color.red;
+                    break;
+                case "green":
+                    color = Color.green;
+                    break;
+                case "blue":
+                    color = Color.blue;
+                    break;
+                case "white":
+                    color = Color.white;
+                    break;
+                case "black":
+                    color = Color.black;
+                    break;
+                case "yellow":
+                    color = Color.yellow;
+                    break;
+                case "cyan":
+                    color = Color.cyan;
+                    break;
+                case "magenta":
+                    color = Color.blue;
+                    break;
+                case "gray":
+                case "grey":
+                    color = Color.grey;
+                    break;
+            }
+            QuartzDebug.FontColor = color;
         }
     }
 }

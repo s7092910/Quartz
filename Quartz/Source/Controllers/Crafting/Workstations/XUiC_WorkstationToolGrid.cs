@@ -18,8 +18,6 @@ namespace Quartz
 {
     public class XUiC_WorkstationToolGrid : global::XUiC_WorkstationToolGrid
     {
-        protected string requiredTools;
-
         private XUiC_WorkstationWindowGroup workstationGroup;
 
         public override void Init()

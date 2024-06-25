@@ -207,7 +207,7 @@ namespace Quartz
         {
         }
 
-        protected override void CreateComponents(GameObject _go)
+        public override void CreateComponents(GameObject _go)
         {
             _go.AddComponent<UIMaskedTexture>();
         }

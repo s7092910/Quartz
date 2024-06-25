@@ -18,8 +18,6 @@ namespace Quartz
 {
     public class XUiC_RecipeEntry : global::XUiC_RecipeEntry
     {
-        private XUiV_Sprite background;
-
         private Color32 selectedColor = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
         private Color32 nonSelectedColor = new Color32(64, 64, 64, byte.MaxValue);
 
@@ -69,7 +67,7 @@ namespace Quartz
            
         }
 
-        protected override void SelectedChanged(bool isSelected)
+        public override void SelectedChanged(bool isSelected)
         {
             if (background != null)
             {

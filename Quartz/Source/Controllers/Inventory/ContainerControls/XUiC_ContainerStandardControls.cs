@@ -238,9 +238,7 @@ namespace Quartz
                 XUiM_PlayerInventory xuiM_PlayerInventory = dstInventory as XUiM_PlayerInventory;
                 if (xuiM_PlayerInventory != null)
                 {
-                    ValueTuple<bool, bool> valueTuple = xuiM_PlayerInventory.AddItemsUsingPreferenceTracker(srcGrid, preferenceTracker);
-                    item = valueTuple.Item1;
-                    item2 = valueTuple.Item2;
+                    item2 = xuiM_PlayerInventory.AddItemsUsingPreferenceTracker(srcGrid, preferenceTracker);
                 }
             }
 

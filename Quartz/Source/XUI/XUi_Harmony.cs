@@ -47,8 +47,8 @@ public static class XUiPatch
     [HarmonyPatch("LoadAsync")]
     public static IEnumerator LoadAsync(IEnumerator __result, XUi __instance, List<string> windowGroupSubset = null)
     {
-        Dictionary<string, XUiFromXml.StyleData> styles = AccessTools.Field(typeof(XUiFromXml), "styles").GetValue(null) as Dictionary<string, XUiFromXml.StyleData>;
-        yield return FontManager.LoadFonts(__instance, styles);
+        Dictionary<string, XUiFromXml.StyleData> styles = XUiFromXml.styles;
+        yield return FontManager.LoadFonts(__instance);
         yield return __result;
         yield break;
     }

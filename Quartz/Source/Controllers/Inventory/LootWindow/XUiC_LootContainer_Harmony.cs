@@ -54,7 +54,7 @@ public class XUiC_LootContainerPatch
 
     [HarmonyPostfix]
     [HarmonyPatch("OnTileEntityChanged")]
-    public static void OnTileEntityChanged(XUiC_LootContainer __instance, TileEntity _te, int _dataObject)
+    public static void OnTileEntityChanged(XUiC_LootContainer __instance, TileEntity _te)
     {
         if (__instance is Quartz.XUiC_LootContainer instance)
         {

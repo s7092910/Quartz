@@ -57,12 +57,16 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="NGUI">
+      <HintPath>..\..\7DaysToDie_Data\Managed\NGUI.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="Unity.Addressables, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="UnityEngine">
       <HintPath>$(PATH_7D2D_MANAGED)\UnityEngine.dll</HintPath>
       <Private>False</Private>
@@ -79,6 +83,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(PATH_7D2D_MANAGED)\UnityEngine.ImageConversionModule.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>$(PATH_7D2D_MANAGED)\UnityEngine.InputLegacyModule.dll</HintPath>
@@ -170,6 +178,7 @@
     <Compile Include="Source\Controllers\XUiC_Spinner.cs" />
     <Compile Include="Source\Controllers\XUiC_RandomVideo.cs" />
     <Compile Include="Source\Controllers\XUiC_CVarTimer.cs" />
+    <Compile Include="Source\Debugging\QuartzDebug.cs" />
     <Compile Include="Source\Inputs\MinimapActions.cs" />
     <Compile Include="Source\Models\UIDisplay\DisplayInfoEntry.cs" />
     <Compile Include="Source\Models\UIDisplay\UIDisplayInfoFromXml_Harmony.cs" />
