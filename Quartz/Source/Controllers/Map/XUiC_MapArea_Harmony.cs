@@ -23,23 +23,22 @@ public class XUiC_MapAreaPatch
 
     [HarmonyPrefix]
     [HarmonyPatch("initMap")]
-    private static bool initMap(XUiC_MapArea __instance, ref EntityPlayer ___localPlayer, ref bool ___bMapInitialized, 
-        ref Vector2i ___cTexMiddle, XUiV_Texture ___xuiTexture, Texture2D ___mapTexture)
+    private static bool initMap(XUiC_MapArea __instance)
     {
         if (__instance.xui.playerUI.entityPlayer == null)
         {
             return false;
         }
-        ___localPlayer = __instance.xui.playerUI.entityPlayer;
-        ___bMapInitialized = true;
-        ___xuiTexture.Material.SetTexture("_MainTex", ___mapTexture);
-        ___cTexMiddle = ___xuiTexture.Size / 2;
+        __instance.localPlayer = __instance.xui.playerUI.entityPlayer;
+        __instance.bMapInitialized = true;
+        __instance.xuiTexture.Texture = __instance.mapTexture;
+        __instance.cTexMiddle = __instance.xuiTexture.Size / 2;
         return false;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch("OnPreRender")]
-    private static bool OnPreRender(LocalPlayerCamera _localPlayerCamera, XUiV_Texture ___xuiTexture, float ___mapScale, 
+    private static bool OnPreRender(LocalPlayerCamera _localPlayerCamera, XUiV_Texture ___xuiTexture, float ___mapScale,
         Vector2 ___mapBGPos, Vector2 ___mapPos)
     {
         float xScale = ___xuiTexture.Size.x / 712f;
@@ -73,7 +72,7 @@ public class XUiC_MapAreaPatch
 
     [HarmonyPrefix]
     [HarmonyPatch("onMapScrolled")]
-    private static bool onMapScrolled(XUiController _sender, float _delta, XUiC_MapArea __instance, XUiV_Texture ___xuiTexture, 
+    private static bool onMapScrolled(XUiController _sender, float _delta, XUiC_MapArea __instance, XUiV_Texture ___xuiTexture,
         ref float ___zoomScale, ref float ___targetZoomScale)
     {
         float x = ___xuiTexture.Size.x / 712f;
@@ -107,7 +106,7 @@ public class XUiC_MapAreaPatch
     private static bool mousePosToWindowPos(ref Vector3 __result, XUiC_MapArea __instance, XUiV_Texture ___xuiTexture, Vector3 _mousePos)
     {
         int x = ___xuiTexture.Position.x;
-        float  y = ___xuiTexture.Position.y;
+        float y = ___xuiTexture.Position.y;
         Vector2i mouseXUIPosition = __instance.xui.GetMouseXUIPosition();
         Vector3 windowPos = new Vector3(mouseXUIPosition.x, mouseXUIPosition.y, 0f);
         windowPos.x += 217f - x;
