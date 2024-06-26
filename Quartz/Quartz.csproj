@@ -134,7 +134,7 @@
     <Compile Include="Source\Controllers\Inventory\ItemStack\XUiC_RequiredItemStack_Harmony.cs" />
     <Compile Include="Source\Controllers\Map\MapColorDatabase\ChunkCluster_Harmony.cs" />
     <Compile Include="Source\Controllers\Map\MapColorDatabase\MapColorDatabase.cs" />
-    <Compile Include="Source\Controllers\Map\MapColorDatabase\MapChunkDatabase_Harmony.cs" />
+    <Compile Include="Source\Controllers\Map\MapColorDatabase\IMapChunkDatabase_Harmony.cs" />
     <Compile Include="Source\Controllers\Map\NavObject\NavObjectClassExtensions.cs" />
     <Compile Include="Source\Controllers\Map\NavObject\NavObjectClass_Harmony.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MiniMap.cs" />
