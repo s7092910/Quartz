@@ -84,22 +84,6 @@ namespace Quartz
             }
         }
 
-        protected new Color32 SelectionBorderColor
-        {
-            get
-            {
-                return selectionBorderColor;
-            }
-            set
-            {
-                if (!selectionBorderColor.ColorEquals(value))
-                {
-                    selectionBorderColor = value;
-                    IsDirty = true;
-                }
-            }
-        }
-
         public override string ItemIconColor
         {
             get

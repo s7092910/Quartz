@@ -37,10 +37,6 @@ namespace Quartz
 
 		private string searchResult;
 
-		private Traverse isClosingTraverse;
-		private Traverse wasReleasedTraverse;
-		private Traverse activeKeyDownTraverse;
-
 		public override void Init()
 		{
 			base.Init();
@@ -71,10 +67,6 @@ namespace Quartz
                     itemStackController.OnPress += OnItemStackPress;
                 }
             }
-
-            isClosingTraverse = Traverse.Create(this).Field("isClosing");
-            wasReleasedTraverse = Traverse.Create(this).Field("wasReleased");
-            activeKeyDownTraverse = Traverse.Create(this).Field("activeKeyDown");
 		}
 
 		public override void Update(float _dt)
@@ -99,25 +91,25 @@ namespace Quartz
 
 			if (!xui.playerUI.playerInput.PermanentActions.Activate.IsPressed)
 			{
-				wasReleasedTraverse.SetValue(true);
+                wasReleased = true;
 			}
 
-			if (wasReleasedTraverse.GetValue<bool>())
+			if (wasReleased)
 			{
 				if (xui.playerUI.playerInput.PermanentActions.Activate.IsPressed)
 				{
-					activeKeyDownTraverse.SetValue(true);
+					activeKeyDown = true;
 				}
 
-				if (xui.playerUI.playerInput.PermanentActions.Activate.WasReleased && activeKeyDownTraverse.GetValue<bool>() && !xui.playerUI.windowManager.IsInputActive())
+				if (xui.playerUI.playerInput.PermanentActions.Activate.WasReleased && activeKeyDown && !xui.playerUI.windowManager.IsInputActive())
 				{
-					activeKeyDownTraverse.SetValue(false);
+					activeKeyDown = false;
 					OnClose();
 					xui.playerUI.windowManager.CloseAllOpenWindows();
 				}
 			}
 
-			if (!isClosingTraverse.GetValue<bool>() && ViewComponent != null && ViewComponent.IsVisible && items != null && !xui.playerUI.windowManager.IsInputActive()
+			if (!isClosing && ViewComponent != null && ViewComponent.IsVisible && items != null && !xui.playerUI.windowManager.IsInputActive()
 				&& (xui.playerUI.playerInput.GUIActions.LeftStick.WasPressed || xui.playerUI.playerInput.PermanentActions.Reload.WasPressed))
 			{
                 if (standardControls is XUiC_ContainerStandardControls controls)
