@@ -12,8 +12,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
-using HarmonyLib;
-
 namespace Quartz
 {
     public class XUiC_WorkstationFuelGrid : global::XUiC_WorkstationFuelGrid
@@ -23,17 +21,13 @@ namespace Quartz
         protected string requiredFuels;
 
         private XUiC_WorkstationWindowGroup workstationGroup;
-        private Traverse isOnTraverse;
 
         private bool updateBackend = false;
-
-        protected bool IsOn { get => isOnTraverse.GetValue<bool>(); }
 
         public override void Init()
         {
             base.Init();
             workstationGroup = GetParentByType<XUiC_WorkstationWindowGroup>();
-            isOnTraverse = Traverse.Create(this).Field("isOn");
         }
 
         public override void Update(float _dt)
@@ -61,14 +55,14 @@ namespace Quartz
                 }
             }
 
-            if (IsOn && (!HasRequirement(null) || workstationData.GetIsBesideWater()))
+            if (isOn && (!HasRequirement(null) || workstationData.GetIsBesideWater()))
             {
                 TurnOff();
                 XUiC_WorkstationFuelGridPatch.onFuelItemsChanged(this);
                 return;
             }
 
-            if (IsOn)
+            if (isOn)
             {
                 bool foundTopItemStack = false;
                 for (int i = 0; i < itemControllers.Length; i++)

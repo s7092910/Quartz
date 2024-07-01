@@ -12,8 +12,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
-using HarmonyLib;
-
 namespace Quartz
 {
     public class XUiC_WorkstationToolGrid : global::XUiC_WorkstationToolGrid
@@ -23,7 +21,7 @@ namespace Quartz
         public override void Init()
         {
             base.Init();
-            AccessTools.Field(typeof(global::XUiC_WorkstationToolGrid), "requiredToolsOnly").SetValue(this, true);
+            requiredToolsOnly = true;
             workstationGroup = GetParentByType<XUiC_WorkstationWindowGroup>();
         }
 
