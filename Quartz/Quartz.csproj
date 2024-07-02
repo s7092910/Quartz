@@ -169,7 +169,6 @@
     <Compile Include="Source\Controllers\Inventory\SortUtil.cs" />
     <Compile Include="Source\Controllers\Inventory\VehicleStorageWindow\XUiC_VehicleContainer.cs" />
     <Compile Include="Source\Controllers\Inventory\VehicleStorageWindow\XUiC_VehicleContainer_Harmony.cs" />
-    <Compile Include="Source\Controllers\MainMenu\MainMenuMusic_Harmony.cs" />
     <Compile Include="Source\Controllers\XUiC_RandomTexture.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MapInvitesListEntry.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MapWaypointListEntry.cs" />
