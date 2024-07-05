@@ -224,6 +224,9 @@
     <Folder Include="Source\Overhaul\Models\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="News\clquartz.png" />
+    <Content Include="News\clquartz.xml" />
+    <Content Include="News\noquartz.xml" />
     <Content Include="Quartz Mod Folder\Config\blocks.xml" />
     <Content Include="Quartz Mod Folder\Config\Localization.txt" />
     <Content Include="Quartz Mod Folder\UIAtlases\UIAtlas\quartz_scrollbar_background.png" />
