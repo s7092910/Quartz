@@ -98,10 +98,15 @@ namespace Quartz
             
             if (mapTexture == null)
             {
-                mapTexture = new Texture2D(MapDrawnSize, MapDrawnSize, TextureFormat.RGB565, false);
-                mapTexture.name = "Minimap";
-                mapTexture.wrapMode = TextureWrapMode.Clamp;
-                mapTexture.Apply(false, false);
+                mapTexture = new Texture2D(MapDrawnSize, MapDrawnSize, TextureFormat.RGB565, false)
+                {
+                    name = "Minimap",
+                    wrapMode = TextureWrapMode.Clamp,
+                    // FilterMode.Point makes the zoom in blocky
+                    // But it would probably a tad bit faster
+                    filterMode = FilterMode.Trilinear
+                };
+                // mapTexture.Apply(false, false);
                 // mapTexture.enableRandomWrite = true;
                 // mapTexture.Create();
             }
@@ -379,18 +384,21 @@ namespace Quartz
         int tickChunkEnd = 64;
         int tickMapStartX = 0;
         int tickMapStartZ = 0;
+        Vector2 tickMiddlePosChunks;
 
         private void TickMapUpdate()
         {
             Vector3 worldPos = localPlayer.GetPosition();
-            mapMiddlePosChunks = new Vector2(
+
+            var middlePosChunks = new Vector2(
                 World.toChunkXZ((int)worldPos.x - 1024) * 16 + 1024,
                 World.toChunkXZ((int)worldPos.z - 1024) * 16 + 1024);
 
             if (tickRunning == false)
             {
-                tickMapStartX = (int)mapMiddlePosChunks.x - 512;
-                tickMapStartZ = (int)mapMiddlePosChunks.y - 512;
+                tickMiddlePosChunks = middlePosChunks;
+                tickMapStartX = (int)tickMiddlePosChunks.x - 512;
+                tickMapStartZ = (int)tickMiddlePosChunks.y - 512;
                 tickChunkX = World.toChunkXZ(tickMapStartX);
                 tickChunkZ = World.toChunkXZ(tickMapStartZ);
                 tickChunkStart = 32 - mapUpdateSizeRadius / 16;
@@ -400,14 +408,11 @@ namespace Quartz
                 tickStateX = tickChunkStart;
                 tickStateZ = tickChunkStart;
                 tickRunning = true;
-                mapMiddlePosPixel.x = worldPos.x;
-                mapMiddlePosPixel.y = worldPos.z;
-                PositionMap();
-
             }
             else if (tickFinished)
             {
                 UpdateMapTextureFromRawArray();
+                mapMiddlePosChunks = tickMiddlePosChunks;
                 tickFinished = false;
                 tickRunning = false;
             }
@@ -436,9 +441,9 @@ namespace Quartz
         }
 
 
+        // Not used anymore really!
         private void UpdateMapSectionCompute()
         {
-
             // mapUpdateSizeRadius = 512;
 
             // The full potential area of chunks to render
@@ -469,6 +474,7 @@ namespace Quartz
 
         private void UpdateFullMap()
         {
+            return; // Not needed really? All lazy!?
             Vector3 worldPos = localPlayer.GetPosition();
             int worldPosX = (int)worldPos.x;
             int worldPosY = (int)worldPos.z;
@@ -786,6 +792,7 @@ namespace Quartz
 
         public void PositionMapAtPlayer()
         {
+            // return;
             Vector3 worldPos = localPlayer.GetPosition();
             mapMiddlePosPixel.x = worldPos.x;
             mapMiddlePosPixel.y = worldPos.z;
