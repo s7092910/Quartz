@@ -19,6 +19,7 @@ using Quartz.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Collections;
 using UnityEngine;
 
 namespace Quartz
@@ -79,7 +80,6 @@ namespace Quartz
         private HashSetLong navObjectsOnMapAlive = new HashSetLong();
 
         private uint[] emptyChunk = new uint[128];
-        private ushort[] mapColorsShort;
 
         private int kernelIndex;
 
@@ -98,7 +98,7 @@ namespace Quartz
             
             if (mapTexture == null)
             {
-                mapTexture = new Texture2D(MapDrawnSize, MapDrawnSize, TextureFormat.RGB565, false)
+                mapTexture = new Texture2D(MapDrawnSize, MapDrawnSize, TextureFormat.RGB565, false, false)
                 {
                     name = "Minimap",
                     wrapMode = TextureWrapMode.Clamp,
@@ -106,14 +106,10 @@ namespace Quartz
                     // But it would probably a tad bit faster
                     filterMode = FilterMode.Trilinear
                 };
+                //mapTexture.space
                 // mapTexture.Apply(false, false);
                 // mapTexture.enableRandomWrite = true;
                 // mapTexture.Create();
-            }
-
-            if (mapColorsShort == null)
-            {
-                mapColorsShort = new ushort[MapDrawnSize * MapDrawnSize];
             }
 
             XUiController childById = GetChildById("mapViewTexture");
@@ -265,7 +261,7 @@ namespace Quartz
                 Log.Out("Got a new max map tick time => {0}",
                     stopwatch.ElapsedMicroseconds * 0.001d);
             }
-            else if (stopwatch.ElapsedMicroseconds > 175d)
+            else if (stopwatch.ElapsedMicroseconds > 50d)
             {
                 Log.Out("Frame with long tick time => {0}",
                     stopwatch.ElapsedMicroseconds * 0.001d);
@@ -521,6 +517,7 @@ namespace Quartz
         {
             long key = WorldChunkCache.MakeChunkKey(sx + nx, sz + nz);
             ushort[] mapColors = mapDatabase.GetMapColors(key);
+            NativeArray<ushort> rawTextureData = mapTexture.GetRawTextureData<ushort>();
             if (mapColors != null)
             {
                 for (int u = 0; u < 16; u++)
@@ -529,8 +526,8 @@ namespace Quartz
                     // Buffer.BlockCopy(mapColors, u * 16 * 2, mapColorsShort, (nz * 16 + u) * 1024 * 2 + nx * 16 * 2, 32);
                     for (int v = 0; v < 16; v++)
                     {
-                        mapColorsShort[(nz * 16 + u) * 1024 + nx * 16 + v]
-                              = FixColor(mapColors[u * 16 + v]);
+                        rawTextureData[(nz * 16 + u) * 1024 + nx * 16 + v]
+                            = FixColor(mapColors[u * 16 + v]);
                              // = mapColors[u * 16 + v]; // Isn't RGB565!?
                              // = SwapBytes(mapColors[u * 16 + v]);
                              // = 0b1111_1000_0000_0000;
@@ -548,7 +545,7 @@ namespace Quartz
                         // Reset colors for chunks not yet discovered
                         // Note: maybe it's faster to reset all at once?
                         // E.g. when we start the update ticker
-                        mapColorsShort[(nz * 16 + u) * 1024 + nx * 16 + v]
+                        rawTextureData[(nz * 16 + u) * 1024 + nx * 16 + v]
                             = 0b0000_0000_0000_0000;
                     }
                 }
@@ -558,7 +555,12 @@ namespace Quartz
 
         private void UpdateMapTextureFromRawArray()
         {
-            mapTexture.SetPixelData(mapColorsShort, 0, 0);
+            // NativeArray<ushort> rawTextureData = mapTexture.GetRawTextureData<ushort>();
+            // rawTextureData.CopyFrom(mapColorsShort);
+            // rawTextureData[]
+                // TextureUtils.CopyTexturePart()
+                // Graphics.Text(mapColorsShort, mapTexture);
+            // mapTexture.SetPixelData(mapColorsShort, 0, 0);
             mapTexture.Apply(false, false);
         }
 
