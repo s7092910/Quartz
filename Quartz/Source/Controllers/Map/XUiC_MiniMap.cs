@@ -497,6 +497,15 @@ namespace Quartz
         {
             return (ushort)((ushort)((x & 0xff) << 8) | ((x >> 8) & 0xff));
         }
+        
+        public ushort FixColor(ushort x)
+        {
+            return (ushort)(
+                // Blue channel is fine and so is lower red
+                (x & 0b0000_0000_0001_1111) |
+                ((x & 0b0111_1111_1110_0000) << 1)
+            );
+        }
 
         private void RedrawChunkIntoRawArray(IMapChunkDatabase mapDatabase, int sx, int nx, int sz, int nz)
         {
@@ -507,16 +516,17 @@ namespace Quartz
                 for (int u = 0; u < 16; u++)
                 {
                     // Copy the full line at once (not sure this is faster than a simple loop though)
-                    Buffer.BlockCopy(mapColors, u * 16 * 2, mapColorsShort, (nz * 16 + u) * 1024 * 2 + nx * 16 * 2, 32);
-                    // for (int v = 0; v < 16; v++)
-                    // {
-                    //     mapColorsShort[(nz * 16 + u) * 1024 + nx * 16 + v]
+                    //Buffer.BlockCopy(mapColors, u * 16 * 2, mapColorsShort, (nz * 16 + u) * 1024 * 2 + nx * 16 * 2, 32);
+                    for (int v = 0; v < 16; v++)
+                    {
+                        mapColorsShort[(nz * 16 + u) * 1024 + nx * 16 + v]
+                              = FixColor(mapColors[u * 16 + v]);
                     //         = mapColors[u * 16 + v]; // Isn't RGB565!?
                     //         // = SwapBytes(mapColors[u * 16 + v]);
                     //         // = 0b1111_1000_0000_0000;
                     //         // = 0b0000_0111_1110_0000;
                     //         // = mapColors[u * 16 + v];
-                    // }
+                    }
                 }
             }
             else
