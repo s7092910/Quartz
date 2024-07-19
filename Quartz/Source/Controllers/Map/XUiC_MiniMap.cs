@@ -265,6 +265,11 @@ namespace Quartz
                 Log.Out("Got a new max map tick time => {0}",
                     stopwatch.ElapsedMicroseconds * 0.001d);
             }
+            else if (stopwatch.ElapsedMicroseconds > 175d)
+            {
+                Log.Out("Frame with long tick time => {0}",
+                    stopwatch.ElapsedMicroseconds * 0.001d);
+            }
 
             // if (timeToRedrawMap >= 0f)
             // {
@@ -390,13 +395,12 @@ namespace Quartz
         {
             Vector3 worldPos = localPlayer.GetPosition();
 
-            var middlePosChunks = new Vector2(
-                World.toChunkXZ((int)worldPos.x - 1024) * 16 + 1024,
-                World.toChunkXZ((int)worldPos.z - 1024) * 16 + 1024);
 
             if (tickRunning == false)
             {
-                tickMiddlePosChunks = middlePosChunks;
+                tickMiddlePosChunks = new Vector2(
+                    World.toChunkXZ((int)worldPos.x - 1024) * 16 + 1024,
+                    World.toChunkXZ((int)worldPos.z - 1024) * 16 + 1024);
                 tickMapStartX = (int)tickMiddlePosChunks.x - 512;
                 tickMapStartZ = (int)tickMiddlePosChunks.y - 512;
                 tickChunkX = World.toChunkXZ(tickMapStartX);
@@ -522,33 +526,34 @@ namespace Quartz
                 for (int u = 0; u < 16; u++)
                 {
                     // Copy the full line at once (not sure this is faster than a simple loop though)
-                    //Buffer.BlockCopy(mapColors, u * 16 * 2, mapColorsShort, (nz * 16 + u) * 1024 * 2 + nx * 16 * 2, 32);
+                    // Buffer.BlockCopy(mapColors, u * 16 * 2, mapColorsShort, (nz * 16 + u) * 1024 * 2 + nx * 16 * 2, 32);
                     for (int v = 0; v < 16; v++)
                     {
                         mapColorsShort[(nz * 16 + u) * 1024 + nx * 16 + v]
                               = FixColor(mapColors[u * 16 + v]);
-                    //         = mapColors[u * 16 + v]; // Isn't RGB565!?
-                    //         // = SwapBytes(mapColors[u * 16 + v]);
-                    //         // = 0b1111_1000_0000_0000;
-                    //         // = 0b0000_0111_1110_0000;
-                    //         // = mapColors[u * 16 + v];
+                             // = mapColors[u * 16 + v]; // Isn't RGB565!?
+                             // = SwapBytes(mapColors[u * 16 + v]);
+                             // = 0b1111_1000_0000_0000;
+                             // = 0b0000_0111_1110_0000;
+                             // = mapColors[u * 16 + v];
                     }
                 }
             }
             else
             {
-                // for (int u = 0; u < 16; u++)
-                // {
-                //     for (int v = 0; v < 16; v++)
-                //     {
-                //         // Log.Out("==> {0}", (nz * 16 + u) * 16 + (nx * 16 + v));
-                //         //mapColorsShort[(nz * 16 + u) * 1024 + nx * 16 + v]
-                //         //    = ushort.MaxValue / 32;
-                //         // = mapColors[u * 16 + v];
-                //     }
-                // }
+                for (int u = 0; u < 16; u++)
+                {
+                    for (int v = 0; v < 16; v++)
+                    {
+                        // Reset colors for chunks not yet discovered
+                        // Note: maybe it's faster to reset all at once?
+                        // E.g. when we start the update ticker
+                        mapColorsShort[(nz * 16 + u) * 1024 + nx * 16 + v]
+                            = 0b0000_0000_0000_0000;
+                    }
+                }
             }
-
+            // return mapColors != null;
         }
 
         private void UpdateMapTextureFromRawArray()
