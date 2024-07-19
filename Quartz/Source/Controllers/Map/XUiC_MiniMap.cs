@@ -395,9 +395,15 @@ namespace Quartz
                 tickChunkZ = World.toChunkXZ(tickMapStartZ);
                 tickChunkStart = 32 - mapUpdateSizeRadius / 16;
                 tickChunkEnd = 32 + mapUpdateSizeRadius / 16;
+                if (tickChunkStart < 0) tickChunkStart = 0;
+                if (tickChunkEnd > 64) tickChunkEnd = 64;
                 tickStateX = tickChunkStart;
                 tickStateZ = tickChunkStart;
                 tickRunning = true;
+                mapMiddlePosPixel.x = worldPos.x;
+                mapMiddlePosPixel.y = worldPos.z;
+                PositionMap();
+
             }
             else if (tickFinished)
             {
@@ -409,20 +415,22 @@ namespace Quartz
             {
                 IMapChunkDatabase mapDatabase = localPlayer.ChunkObserver.mapDatabase;
 
-                // If called every frame (quota 2) => around 2 full updates per second with 100fps
+                // If called every frame (quota 42) => around one full updates per second with 100fps
+                // For a full map update we need to update 4096 chunks => 100fps, 40 per frame
                 // Cool thing is this will scale automatically down if fps is low already ;)
-                int quota = 2;
+                // Note: could only use up quota if redraw does actually something!?
+                int budget = 42;
 
                 for (; tickStateZ < tickChunkEnd; tickStateZ++)
                 {
                     for (; tickStateX < tickChunkEnd; tickStateX++)
                     {
-                        if (quota-- <= 0) return;
+                        if (budget-- <= 0) return;
                         RedrawChunkIntoRawArray(mapDatabase,
                             tickChunkX, tickStateX, tickChunkZ, tickStateZ);
                     }
+                    tickStateX = tickChunkStart;
                 }
-
                 tickFinished = true;
             }
         }
