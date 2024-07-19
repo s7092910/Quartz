@@ -58,7 +58,7 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="NGUI">
-      <HintPath>..\..\7DaysToDie_Data\Managed\NGUI.dll</HintPath>
+      <HintPath>$(PATH_7D2D_MANAGED)\NGUI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -86,7 +86,7 @@
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>$(PATH_7D2D_MANAGED)\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>$(PATH_7D2D_MANAGED)\UnityEngine.InputLegacyModule.dll</HintPath>
