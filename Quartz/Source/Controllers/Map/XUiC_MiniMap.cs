@@ -204,6 +204,8 @@ namespace Quartz
             }
         }
 
+        private long elapsedOverall = 0;
+        private long elapsedCounter = 0;
         public override void Update(float dt)
         {
             base.Update(dt);
@@ -255,6 +257,9 @@ namespace Quartz
             TickMapUpdate();
             stopwatch.Stop();
 
+            elapsedOverall += stopwatch.ElapsedMicroseconds;
+            elapsedCounter += 1;
+
             if (maxMapTickTime < stopwatch.ElapsedMicroseconds)
             {
                 maxMapTickTime = stopwatch.ElapsedMicroseconds;
@@ -265,6 +270,11 @@ namespace Quartz
             {
                 Log.Out("Frame with long tick time => {0}",
                     stopwatch.ElapsedMicroseconds * 0.001d);
+            }
+
+            if (elapsedCounter % 250 == 0)
+            {
+                Log.Out("Average timing is {0}", elapsedOverall / elapsedCounter * 0.001d);
             }
 
             // if (timeToRedrawMap >= 0f)
