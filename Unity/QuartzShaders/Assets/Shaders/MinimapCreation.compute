@@ -1,0 +1,65 @@
+#pragma kernel WithAlpha
+#pragma kernel WithoutAlpha
+#pragma kernel DoublePack
+
+#define BLOCK_SIZE 16
+#define BLOCK_LEN 256
+
+struct CS_INPUT
+{
+	uint3 Gid : SV_GroupID; //Chunk coordinates
+	uint3 DTid : SV_DispatchThreadID; //Texture Coordinates
+    uint3 GTid : SV_GroupThreadID; //Index coordinates
+	uint GI : SV_GroupIndex; //Block Array Index
+};
+
+RWTexture2D<float4> Minimap;
+RWBuffer<uint> data;
+uint width;
+
+//x = first element, y = second element
+uint2 UnpackUShort2(uint packedValue)
+{
+    return uint2(packedValue >> 16, packedValue & 0xffff);
+}
+
+float4 FromColor5To32(uint alpha, uint col) {
+    return float4((((col >> 10) & 0x1f) / 31.0), (((col >> 5) & 0x1f) / 31.0), ((col & 0x1f) / 31.0), alpha/255.0);
+}
+
+float4 FromColor5To32(uint col) {
+    if(col >> 15 == 0.0) {
+        return float4((((col >> 10) & 0x1f) / 31.0), (((col >> 5) & 0x1f) / 31.0), ((col & 0x1f) / 31.0), 1);
+    }
+
+    return float4(1.0, 1.0, 1.0, 0.0);
+}
+
+[numthreads(BLOCK_SIZE,BLOCK_SIZE,1)]
+void WithAlpha (CS_INPUT input)
+{
+    uint index = (input.Gid.y * width) + (input.Gid.x * BLOCK_LEN) + input.GI;
+    uint2 unpacked = UnpackUShort2(data[index]);
+    Minimap[input.DTid.xy] = FromColor5To32(unpacked.x, unpacked.y);
+}
+
+[numthreads(BLOCK_SIZE,BLOCK_SIZE,1)]
+void WithoutAlpha (CS_INPUT input)
+{
+    uint index = (input.Gid.y * width) + (input.Gid.x * BLOCK_LEN) + input.GI;
+    Minimap[input.DTid.xy] = FromColor5To32(data[index]);
+}
+
+//Gets the next two pixels in the row from the single uint buffer
+[numthreads(8,BLOCK_SIZE,1)]
+void DoublePack (CS_INPUT input)
+{   
+    uint index = (input.Gid.y * width) + (input.Gid.x * 128) + input.GI;
+    uint2 unpacked = UnpackUShort2(data[index]);
+
+    uint2 pixel = uint2((input.Gid.x * 16) + (input.GTid.x * 2), input.DTid.y);
+    Minimap[pixel.xy] = FromColor5To32(unpacked.x);
+
+    pixel.x = pixel.x + 1;
+    Minimap[pixel.xy] = FromColor5To32(unpacked.y);
+}
