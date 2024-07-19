@@ -52,6 +52,7 @@ namespace Quartz
 
         private bool bShouldRedrawMap;
         private float timeToRedrawMap;
+        private long maxMapTickTime = 0;
 
         private Vector2 mapMiddlePosChunks;
         private Vector2 mapMiddlePosPixel;
@@ -248,15 +249,27 @@ namespace Quartz
                 bShouldRedrawMap = false;
             }
 
-            if (timeToRedrawMap >= 0f)
+            MicroStopwatch stopwatch = new MicroStopwatch();
+            stopwatch.Start();
+            TickMapUpdate();
+            stopwatch.Stop();
+
+            if (maxMapTickTime < stopwatch.ElapsedMicroseconds)
             {
-                timeToRedrawMap -= dt;
-                if (timeToRedrawMap <= 0f)
-                {
-                    timeToRedrawMap = 2f;
-                    bShouldRedrawMap = true;
-                }
+                maxMapTickTime = stopwatch.ElapsedMicroseconds;
+                Log.Out("Got a new max map tick time => {0}",
+                    stopwatch.ElapsedMicroseconds * 0.001d);
             }
+
+            // if (timeToRedrawMap >= 0f)
+            // {
+            //     timeToRedrawMap -= dt;
+            //     if (timeToRedrawMap <= 0f)
+            //     {
+            //         timeToRedrawMap = 2f;
+            //         // bShouldRedrawMap = true;
+            //     }
+            // }
 
             if (localPlayer.ChunkObserver.mapDatabase.IsNetworkDataAvail())
             {
@@ -355,11 +368,103 @@ namespace Quartz
             }
         }
 
+        bool tickRunning = false;
+        bool tickFinished = false;
+
+        int tickStateX = -1;
+        int tickStateZ = -1;
+        int tickChunkX = -1;
+        int tickChunkZ = -1;
+        int tickChunkStart = 0;
+        int tickChunkEnd = 64;
+        int tickMapStartX = 0;
+        int tickMapStartZ = 0;
+
+        private void TickMapUpdate()
+        {
+            Vector3 worldPos = localPlayer.GetPosition();
+            mapMiddlePosChunks = new Vector2(
+                World.toChunkXZ((int)worldPos.x - 1024) * 16 + 1024,
+                World.toChunkXZ((int)worldPos.z - 1024) * 16 + 1024);
+
+            if (tickRunning == false)
+            {
+                tickMapStartX = (int)mapMiddlePosChunks.x - 512;
+                tickMapStartZ = (int)mapMiddlePosChunks.y - 512;
+                tickChunkX = World.toChunkXZ(tickMapStartX);
+                tickChunkZ = World.toChunkXZ(tickMapStartZ);
+                tickChunkStart = 32 - mapUpdateSizeRadius / 16;
+                tickChunkEnd = 32 + mapUpdateSizeRadius / 16;
+                tickStateX = tickChunkStart;
+                tickStateZ = tickChunkStart;
+                tickRunning = true;
+            }
+            else if (tickFinished)
+            {
+                UpdateMapTextureFromRawArray();
+                tickFinished = false;
+                tickRunning = false;
+            }
+            else
+            {
+                IMapChunkDatabase mapDatabase = localPlayer.ChunkObserver.mapDatabase;
+
+                // If called every frame (quota 2) => around 2 full updates per second with 100fps
+                // Cool thing is this will scale automatically down if fps is low already ;)
+                int quota = 2;
+
+                for (; tickStateZ < tickChunkEnd; tickStateZ++)
+                {
+                    for (; tickStateX < tickChunkEnd; tickStateX++)
+                    {
+                        if (quota-- <= 0) return;
+                        RedrawChunkIntoRawArray(mapDatabase,
+                            tickChunkX, tickStateX, tickChunkZ, tickStateZ);
+                    }
+                }
+
+                tickFinished = true;
+            }
+        }
+
+
+        private void UpdateMapSectionCompute()
+        {
+
+            // mapUpdateSizeRadius = 512;
+
+            // The full potential area of chunks to render
+            int mapStartX = (int)mapMiddlePosChunks.x - 512;
+            int mapStartZ = (int)mapMiddlePosChunks.y - 512;
+            // int mapEndX = (int)mapMiddlePosChunks.x + 512;
+            // int mapEndZ = (int)mapMiddlePosChunks.y + 512;
+
+            int chunkStart = 32 - mapUpdateSizeRadius / 16;
+            int chunkEnd = 32 + mapUpdateSizeRadius / 16;
+
+            IMapChunkDatabase mapDatabase = localPlayer.ChunkObserver.mapDatabase;
+
+            int sx = World.toChunkXZ(mapStartX);
+            int sz = World.toChunkXZ(mapStartZ);
+
+            for (int nz = chunkStart; nz < chunkEnd; nz++)
+            {
+                for (int nx = chunkStart; nx < chunkEnd; nx++)
+                {
+                    RedrawChunkIntoRawArray(mapDatabase, sx, nx, sz, nz);
+                }
+            }
+
+            UpdateMapTextureFromRawArray();
+        }
+
+
         private void UpdateFullMap()
         {
             Vector3 worldPos = localPlayer.GetPosition();
             int worldPosX = (int)worldPos.x;
             int worldPosY = (int)worldPos.z;
+
             Vector2 middlePosChunk = new Vector2(World.toChunkXZ(worldPosX - 1024) * 16 + 1024, World.toChunkXZ(worldPosY - 1024) * 16 + 1024);
 
             //if(mapMiddlePosChunks.Equals(middlePosChunk))
@@ -367,13 +472,7 @@ namespace Quartz
             //    return;
             //}
 
-            // mapUpdateSizeRadius = 512;
             mapMiddlePosChunks = middlePosChunk;
-
-            int mapStartX = (int)mapMiddlePosChunks.x - mapUpdateSizeRadius;
-            int mapEndX = (int)mapMiddlePosChunks.x + mapUpdateSizeRadius;
-            int mapStartZ = (int)mapMiddlePosChunks.y - mapUpdateSizeRadius;
-            int mapEndZ = (int)mapMiddlePosChunks.y + mapUpdateSizeRadius;
 
             MicroStopwatch stopwatch = new MicroStopwatch();
             stopwatch.Start();
@@ -384,6 +483,7 @@ namespace Quartz
             PositionMapAtPlayer();
             SendMapPositionToServer();
         }
+
 
         public ushort SwapBytes(ushort x)
         {
@@ -431,36 +531,6 @@ namespace Quartz
         {
             mapTexture.SetPixelData(mapColorsShort, 0, 0);
             mapTexture.Apply(false, false);
-        }
-
-        private void UpdateMapSectionCompute()
-        {
-
-            // mapUpdateSizeRadius = 512;
-
-            // The full potential area of chunks to render
-            int mapStartX = (int)mapMiddlePosChunks.x - 512;
-            int mapStartZ = (int)mapMiddlePosChunks.y - 512;
-            // int mapEndX = (int)mapMiddlePosChunks.x + 512;
-            // int mapEndZ = (int)mapMiddlePosChunks.y + 512;
-
-            int chunkStart = 32 - mapUpdateSizeRadius / 16;
-            int chunkEnd = 32 + mapUpdateSizeRadius / 16;
-
-            IMapChunkDatabase mapDatabase = localPlayer.ChunkObserver.mapDatabase;
-
-            int sx = World.toChunkXZ(mapStartX);
-            int sz = World.toChunkXZ(mapStartZ);
-
-            for (int nz = chunkStart; nz < chunkEnd; nz++)
-            {
-                for (int nx = chunkStart; nx < chunkEnd; nx++)
-                {
-                    RedrawChunkIntoRawArray(mapDatabase, sx, nx, sz, nz);
-                }
-            }
-
-            UpdateMapTextureFromRawArray();
         }
 
 
