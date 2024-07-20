@@ -122,6 +122,11 @@ namespace Quartz.Debugging
                     {
                         LoadSpriteData();
                     }
+                    if (spriteList == null)
+                    {
+                        value = "0";
+                        return true;
+                    }
                     value = spriteList.Count.ToString();
                     Logging.Out(TAG, "Sprite Count = " + value);
                     return true;

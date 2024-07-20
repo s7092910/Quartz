@@ -19,6 +19,7 @@ using Quartz.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Collections;
 using UnityEngine;
 
 namespace Quartz
@@ -44,7 +45,7 @@ namespace Quartz
         private const float MapOnScreenSize = 300f;
         private const float MapDefaultZoom = 150f; //Vanilla 336
 
-        private RenderTexture mapTextureRender;
+        private Texture2D mapTexture;
 
         private Vector2i cTexMiddle = new Vector2i(356, 356);
 
@@ -52,6 +53,7 @@ namespace Quartz
 
         private bool bShouldRedrawMap;
         private float timeToRedrawMap;
+        private long maxMapTickTime = 0;
 
         private Vector2 mapMiddlePosChunks;
         private Vector2 mapMiddlePosPixel;
@@ -78,10 +80,6 @@ namespace Quartz
         private HashSetLong navObjectsOnMapAlive = new HashSetLong();
 
         private uint[] emptyChunk = new uint[128];
-        private uint[] mapColorsData;
-
-        private ComputeBuffer mapDataBuffer;
-        private ComputeShader mapGenShader;
 
         private int kernelIndex;
 
@@ -97,33 +95,22 @@ namespace Quartz
 
             //var maxSizeMb = SystemInfo.maxGraphicsBufferSize / 1024 / 1024;
             //Logging.Inform($"Maximum graphics buffer size is {maxSizeMb} MB");
-
-            if (mapTextureRender == null)
+            
+            if (mapTexture == null)
             {
-                mapTextureRender = new RenderTexture(MapDrawnSize, MapDrawnSize, 0, RenderTextureFormat.ARGB32);
-                mapTextureRender.name = "MinimapRT";
-                mapTextureRender.wrapMode = TextureWrapMode.Clamp;
-                mapTextureRender.enableRandomWrite = true;
-                mapTextureRender.Create();
-            }
-
-            if (mapDataBuffer == null)
-            {
-                mapDataBuffer = new ComputeBuffer(MapDrawnSize * MapDrawnSize, 4, ComputeBufferType.Default);
-            }
-
-            if (mapGenShader == null)
-            {
-                mapGenShader = LoadComputeShader();
-                kernelIndex = mapGenShader.FindKernel("DoublePack");
-                mapGenShader.SetTexture(kernelIndex, "Minimap", mapTextureRender);
-                mapGenShader.SetBuffer(kernelIndex, "data", mapDataBuffer);
-                mapGenShader.SetInt("width", bufferRowLength);
-            }
-
-            if (mapColorsData == null)
-            {
-                mapColorsData = new uint[MapDrawnSize * MapDrawnSize / 2];
+                mapTexture = new Texture2D(MapDrawnSize, MapDrawnSize, TextureFormat.RGB565, false, true)
+                {
+                    name = "Minimap",
+                    wrapMode = TextureWrapMode.Clamp,
+                    // FilterMode.Point makes the zoom in blocky
+                    // But it would probably a tad bit faster
+                    filterMode = FilterMode.Trilinear,
+                    anisoLevel = 8,
+                };
+                //mapTexture.space
+                // mapTexture.Apply(false, false);
+                // mapTexture.enableRandomWrite = true;
+                // mapTexture.Create();
             }
 
             XUiController childById = GetChildById("mapViewTexture");
@@ -218,6 +205,8 @@ namespace Quartz
             }
         }
 
+        private long elapsedOverall = 0;
+        private long elapsedCounter = 0;
         public override void Update(float dt)
         {
             base.Update(dt);
@@ -264,15 +253,40 @@ namespace Quartz
                 bShouldRedrawMap = false;
             }
 
-            if (timeToRedrawMap >= 0f)
+            MicroStopwatch stopwatch = new MicroStopwatch();
+            stopwatch.Start();
+            TickMapUpdate();
+            stopwatch.Stop();
+
+            elapsedOverall += stopwatch.ElapsedMicroseconds;
+            elapsedCounter += 1;
+
+            if (maxMapTickTime < stopwatch.ElapsedMicroseconds)
             {
-                timeToRedrawMap -= dt;
-                if (timeToRedrawMap <= 0f)
-                {
-                    timeToRedrawMap = 2f;
-                    bShouldRedrawMap = true;
-                }
+                maxMapTickTime = stopwatch.ElapsedMicroseconds;
+                Log.Out("Got a new max map tick time => {0}",
+                    stopwatch.ElapsedMicroseconds * 0.001d);
             }
+            else if (stopwatch.ElapsedMicroseconds > 50d)
+            {
+                Log.Out("Frame with long tick time => {0}",
+                    stopwatch.ElapsedMicroseconds * 0.001d);
+            }
+
+            if (elapsedCounter % 250 == 0)
+            {
+                Log.Out("Average timing is {0}", elapsedOverall / elapsedCounter * 0.001d);
+            }
+
+            // if (timeToRedrawMap >= 0f)
+            // {
+            //     timeToRedrawMap -= dt;
+            //     if (timeToRedrawMap <= 0f)
+            //     {
+            //         timeToRedrawMap = 2f;
+            //         // bShouldRedrawMap = true;
+            //     }
+            // }
 
             if (localPlayer.ChunkObserver.mapDatabase.IsNetworkDataAvail())
             {
@@ -354,13 +368,13 @@ namespace Quartz
                 bMapInitialized = true;
                 if(xuiTexture is XUiV_Texture texture)
                 {
-                    texture.Material.SetTexture("_MainTex", mapTextureRender);
+                    texture.Material.SetTexture("_MainTex", mapTexture);
                     texture.Material.shader = LoadMinimapShader();
                 }
 
                 if (xuiTexture is XUiV_MaskedTexture maskedTexture)
                 {
-                    maskedTexture.Material.SetTexture("_MainTex", mapTextureRender);
+                    maskedTexture.Material.SetTexture("_MainTex", mapTexture);
                     maskedTexture.Material.shader = LoadMinimapShader();
                 }
 
@@ -371,11 +385,111 @@ namespace Quartz
             }
         }
 
+        bool tickRunning = false;
+        bool tickFinished = false;
+
+        int tickStateX = -1;
+        int tickStateZ = -1;
+        int tickChunkX = -1;
+        int tickChunkZ = -1;
+        int tickChunkStart = 0;
+        int tickChunkEnd = 64;
+        int tickMapStartX = 0;
+        int tickMapStartZ = 0;
+        Vector2 tickMiddlePosChunks;
+
+        private void TickMapUpdate()
+        {
+            Vector3 worldPos = localPlayer.GetPosition();
+
+
+            if (tickRunning == false)
+            {
+                tickMiddlePosChunks = new Vector2(
+                    World.toChunkXZ((int)worldPos.x - 1024) * 16 + 1024,
+                    World.toChunkXZ((int)worldPos.z - 1024) * 16 + 1024);
+                tickMapStartX = (int)tickMiddlePosChunks.x - 512;
+                tickMapStartZ = (int)tickMiddlePosChunks.y - 512;
+                tickChunkX = World.toChunkXZ(tickMapStartX);
+                tickChunkZ = World.toChunkXZ(tickMapStartZ);
+                tickChunkStart = 32 - mapUpdateSizeRadius / 16;
+                tickChunkEnd = 32 + mapUpdateSizeRadius / 16;
+                if (tickChunkStart < 0) tickChunkStart = 0;
+                if (tickChunkEnd > 64) tickChunkEnd = 64;
+                tickStateX = tickChunkStart;
+                tickStateZ = tickChunkStart;
+                tickRunning = true;
+            }
+            else if (tickFinished)
+            {
+                UpdateMapTextureFromRawArray();
+                mapMiddlePosChunks = tickMiddlePosChunks;
+                tickFinished = false;
+                tickRunning = false;
+            }
+            else
+            {
+                IMapChunkDatabase mapDatabase = localPlayer.ChunkObserver.mapDatabase;
+
+                // If called every frame (quota 42) => around one full updates per second with 100fps
+                // For a full map update we need to update 4096 chunks => 100fps, 40 per frame
+                // Cool thing is this will scale automatically down if fps is low already ;)
+                // Note: could only use up quota if redraw does actually something!?
+                int budget = 42;
+
+                for (; tickStateZ < tickChunkEnd; tickStateZ++)
+                {
+                    for (; tickStateX < tickChunkEnd; tickStateX++)
+                    {
+                        if (budget-- <= 0) return;
+                        RedrawChunkIntoRawArray(mapDatabase,
+                            tickChunkX, tickStateX, tickChunkZ, tickStateZ);
+                    }
+                    tickStateX = tickChunkStart;
+                }
+                tickFinished = true;
+            }
+        }
+
+
+        // Not used anymore really!
+        private void UpdateMapSectionCompute()
+        {
+            // mapUpdateSizeRadius = 512;
+
+            // The full potential area of chunks to render
+            int mapStartX = (int)mapMiddlePosChunks.x - 512;
+            int mapStartZ = (int)mapMiddlePosChunks.y - 512;
+            // int mapEndX = (int)mapMiddlePosChunks.x + 512;
+            // int mapEndZ = (int)mapMiddlePosChunks.y + 512;
+
+            int chunkStart = 32 - mapUpdateSizeRadius / 16;
+            int chunkEnd = 32 + mapUpdateSizeRadius / 16;
+
+            IMapChunkDatabase mapDatabase = localPlayer.ChunkObserver.mapDatabase;
+
+            int sx = World.toChunkXZ(mapStartX);
+            int sz = World.toChunkXZ(mapStartZ);
+
+            for (int nz = chunkStart; nz < chunkEnd; nz++)
+            {
+                for (int nx = chunkStart; nx < chunkEnd; nx++)
+                {
+                    RedrawChunkIntoRawArray(mapDatabase, sx, nx, sz, nz);
+                }
+            }
+
+            UpdateMapTextureFromRawArray();
+        }
+
+
         private void UpdateFullMap()
         {
+            return; // Not needed really? All lazy!?
             Vector3 worldPos = localPlayer.GetPosition();
             int worldPosX = (int)worldPos.x;
             int worldPosY = (int)worldPos.z;
+
             Vector2 middlePosChunk = new Vector2(World.toChunkXZ(worldPosX - 1024) * 16 + 1024, World.toChunkXZ(worldPosY - 1024) * 16 + 1024);
 
             //if(mapMiddlePosChunks.Equals(middlePosChunk))
@@ -385,61 +499,82 @@ namespace Quartz
 
             mapMiddlePosChunks = middlePosChunk;
 
-            int mapStartX = (int)mapMiddlePosChunks.x - mapUpdateSizeRadius;
-            int mapEndX = (int)mapMiddlePosChunks.x + mapUpdateSizeRadius;
-            int mapStartZ = (int)mapMiddlePosChunks.y - mapUpdateSizeRadius;
-            int mapEndZ = (int)mapMiddlePosChunks.y + mapUpdateSizeRadius;
-
             MicroStopwatch stopwatch = new MicroStopwatch();
             stopwatch.Start();
-
-            UpdateMapSectionCompute(mapStartX, mapStartZ, mapEndX, mapEndZ, (MapDrawnSize / 2) - mapUpdateSizeRadius, (MapDrawnSize / 2) - mapUpdateSizeRadius, 512, 512);
-
+            UpdateMapSectionCompute();
             stopwatch.Stop();
-            Logging.Out(TAG, "updateFullMap Called, time taken = " + (stopwatch.ElapsedMicroseconds * 0.001d));
+            Log.Out("updateFullMap Called, time taken = " + (stopwatch.ElapsedMicroseconds * 0.001d));
 
             PositionMapAtPlayer();
             SendMapPositionToServer();
         }
 
-        private void UpdateMapSectionCompute(int mapStartX, int mapStartY, int mapEndX, int mapEndY, int drawnMapStartX, int drawnMapStartY, int drawnMapEndX, int drawnMapEndY)
+
+        public ushort SwapBytes(ushort x)
         {
-            IMapChunkDatabase mapDatabase = localPlayer.ChunkObserver.mapDatabase;
-            int num = mapStartY;
-            int y = drawnMapStartY;
-            while (num < mapEndY)
-            {
-                int num3 = mapStartX;
-                int x = drawnMapStartX;
-                while (num3 < mapEndX)
-                {
-                    int chunkX = World.toChunkXZ(num3);
-                    int chunkZ = World.toChunkXZ(num);
-
-                    uint[] mapColors = mapDatabase.GetPackedMapColors(chunkX, chunkZ);
-
-                    int indexBuffer = ((y / 16) * bufferRowLength) + ((x / 16) * 128);
-                    if (mapColors != null)
-                    {
-                        Array.Copy(mapColors, 0, mapColorsData, indexBuffer, 128);
-                    }
-                    else
-                    {
-                        Array.Copy(emptyChunk, 0, mapColorsData, indexBuffer, 128);
-                    }
-
-                    num3 += 16;
-                    x = (x + 16) % MapDrawnSize;
-                }
-
-                num += 16;
-                y = (y + 16) % MapDrawnSize;
-            }
-
-            //TODO: Move out of this method to be excuted on the next frame?
-            mapDataBuffer.SetData(mapColorsData);
-            mapGenShader.Dispatch(kernelIndex, MapDrawnSizeInChunks, MapDrawnSizeInChunks, 1);
+            return (ushort)((ushort)((x & 0xff) << 8) | ((x >> 8) & 0xff));
         }
+        
+        public ushort FixColor(ushort x)
+        {
+            return (ushort)(
+                // Blue channel is fine and so is lower red
+                (x & 0b0000_0000_0001_1111) |
+                ((x & 0b0111_1111_1110_0000) << 1)
+            );
+        }
+
+        private void RedrawChunkIntoRawArray(IMapChunkDatabase mapDatabase, int sx, int nx, int sz, int nz)
+        {
+            long key = WorldChunkCache.MakeChunkKey(sx + nx, sz + nz);
+            ushort[] mapColors = mapDatabase.GetMapColors(key);
+            NativeArray<ushort> rawTextureData = mapTexture.GetRawTextureData<ushort>();
+            if (mapColors != null)
+            {
+                for (int u = 0; u < 16; u++)
+                {
+                    // Copy the full line at once (not sure this is faster than a simple loop though)
+                    // Buffer.BlockCopy(mapColors, u * 16 * 2, mapColorsShort, (nz * 16 + u) * 1024 * 2 + nx * 16 * 2, 32);
+                    for (int v = 0; v < 16; v++)
+                    {
+                        rawTextureData[(nz * 16 + u) * 1024 + nx * 16 + v]
+                            = FixColor(mapColors[u * 16 + v]);
+                             // = mapColors[u * 16 + v]; // Isn't RGB565!?
+                             // = SwapBytes(mapColors[u * 16 + v]);
+                             // = 0b1111_1000_0000_0000;
+                             // = 0b0000_0111_1110_0000;
+                             // = mapColors[u * 16 + v];
+                    }
+                }
+            }
+            else
+            {
+                for (int u = 0; u < 16; u++)
+                {
+                    for (int v = 0; v < 16; v++)
+                    {
+                        // Reset colors for chunks not yet discovered
+                        // Note: maybe it's faster to reset all at once?
+                        // E.g. when we start the update ticker
+                        rawTextureData[(nz * 16 + u) * 1024 + nx * 16 + v]
+                            = 0b0000_0000_0000_0000;
+                    }
+                }
+            }
+            // return mapColors != null;
+        }
+
+        private void UpdateMapTextureFromRawArray()
+        {
+            // NativeArray<ushort> rawTextureData = mapTexture.GetRawTextureData<ushort>();
+            // rawTextureData.CopyFrom(mapColorsShort);
+            // rawTextureData[]
+                // TextureUtils.CopyTexturePart()
+                // Graphics.Text(mapColorsShort, mapTexture);
+            // mapTexture.SetPixelData(mapColorsShort, 0, 0);
+            mapTexture.Apply(false, false);
+        }
+
 
         private void SendMapPositionToServer()
         {
@@ -675,6 +810,7 @@ namespace Quartz
 
         public void PositionMapAtPlayer()
         {
+            // return;
             Vector3 worldPos = localPlayer.GetPosition();
             mapMiddlePosPixel.x = worldPos.x;
             mapMiddlePosPixel.y = worldPos.z;
@@ -684,22 +820,15 @@ namespace Quartz
 
         private void ResetMapColorsData()
         {
-            for (int i = 0; i < mapColorsData.Length; i += 128)
-            {
-                Array.Copy(emptyChunk, 0, mapColorsData, i, 128);
-            }
+            // for (int i = 0; i < mapColorsData.Length; i += 128)
+            // {
+            //     Array.Copy(emptyChunk, 0, mapColorsData, i, 128);
+            // }
         }
 
         public override void Cleanup()
         {
             base.Cleanup();
-
-            mapTextureRender.Release();
-            mapDataBuffer.Release();
-            UnityEngine.Object.Destroy(mapTextureRender);
-
-            mapTextureRender = null;
-            mapDataBuffer = null;
         }
 
         private ComputeShader LoadComputeShader()
