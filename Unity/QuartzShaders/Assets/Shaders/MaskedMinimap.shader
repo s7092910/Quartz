@@ -113,6 +113,10 @@ Shader "Unlit/MaskedMinimap"
                 col.a *= tex2D(_Mask, i.maskUv).a;
 
                 col.a *= _MapOpacity;
+
+                const float gamma = 2.2;
+                col.rgb = pow(col.rgb, gamma);
+
                 return col;
             }
             ENDCG

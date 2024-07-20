@@ -98,13 +98,14 @@ namespace Quartz
             
             if (mapTexture == null)
             {
-                mapTexture = new Texture2D(MapDrawnSize, MapDrawnSize, TextureFormat.RGB565, false, false)
+                mapTexture = new Texture2D(MapDrawnSize, MapDrawnSize, TextureFormat.RGB565, false, true)
                 {
                     name = "Minimap",
                     wrapMode = TextureWrapMode.Clamp,
                     // FilterMode.Point makes the zoom in blocky
                     // But it would probably a tad bit faster
-                    filterMode = FilterMode.Trilinear
+                    filterMode = FilterMode.Trilinear,
+                    anisoLevel = 8,
                 };
                 //mapTexture.space
                 // mapTexture.Apply(false, false);
