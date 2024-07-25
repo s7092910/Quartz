@@ -127,6 +127,7 @@
     <Compile Include="Source\Bindings\BindingInfo_Harmony.cs" />
     <Compile Include="Source\Console\ConsoleCmdQuartz.cs" />
     <Compile Include="Source\Controllers\Crafting\Workstations\XUiC_WorkstationFuelGrid_Harmony.cs" />
+    <Compile Include="Source\Controllers\Crafting\Workstations\XUiC_WorkstationWindowGroup.cs" />
     <Compile Include="Source\Controllers\Crafting\XUiC_RecipeEntry.cs" />
     <Compile Include="Source\Controllers\Crafting\Workstations\XUiC_WorkstationFuelGrid.cs" />
     <Compile Include="Source\Controllers\Crafting\Workstations\XUiC_WorkstationToolGrid.cs" />
@@ -166,7 +167,6 @@
     <Compile Include="Source\Controllers\Inventory\LootWindow\XUiC_LootContainer_Harmony.cs" />
     <Compile Include="Source\Controllers\Inventory\LootWindow\XUiC_LootWindow_Harmony.cs" />
     <Compile Include="Source\Controllers\Inventory\SearchUtil.cs" />
-    <Compile Include="Source\Controllers\Inventory\SortUtil.cs" />
     <Compile Include="Source\Controllers\Inventory\VehicleStorageWindow\XUiC_VehicleContainer.cs" />
     <Compile Include="Source\Controllers\Inventory\VehicleStorageWindow\XUiC_VehicleContainer_Harmony.cs" />
     <Compile Include="Source\Controllers\XUiC_RandomTexture.cs" />
@@ -184,6 +184,7 @@
     <Compile Include="Source\Settings\MinimapSettings.cs" />
     <Compile Include="Source\Utils\TextureExtensions.cs" />
     <Compile Include="Source\Utils\VehicleExtensions.cs" />
+    <Compile Include="Source\Utils\XUiM_WorkstationExtensions.cs" />
     <Compile Include="Source\Views\MaskedTextures\UIMaskedTexture.cs" />
     <Compile Include="Source\Views\MaskedTextures\XUiV_MaskedPanel.cs" />
     <Compile Include="Source\Views\MaskedTextures\XUiV_MaskedTexture.cs" />

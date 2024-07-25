@@ -23,7 +23,7 @@ using System.Collections.Generic;
 
 namespace Quartz
 {
-	public class XUiC_VehicleContainer : global::XUiC_VehicleContainer, ILockableInventory
+    public class XUiC_VehicleContainer : global::XUiC_VehicleContainer, ILockableInventory
 	{
 		private const string TAG = "VehicleContainer";
         private const string lockedSlotsCvarName = "$varQuartzVehicleLockedSlots";
@@ -37,7 +37,9 @@ namespace Quartz
 
 		private string searchResult;
 
-		public override void Init()
+        public bool IsIndividualSlotLockingAllowed { get; set; }
+
+        public override void Init()
 		{
 			base.Init();
 
@@ -58,18 +60,18 @@ namespace Quartz
 			}
 
 			standardControls = GetChildByType<global::XUiC_ContainerStandardControls>();
+            standardControls.LockModeToggled = OnLockModeToggled;
 
-            if (standardControls is XUiC_ContainerStandardControls)
+            if (standardControls.GetChildById("btnToggleLockMode") != null)
             {
-                standardControls.OnSortPressed = OnSortPressed;
-                foreach (XUiController itemStackController in GetItemStackControllers())
-				{
-                    itemStackController.OnPress += OnItemStackPress;
+                foreach (XUiController xUiController in GetItemStackControllers())
+                {
+                    xUiController.OnPress += OnItemStackPress;
                 }
             }
-		}
+        }
 
-		public override void Update(float _dt)
+        public override void Update(float _dt)
 		{
 			if (GameManager.Instance == null && GameManager.Instance.World == null)
 			{
@@ -120,12 +122,13 @@ namespace Quartz
                 {
                     standardControls.MoveAll();
                 }
-			}
+            }
 		}
 
         public override void OnOpen()
         {
             base.OnOpen();
+            standardControls.SortPressed = OnSortPressed;
             QuartzInputManager.inventoryActions.Enabled = true;
         }
 
@@ -142,12 +145,17 @@ namespace Quartz
             LoadLockedSlots();
         }
 
+        public void OnLockModeToggled()
+        {
+            IsIndividualSlotLockingAllowed = !IsIndividualSlotLockingAllowed;
+        }
+
         public int TotalLockedSlotsCount()
         {
             int count = 0;
             for (int i = 0; i < itemControllers.Length; i++)
             {
-                if (itemControllers[i] is XUiC_ItemStack itemStack && itemStack.IsALockedSlot)
+                if (itemControllers[i] is XUiC_ItemStack itemStack && itemStack.UserLockedSlot)
                 {
                     count++;
                 }
@@ -161,7 +169,7 @@ namespace Quartz
             int count = 0;
             for (int i = 0; i < itemControllers.Length; i++)
             {
-                if (i >= ignoredLockedSlots && itemControllers[i] is XUiC_ItemStack itemStack && itemStack.IsALockedSlot)
+                if (i >= ignoredLockedSlots && itemControllers[i] is XUiC_ItemStack itemStack && itemStack.UserLockedSlot)
                 {
                     count++;
                 }
@@ -175,13 +183,24 @@ namespace Quartz
             int count = 0;
             for (int i = 0; i < itemControllers.Length; i++)
             {
-                if (i >= ignoredLockedSlots && itemControllers[i] is XUiC_ItemStack itemStack && !itemStack.IsALockedSlot)
+                if (i >= ignoredLockedSlots && itemControllers[i] is XUiC_ItemStack itemStack && !itemStack.UserLockedSlot)
                 {
                     count++;
                 }
             }
 
             return count;
+        }
+
+        public bool[] GetLockSlots()
+        {
+            bool[] bools = new bool[itemControllers.Length];
+            for (int i = 0; i < itemControllers.Length; i++)
+            {
+                bools[i] = itemControllers[i].UserLockedSlot;
+            }
+
+            return bools;
         }
 
         public override void HandleSlotChangedEvent(int slotNumber, ItemStack stack)
@@ -209,44 +228,41 @@ namespace Quartz
 
             for (int i = 0; i < itemControllers.Length; i++)
             {
-                XUiC_ItemStack itemStack = itemControllers[i] as XUiC_ItemStack;
-                if (itemStack != null)
+                global::XUiC_ItemStack itemStack = itemControllers[i];
+                if (value > i && i >= newValue)
                 {
-                    if (value > i && i >= newValue)
-                    {
-                        itemStack.IsALockedSlot = false;
-                    }
+                    itemStack.UserLockedSlot = false;
+                }
 
-                    if (newValue > i && i >= value)
-                    {
-                        itemStack.IsALockedSlot = true;
-					}
-				}
-			}
+                if (newValue > i && i >= value)
+                {
+                    itemStack.UserLockedSlot = true;
+                }
+            }
 
 			ignoredLockedSlots = (int)newValue;
 
             SaveLockedSlots();
         }
 
-        protected virtual void OnSortPressed(int ignoreSlots)
+        protected virtual void OnSortPressed(bool[] ignoreSlots)
         {
             if (xui.vehicle.GetVehicle() == null)
 			{
                 return;
             }
-            xui.vehicle.bag.SetSlots(SortUtil.CombineAndSortStacks(this, ignoreSlots));
+            base.btnSort_OnPress(GetLockSlots());
         }
 
         protected void OnItemStackPress(XUiController sender, int mouseButton)
         {
-            if (sender is XUiC_ItemStack itemStack && standardControls is XUiC_ContainerStandardControls controls
-                && (QuartzInputManager.inventoryActions.LockSlot.IsPressed || controls.IsIndividualSlotLockingAllowed()))
+            if (sender is XUiC_ItemStack itemStack
+                && (QuartzInputManager.inventoryActions.LockSlot.IsPressed || IsIndividualSlotLockingAllowed))
 			{
                 int index = Array.IndexOf(itemControllers, itemStack);
                 if(index >= ignoredLockedSlots)
                 {
-                    itemStack.IsALockedSlot = !itemStack.IsALockedSlot;
+                    itemStack.UserLockedSlot = !itemStack.UserLockedSlot;
                     Manager.PlayButtonClick();
                     SaveLockedSlots();
                 }
@@ -262,13 +278,7 @@ namespace Quartz
 
             if (comboBox != null)
             {
-                standardControls.ChangeLockedSlots(ignoredLockedSlots);
                 comboBox.Value = ignoredLockedSlots;
-            }
-
-            if (standardControls is XUiC_ContainerStandardControls controls)
-            {
-                controls.ChangeLockedSlots(ignoredLockedSlots);
             }
         }
 
@@ -282,8 +292,8 @@ namespace Quartz
 			BitArray bitArray = new BitArray(itemControllers.Length);
             for (int i = 0; i < bitArray.Length; i++)
             {
-                XUiC_ItemStack itemStack = itemControllers[i] as XUiC_ItemStack;
-                if (itemStack != null && itemStack.IsALockedSlot)
+                global::XUiC_ItemStack itemStack = itemControllers[i];
+                if (itemStack.UserLockedSlot)
                 {
                     bitArray.Set(i, true);
                 }
@@ -305,11 +315,8 @@ namespace Quartz
 
             for (int i = 0; i < itemControllers.Length; i++)
             {
-                XUiC_ItemStack itemStack = itemControllers[i] as XUiC_ItemStack;
-                if (itemStack != null)
-                {
-                    itemStack.IsALockedSlot = bitArray.Get(i);
-                }
+                global::XUiC_ItemStack itemStack = itemControllers[i];
+                itemStack.UserLockedSlot = bitArray.Get(i);
             }
         }
 
@@ -383,5 +390,5 @@ namespace Quartz
 			}
 			itemStack.IsSearchActive = activeSearch;
 		}
-	}
+    }
 }

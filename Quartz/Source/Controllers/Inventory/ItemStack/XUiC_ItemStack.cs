@@ -20,7 +20,6 @@ namespace Quartz
     {
         private const string TAG = "ItemStack";
 
-        private bool isALockedSlot;
         private bool matchesSearch;
         private bool isSearchActive;
 
@@ -35,22 +34,6 @@ namespace Quartz
         protected new Color32 selectionBorderColor;
 
         private readonly CachedStringFormatterXuiRgbaColor colorFormatter = new CachedStringFormatterXuiRgbaColor();
-
-        public bool IsALockedSlot
-        {
-            get
-            {
-                return isALockedSlot;
-            }
-            set
-            {
-                if (isALockedSlot != value)
-                {
-                    isALockedSlot = value;
-                    RefreshBindings(false);
-                }
-            }
-        }
 
         public bool IsSearchActive
         {
@@ -107,9 +90,6 @@ namespace Quartz
         {
             switch (bindingName)
             {
-                case "isalockedslot":
-                    value = isALockedSlot.ToString();
-                    return true;
                 case "issearchactive":
                     value = isSearchActive.ToString();
                     return true;
@@ -211,7 +191,7 @@ namespace Quartz
             {
                 SelectionBorderColor = searchColor;
             }
-            else if (isALockedSlot && isLockedSlotColorSet)
+            else if (userLockedSlot && isLockedSlotColorSet)
             {
                 SelectionBorderColor = lockedSlotColor;
             }
