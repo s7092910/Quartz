@@ -23,7 +23,7 @@ namespace Quartz
         public override void Update(float _dt)
         {
             base.Update(_dt);
-            if (!XUi.IsGameRunning() || !ViewComponent.IsVisible)
+            if (!XUi.IsGameRunning() || !ViewComponent.IsVisible || itemValue.IsEmpty())
             {
                 return;
             }
@@ -76,7 +76,6 @@ namespace Quartz
                     return true;
                 case "itemname":
                     itemValue = ItemClass.GetItem(value, true);
-                    Logging.Inform("itemValue type = " + itemValue.type);
                     return true;
                 default:
                     return base.ParseAttribute(name, value, parent);
