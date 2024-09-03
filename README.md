@@ -1,4 +1,4 @@
-![](images/Q_logo_subtle_shadow.png)
+![](Images/Q_logo_subtle_shadow.png)
 
 A 7 Days to Die modder's resource that adds some new XUi Widgets and XUi Controllers that modders can use.
 
