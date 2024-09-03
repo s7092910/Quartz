@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<news>
+
+  <entry>
+    <date>2024-06-25 08:45:00Z</date>
+    <title>Changelog</title>
+    <title2>Installed: v3.0.0</title2>
+    <text>Click to open the Quartz changelog.</text>
+    <link>https://github.com/s7092910/Quartz/blob/main/CHANGELOG.md</link>
+    <imagerelpath>clquartz.png</imagerelpath>
+  </entry>
+
+</news>

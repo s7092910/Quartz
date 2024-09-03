@@ -37,7 +37,7 @@ namespace Quartz.Managers
             return referenceFont;
         }
 
-        public static IEnumerator LoadFonts(XUi xui, Dictionary<string, XUiFromXml.StyleData> styles)
+        public static IEnumerator LoadFonts(XUi xui)
         {
             yield return null;
             while (!XUiFromXml.HasData())
@@ -55,7 +55,7 @@ namespace Quartz.Managers
             }
 
             XUiFromXml.StyleData fontData;
-            if (styles.TryGetValue(styleKeyNGUIFonts, out fontData))
+            if (XUiFromXml.styles.TryGetValue(styleKeyNGUIFonts, out fontData))
             {
                 foreach (XUiFromXml.StyleEntryData fontEntry in fontData.StyleEntries.Values)
                 {
@@ -68,7 +68,7 @@ namespace Quartz.Managers
                 }
             }
 
-            if (styles.TryGetValue(styleKeyUnityFonts, out fontData))
+            if (XUiFromXml.styles.TryGetValue(styleKeyUnityFonts, out fontData))
             {
                 foreach (XUiFromXml.StyleEntryData fontEntry in fontData.StyleEntries.Values)
                 {
@@ -81,7 +81,7 @@ namespace Quartz.Managers
                 }
             }
 
-            if (styles.TryGetValue(styleKeyOSFonts, out fontData))
+            if (XUiFromXml.styles.TryGetValue(styleKeyOSFonts, out fontData))
             {
                 foreach (XUiFromXml.StyleEntryData fontEntry in fontData.StyleEntries.Values)
                 {

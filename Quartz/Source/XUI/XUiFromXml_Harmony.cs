@@ -27,7 +27,7 @@ public class XUiFromXmlPatch
     private const string TAG = "XUiFromXmlPatch";
 
     [HarmonyPrefix]
-    [HarmonyPatch("parseByElementName")]
+    [HarmonyPatch(nameof(XUiFromXml.parseViewComponents))]
     public static bool parseByElementName(ref XUiView __result,
         XElement _node, XUiController _parent, XUiWindowGroup _windowGroup,
         string nodeNameOverride = "", Dictionary<string, object> _controlParams = null)

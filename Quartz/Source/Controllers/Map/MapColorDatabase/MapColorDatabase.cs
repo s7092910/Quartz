@@ -18,14 +18,14 @@ namespace Quartz.Map
 {
     public static class MapColorDatabase
     {
-        public static Dictionary<int, uint[]> mapDataCache = new Dictionary<int, uint[]>();
+        public static Dictionary<long, uint[]> mapDataCache = new Dictionary<long, uint[]>();
 
-        public static uint[] GetPackedMapColors(this MapChunkDatabase database, int x, int y)
+        public static uint[] GetPackedMapColors(this IMapChunkDatabase database, int x, int y)
         {
-            int key = ToChunkKey(x, y);
+            long key = WorldChunkCache.MakeChunkKey(x, y);
             if (!mapDataCache.TryGetValue(key, out uint[] cachedChunk))
             {
-                ushort[] mapColors = database.GetDS(key);
+                ushort[] mapColors = database.GetMapColors(key);
                 if (mapColors == null)
                 {
                     return null;
@@ -37,7 +37,7 @@ namespace Quartz.Map
             return cachedChunk;
         }
 
-        public static uint[] AddPackedMapColors(int key, ushort[] mapColors)
+        public static uint[] AddPackedMapColors(long key, ushort[] mapColors)
         {
             uint[] mapData = new uint[128];
             int textureOffset = 0;
@@ -54,11 +54,6 @@ namespace Quartz.Map
         public static uint PackShorts(ushort first, ushort second)
         {
             return ((uint)first << 16) + second;
-        }
-
-        public static int ToChunkKey(int x, int y)
-        {
-            return ((y & 65535) << 16) | (x & 65535);
         }
     }
 }

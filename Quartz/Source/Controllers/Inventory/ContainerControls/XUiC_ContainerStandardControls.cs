@@ -22,10 +22,8 @@ namespace Quartz
 {
     public class XUiC_ContainerStandardControls : global::XUiC_ContainerStandardControls
     {
-        protected int ignoredLockedSlots;
         protected static float lastStashTime;
 
-        protected XUiV_Button btnIndividualLock;
         protected XUiC_ComboBoxInt comboBox;
 
         protected ILockableInventory inventory;
@@ -66,17 +64,6 @@ namespace Quartz
             if (child != null)
             {
                 comboBox = GetChildByType<XUiC_ComboBoxInt>();
-                if(comboBox != null)
-                {
-                    comboBox.OnValueChanged += ComboBoxOnValueChanged;
-                }
-            }
-
-            child = GetChildById("btnIndividualLock");
-            if(child != null)
-            {
-                child.OnPress += IndividualLockOnPress;
-                btnIndividualLock = child.ViewComponent as XUiV_Button;
             }
 
             inventory = GetParentWindow().Controller.GetChildByType<XUiC_ItemStackGrid>() as ILockableInventory;
@@ -85,10 +72,6 @@ namespace Quartz
         public override void OnOpen()
         {
             base.OnOpen();
-            if(comboBox != null)
-            {
-                comboBox.Value = ignoredLockedSlots;
-            }
             RefreshBindings();
         }
 
@@ -97,10 +80,6 @@ namespace Quartz
             MoveAll(this, 0);
         }
 
-        public bool IsIndividualSlotLockingAllowed()
-        {
-            return btnIndividualLock != null && btnIndividualLock.Selected;
-        }
 
         public override bool GetBindingValue(ref string value, string bindingName)
         {
@@ -110,7 +89,7 @@ namespace Quartz
                     value = inventory != null ? inventory.TotalLockedSlotsCount().ToString() : "0";
                     return true;
                 case "combolockedslots":
-                    value = ignoredLockedSlots.ToString();
+                    value = comboBox != null ? comboBox.valueText : "0";
                     return true;
                 case "individuallockedslotscount":
                     value = inventory != null ? inventory.IndividualLockedSlotsCount().ToString() : "0";
@@ -123,62 +102,38 @@ namespace Quartz
             }
         }
 
-        public new void ChangeLockedSlots(long newValue)
+        public void ChangeLockedSlots(long newValue)
         {
-            ignoredLockedSlots = (int)newValue;
             RefreshBindings();
-        }
-
-        public void ChangeLockingStatus(bool enableLocking)
-        {
-            if(comboBox != null)
-            {
-                comboBox.Enabled = enableLocking;
-            }
-
-            if(btnIndividualLock != null)
-            {
-                btnIndividualLock.Enabled = enableLocking;
-            }
-        }
-
-        protected virtual void IndividualLockOnPress(XUiController _sender, int _mouseButton)
-        {
-            if(btnIndividualLock != null)
-            {
-                btnIndividualLock.Selected = !btnIndividualLock.Selected;
-            }
-        }
-
-        protected virtual void ComboBoxOnValueChanged(XUiController sender, long oldValue, long newValue)
-        {
-            ChangeLockedSlots(newValue);
         }
 
         protected virtual void MoveSmart(XUiController sender, int mouseButton)
         {
+
             XUiController srcWindow;
             XUiC_ItemStackGrid srcGrid;
             IInventory dstInventory;
             if (MoveAllowed(out srcWindow, out srcGrid, out dstInventory))
             {
-                StashItems(srcWindow, srcGrid, dstInventory, ignoredLockedSlots, XUiM_LootContainer.EItemMoveKind.FillAndCreate, MoveStartBottomRight);
+                XUiM_LootContainer.StashItems(srcWindow, srcGrid, dstInventory, 0, inventory.GetLockSlots(), XUiM_LootContainer.EItemMoveKind.FillAndCreate, MoveStartBottomRight);
             }
         }
 
         protected virtual void MoveFillStacks(XUiController sender, int mouseButton)
         {
+
             XUiController srcWindow;
             XUiC_ItemStackGrid srcGrid;
             IInventory dstInventory;
             if (MoveAllowed(out srcWindow, out srcGrid, out dstInventory))
             {
-                StashItems(srcWindow, srcGrid, dstInventory, ignoredLockedSlots, XUiM_LootContainer.EItemMoveKind.FillOnly, MoveStartBottomRight);
+                XUiM_LootContainer.StashItems(srcWindow, srcGrid, dstInventory, 0, inventory.GetLockSlots(), XUiM_LootContainer.EItemMoveKind.FillOnly, MoveStartBottomRight);
             }
         }
 
         protected virtual void MoveFillAndSmart(XUiController sender, int mouseButton)
         {
+
             XUiController srcWindow;
             XUiC_ItemStackGrid srcGrid;
             IInventory dstInventory;
@@ -192,7 +147,7 @@ namespace Quartz
 
             if (MoveAllowed(out srcWindow, out srcGrid, out dstInventory))
             {
-                StashItems(srcWindow, srcGrid, dstInventory, ignoredLockedSlots, moveKind, MoveStartBottomRight);
+                XUiM_LootContainer.StashItems(srcWindow, srcGrid, dstInventory, 0, inventory.GetLockSlots(), moveKind, MoveStartBottomRight);
                 lastStashTime = unscaledTime;
             }
         }
@@ -204,7 +159,7 @@ namespace Quartz
             IInventory dstInventory;
             if (MoveAllowed(out srcWindow, out srcGrid, out dstInventory))
             {
-                ValueTuple<bool, bool> valueTuple = StashItems(srcWindow, srcGrid, dstInventory, ignoredLockedSlots, XUiM_LootContainer.EItemMoveKind.All, MoveStartBottomRight);
+                ValueTuple<bool, bool> valueTuple = XUiM_LootContainer.StashItems(srcWindow, srcGrid, dstInventory, 0, inventory.GetLockSlots(), XUiM_LootContainer.EItemMoveKind.All, MoveStartBottomRight);
                 bool item = valueTuple.Item1;
                 bool item2 = valueTuple.Item2;
                 Action<bool, bool> moveAllDone = MoveAllDone;
@@ -214,72 +169,6 @@ namespace Quartz
                 }
                 moveAllDone(item, item2);
             }
-        }
-
-        private (bool allMoved, bool anyMoved) StashItems(XUiController srcWindow, XUiC_ItemStackGrid srcGrid, IInventory dstInventory, int ignoredSlots, XUiM_LootContainer.EItemMoveKind moveKind, bool startBottomRight)
-        {
-            if (srcGrid == null || dstInventory == null)
-            {
-                return (false, false);
-            }
-            global::XUiC_ItemStack[] itemStackControllers = srcGrid.GetItemStackControllers();
-
-            bool item = true;
-            bool item2 = false;
-
-            PreferenceTracker preferenceTracker = null;
-            XUiC_LootWindow xuiC_LootWindow = srcWindow as XUiC_LootWindow;
-            if (xuiC_LootWindow != null)
-            {
-                preferenceTracker = xuiC_LootWindow.GetPreferenceTrackerFromTileEntity();
-            }
-            if (preferenceTracker != null && preferenceTracker.AnyPreferences)
-            {
-                XUiM_PlayerInventory xuiM_PlayerInventory = dstInventory as XUiM_PlayerInventory;
-                if (xuiM_PlayerInventory != null)
-                {
-                    ValueTuple<bool, bool> valueTuple = xuiM_PlayerInventory.AddItemsUsingPreferenceTracker(srcGrid, preferenceTracker);
-                    item = valueTuple.Item1;
-                    item2 = valueTuple.Item2;
-                }
-            }
-
-            int num = startBottomRight ? (itemStackControllers.Length - 1) : ignoredSlots;
-            while (startBottomRight ? (num >= ignoredSlots) : (num < itemStackControllers.Length))
-            {
-                global::XUiC_ItemStack xuiC_ItemStack = itemStackControllers[num];
-                if (!xuiC_ItemStack.StackLock && (!(xuiC_ItemStack is XUiC_ItemStack quartzItemStack) || !quartzItemStack.IsALockedSlot))
-                {
-                    ItemStack itemStack = xuiC_ItemStack.ItemStack;
-                    if (!xuiC_ItemStack.ItemStack.IsEmpty())
-                    {
-                        int count = itemStack.count;
-                        dstInventory.TryStackItem(0, itemStack);
-                        if (itemStack.count > 0
-                            && (moveKind == XUiM_LootContainer.EItemMoveKind.All || (moveKind == XUiM_LootContainer.EItemMoveKind.FillAndCreate && dstInventory.HasItem(itemStack.itemValue)))
-                            && dstInventory.AddItem(itemStack))
-                        {
-                            itemStack = ItemStack.Empty.Clone();
-                        }
-                        if (itemStack.count == 0)
-                        {
-                            itemStack = ItemStack.Empty.Clone();
-                        }
-                        else
-                        {
-                            item = false;
-                        }
-                        if (count != itemStack.count)
-                        {
-                            xuiC_ItemStack.ForceSetItemStack(itemStack);
-                            item2 = true;
-                        }
-                    }
-                }
-                num = (startBottomRight ? (num - 1) : (num + 1));
-            }
-
-            return (item, item2);
         }
 
         private void ClearEventHandlers(XUiController controller, string eventName)

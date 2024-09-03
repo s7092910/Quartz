@@ -17,7 +17,6 @@ namespace Quartz
 {
     public class XUiC_ItemInfoWindow : global::XUiC_ItemInfoWindow
     {
-        private ItemStack itemStack;
         private ItemDisplayEntry displayEntry;
 
         private XUiC_ItemStatEntry[] itemStatControllers;

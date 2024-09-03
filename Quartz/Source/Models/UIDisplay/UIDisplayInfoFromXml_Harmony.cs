@@ -66,7 +66,7 @@ public class UIDisplayInfoFromXmlPatch
 
         if (node.HasAttribute("tags"))
         {
-            displayInfoEntry.Tags = FastTags.Parse(node.GetAttribute("tags"));
+            displayInfoEntry.Tags = FastTags<TagGroup.Global>.Parse(node.GetAttribute("tags"));
         }
 
         if (node.HasAttribute("icon"))

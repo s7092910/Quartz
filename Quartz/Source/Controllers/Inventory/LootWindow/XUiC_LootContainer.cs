@@ -24,19 +24,21 @@ namespace Quartz
 {
 	public class XUiC_LootContainer : global::XUiC_LootContainer, ILockableInventory
 	{
-		private const string TAG = "LootContainer";
+
+        private const string TAG = "LootContainer";
         private const string lockedSlotsCvarName = "$varQuartzLootContainerLockedSlots";
 
         protected global::XUiC_ContainerStandardControls standardControls;
         protected XUiC_ComboBoxInt comboBox;
-
-        protected TileEntityLootContainer lootContainer;
+        protected XUiV_Button toggleLockModeButton;
 
         protected int ignoredLockedSlots;
 
         protected string searchResult;
 
-		public override void Init()
+        public bool IsIndividualSlotLockingAllowed { get; set; }
+
+        public override void Init()
 		{
 			base.Init();
 			XUiController parent = GetParentByType<XUiC_LootWindow>();
@@ -46,6 +48,7 @@ namespace Quartz
 			}
 
             standardControls = parent.GetChildByType<global::XUiC_ContainerStandardControls>();
+            standardControls.LockModeToggled = OnLockModeToggled;
 
             comboBox = standardControls.GetChildByType<XUiC_ComboBoxInt>();
             if (comboBox != null)
@@ -63,8 +66,12 @@ namespace Quartz
                 }
             }
 
-            if (standardControls != null && standardControls is XUiC_ContainerStandardControls)
+            XUiController controller = standardControls.GetChildById("btnToggleLockMode");
+
+            if (controller != null)
             {
+                toggleLockModeButton = controller.ViewComponent as XUiV_Button;
+
                 foreach (XUiController xUiController in GetItemStackControllers())
                 {
                     xUiController.OnPress += OnItemStackPress;
@@ -75,10 +82,7 @@ namespace Quartz
         public override void OnOpen()
         {
             base.OnOpen();
-            if(standardControls is XUiC_ContainerStandardControls)
-            {
-                standardControls.OnSortPressed = OnSortPressed;
-            }
+            standardControls.SortPressed = OnSortPressed;
             QuartzInputManager.inventoryActions.Enabled = true;
         }
 
@@ -86,12 +90,10 @@ namespace Quartz
         {
             base.OnClose();
             QuartzInputManager.inventoryActions.Enabled = false;
-            lootContainer = null;
         }
 
-        public virtual void SetCurrentTileEntity(TileEntityLootContainer container)
+        public virtual void SetCurrentTileEntity(ITileEntityLootable container)
         {
-            lootContainer = container;
             LoadLockedSlots();
         }
 
@@ -103,7 +105,8 @@ namespace Quartz
 
         protected virtual void OnLockedSlotsChange(XUiController sender, long value, long newValue)
         {
-            if (!(lootContainer is TileEntitySecureLootContainer) || !lootContainer.bPlayerStorage)
+            ILockable lootContainer;
+            if (!localTileEntity.TryGetSelfOrFeature(out lootContainer) || !localTileEntity.bPlayerStorage)
             {
                 return;
             }
@@ -115,18 +118,17 @@ namespace Quartz
                 {
                     if (value > i && i >= newValue)
                     {
-                        itemStack.IsALockedSlot = false;
+                        itemStack.UserLockedSlot = false;
                     }
 
                     if (newValue > i && i >= value)
                     {
-                        itemStack.IsALockedSlot = true;
+                        itemStack.UserLockedSlot = true;
                     }
                 }
             }
 
             ignoredLockedSlots = (int)newValue;
-
             SaveLockedSlots();
         }
 
@@ -144,12 +146,17 @@ namespace Quartz
             FilterFromSearch(searchResult);
         }
 
+        public void OnLockModeToggled()
+        {
+            IsIndividualSlotLockingAllowed = !IsIndividualSlotLockingAllowed;
+        }
+
         public int TotalLockedSlotsCount()
         {
             int count = 0;
             for (int i = 0; i < itemControllers.Length; i++)
             {
-                if (itemControllers[i] is XUiC_ItemStack itemStack && itemStack.IsALockedSlot)
+                if (itemControllers[i] is XUiC_ItemStack itemStack && itemStack.UserLockedSlot)
                 {
                     count++;
                 }
@@ -163,7 +170,7 @@ namespace Quartz
             int count = 0;
             for (int i = 0; i < itemControllers.Length; i++)
             {
-                if (i >= ignoredLockedSlots && itemControllers[i] is XUiC_ItemStack itemStack && itemStack.IsALockedSlot)
+                if (i >= ignoredLockedSlots && itemControllers[i] is XUiC_ItemStack itemStack && itemStack.UserLockedSlot)
                 {
                     count++;
                 }
@@ -177,7 +184,7 @@ namespace Quartz
             int count = 0;
             for (int i = 0; i < itemControllers.Length; i++)
             {
-                if (i >= ignoredLockedSlots && itemControllers[i] is XUiC_ItemStack itemStack && !itemStack.IsALockedSlot)
+                if (i >= ignoredLockedSlots && itemControllers[i] is XUiC_ItemStack itemStack && !itemStack.UserLockedSlot)
                 {
                     count++;
                 }
@@ -186,24 +193,35 @@ namespace Quartz
             return count;
         }
 
-        protected virtual void OnSortPressed(int ignoreSlots)
+        public bool[] GetLockSlots()
         {
-            ItemStack[] array = SortUtil.CombineAndSortStacks(this, ignoreSlots);
+            bool[] bools = new bool[itemControllers.Length];
+            for (int i = 0;i < itemControllers.Length;i++)
+            {
+                bools[i] = itemControllers[i].UserLockedSlot;
+            }
+
+            return bools;
+        }
+
+        protected virtual void OnSortPressed(bool[] _ignoredSlots)
+        {
+            ItemStack[] array = StackSortUtil.CombineAndSortStacks(localTileEntity.items, 0, GetLockSlots());
             for (int i = 0; i < array.Length; i++)
             {
-                lootContainer.UpdateSlot(i, array[i]);
+                localTileEntity.UpdateSlot(i, array[i]);
             }
         }
 
         protected virtual void OnItemStackPress(XUiController sender, int mouseButton)
         {
-            if (lootContainer is TileEntitySecureLootContainer && sender is XUiC_ItemStack itemStack && standardControls is XUiC_ContainerStandardControls controls
-                && (QuartzInputManager.inventoryActions.LockSlot.IsPressed || controls.IsIndividualSlotLockingAllowed()))
+            if (localTileEntity.TryGetSelfOrFeature<ILockable>(out var lootContainer) && sender is global::XUiC_ItemStack itemStack
+                && (QuartzInputManager.inventoryActions.LockSlot.IsPressed || IsIndividualSlotLockingAllowed))
             {
                 int index = Array.IndexOf(itemControllers, itemStack);
                 if (index >= ignoredLockedSlots)
                 {
-                    itemStack.IsALockedSlot = !itemStack.IsALockedSlot;
+                    itemStack.UserLockedSlot = !itemStack.UserLockedSlot;
                     Manager.PlayButtonClick();
                     SaveLockedSlots();
                 }
@@ -219,21 +237,19 @@ namespace Quartz
 
             if (comboBox != null)
             {
-                standardControls.ChangeLockedSlots(ignoredLockedSlots);
                 comboBox.Value = ignoredLockedSlots;
-                comboBox.Enabled = lootContainer is TileEntitySecureLootContainer;
+                comboBox.Enabled = localTileEntity.TryGetSelfOrFeature<ILockable>(out var lootContainer);
             }
 
-            if (standardControls is XUiC_ContainerStandardControls controls)
+            if(toggleLockModeButton != null)
             {
-                controls.ChangeLockedSlots(ignoredLockedSlots);
-                controls.ChangeLockingStatus(lootContainer is TileEntitySecureLootContainer);
+                toggleLockModeButton.Enabled = localTileEntity.TryGetSelfOrFeature<ILockable>(out var lootContainer);
             }
         }
 
         protected virtual void SaveLockedSlots()
         {
-            if (lootContainer == null || !lootContainer.bPlayerStorage)
+            if (localTileEntity == null || !localTileEntity.bPlayerStorage)
             {
                 return;
             }
@@ -242,7 +258,7 @@ namespace Quartz
             for (int i = 0; i < bitArray.Length; i++)
             {
                 XUiC_ItemStack itemStack = itemControllers[i] as XUiC_ItemStack;
-                if (itemStack != null && itemStack.IsALockedSlot)
+                if (itemStack != null && itemStack.UserLockedSlot)
                 {
                     bitArray.Set(i, true);
                 }
@@ -253,7 +269,7 @@ namespace Quartz
 
         protected virtual void LoadLockedSlots()
         {
-            if (lootContainer == null)
+            if (localTileEntity == null)
             {
                 return;
             }
@@ -266,20 +282,20 @@ namespace Quartz
                 XUiC_ItemStack itemStack = itemControllers[i] as XUiC_ItemStack;
                 if (itemStack != null)
                 {
-                    itemStack.IsALockedSlot = bitArray.Get(i);
+                    itemStack.UserLockedSlot = bitArray.Get(i);
                 }
             }
         }
 
         private void SaveLockedSlotsData(BitArray bitArray)
         {
-            TileEntitySecureLootContainer secureContainer = lootContainer as TileEntitySecureLootContainer;
-            if (secureContainer == null || !lootContainer.bPlayerStorage)
+            ILockable lockableContainer;
+            if (!localTileEntity.TryGetSelfOrFeature<ILockable>(out lockableContainer) || !localTileEntity.bPlayerStorage)
             {
                 return;
             }
 
-            List<PlatformUserIdentifierAbs> userIds = secureContainer.GetUsers();
+            List<PlatformUserIdentifierAbs> userIds = lockableContainer.GetUsers();
             byte[] bytes = new byte[(bitArray.Length - 1) / 8 + 1];
             bitArray.CopyTo(bytes, 0);
 
@@ -303,14 +319,14 @@ namespace Quartz
 
         private BitArray LoadLockedSlotsData()
         {
-            TileEntitySecureLootContainer secureContainer = lootContainer as TileEntitySecureLootContainer;
+            ILockable lockableContainer;
             ignoredLockedSlots = 0;
-            if (secureContainer == null)
+            if (!localTileEntity.TryGetSelfOrFeature<ILockable>(out lockableContainer))
             {
                 return new BitArray(itemControllers.Length);
             }
 
-            foreach (PlatformUserIdentifierAbs userId in secureContainer.GetUsers())
+            foreach (PlatformUserIdentifierAbs userId in lockableContainer.GetUsers())
             {
                 if (userId is UserIdentifierLocal user)
                 {
@@ -353,5 +369,5 @@ namespace Quartz
 			}
 			itemStack.IsSearchActive = activeSearch;
 		}
-	}
+    }
 }

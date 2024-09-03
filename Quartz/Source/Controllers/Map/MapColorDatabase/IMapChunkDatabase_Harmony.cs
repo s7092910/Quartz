@@ -28,7 +28,23 @@ public class MapChunkDatabasePatch
     [HarmonyPatch(new Type[] { typeof(List<int>), typeof(List<ushort[]>)})]
     private static void Add(MapChunkDatabase __instance, List<int> _chunks, List<ushort[]> _mapPieces)
     {
-        Logging.Inform(TAG, "Add(List<int>, List<ushort[]>) called");
+        for (int i = 0; i < _chunks.Count; i++)
+        {
+            MapColorDatabase.AddPackedMapColors(_chunks[i], _mapPieces[i]);
+        }
+    }
+}
+
+[HarmonyPatch(typeof(MapChunkDatabaseByRegion))]
+public class MapChunkDatabaseByRegionPatch
+{
+    private const string TAG = "MapChunkDatabaseByRegionPatch";
+
+    [HarmonyPostfix]
+    [HarmonyPatch("Add")]
+    [HarmonyPatch(new Type[] { typeof(List<int>), typeof(List<ushort[]>) })]
+    private static void Add(MapChunkDatabase __instance, List<int> _chunks, List<ushort[]> _mapPieces)
+    {
         for (int i = 0; i < _chunks.Count; i++)
         {
             MapColorDatabase.AddPackedMapColors(_chunks[i], _mapPieces[i]);

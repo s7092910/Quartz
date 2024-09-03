@@ -41,7 +41,7 @@ namespace Quartz.Inputs
             playerActionsLocal.PermanentActions.AddBindingConflictWithActionSet(this);
         }
 
-        protected override void CreateActions()
+        public override void CreateActions()
         {
             MinimapZoomIn = CreatePlayerAction("Minimap Zoom In");
             MinimapZoomIn.UserData = new PlayerActionData.ActionUserData("quartzSettingInputMinimapZoomIn2", "quartzSettingInputMinimapZoomInTooltip", PlayerActionData.GroupUI, PlayerActionData.EAppliesToInputType.KbdMouseOnly, true);
@@ -53,11 +53,11 @@ namespace Quartz.Inputs
             MinimapToggle.UserData = new PlayerActionData.ActionUserData("quartzSettingInputMinimapToggle", "quartzSettingInputMinimapToggleTooltip", PlayerActionData.GroupUI, PlayerActionData.EAppliesToInputType.KbdMouseOnly, true);
         }
 
-        protected override void CreateDefaultJoystickBindings()
+        public override void CreateDefaultJoystickBindings()
         {
         }
 
-        protected override void CreateDefaultKeyboardBindings()
+        public override void CreateDefaultKeyboardBindings()
         {
             MinimapZoomIn.AddDefaultBinding(new Key[]
             {

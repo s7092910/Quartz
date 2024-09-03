@@ -34,7 +34,7 @@ public class XUiC_LootContainerPatch
 
     [HarmonyPrefix]
     [HarmonyPatch("SetSlots")]
-    public static void SetSlotsPrefix(XUiC_LootContainer __instance, TileEntityLootContainer lootContainer, ItemStack[] stackList)
+    public static void SetSlotsPrefix(XUiC_LootContainer __instance, ITileEntityLootable lootContainer, ItemStack[] stackList)
     {
         if (__instance is Quartz.XUiC_LootContainer instance)
         {
@@ -44,7 +44,7 @@ public class XUiC_LootContainerPatch
 
     [HarmonyPostfix]
     [HarmonyPatch("SetSlots")]
-    public static void SetSlots(XUiC_LootContainer __instance, TileEntityLootContainer lootContainer, ItemStack[] stackList)
+    public static void SetSlots(XUiC_LootContainer __instance, ITileEntityLootable lootContainer, ItemStack[] stackList)
     {
         if (__instance is Quartz.XUiC_LootContainer instance)
         {
@@ -54,7 +54,7 @@ public class XUiC_LootContainerPatch
 
     [HarmonyPostfix]
     [HarmonyPatch("OnTileEntityChanged")]
-    public static void OnTileEntityChanged(XUiC_LootContainer __instance, TileEntity _te, int _dataObject)
+    public static void OnTileEntityChanged(XUiC_LootContainer __instance, ITileEntity _te)
     {
         if (__instance is Quartz.XUiC_LootContainer instance)
         {

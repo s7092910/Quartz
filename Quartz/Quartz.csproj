@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>$(PATH_7D2D_MANAGED)\0Harmony.dll</HintPath>
+      <HintPath>..\..\7DaysToDie_Data\Managed\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
@@ -57,12 +57,19 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="NGUI">
+      <HintPath>..\..\7DaysToDie_Data\Managed\NGUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="Unity.Addressables, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>$(PATH_7D2D_MANAGED)\UnityEngine.dll</HintPath>
       <Private>False</Private>
@@ -80,16 +87,17 @@
       <HintPath>$(PATH_7D2D_MANAGED)\UnityEngine.ImageConversionModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\7DaysToDie_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>$(PATH_7D2D_MANAGED)\UnityEngine.InputLegacyModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
       <HintPath>$(PATH_7D2D_MANAGED)\UnityEngine.PhysicsModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.TextCoreModule">
-      <HintPath>$(PATH_7D2D_MANAGED)\UnityEngine.TextCoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -119,6 +127,7 @@
     <Compile Include="Source\Bindings\BindingInfo_Harmony.cs" />
     <Compile Include="Source\Console\ConsoleCmdQuartz.cs" />
     <Compile Include="Source\Controllers\Crafting\Workstations\XUiC_WorkstationFuelGrid_Harmony.cs" />
+    <Compile Include="Source\Controllers\Crafting\Workstations\XUiC_WorkstationWindowGroup.cs" />
     <Compile Include="Source\Controllers\Crafting\XUiC_RecipeEntry.cs" />
     <Compile Include="Source\Controllers\Crafting\Workstations\XUiC_WorkstationFuelGrid.cs" />
     <Compile Include="Source\Controllers\Crafting\Workstations\XUiC_WorkstationToolGrid.cs" />
@@ -126,7 +135,7 @@
     <Compile Include="Source\Controllers\Inventory\ItemStack\XUiC_RequiredItemStack_Harmony.cs" />
     <Compile Include="Source\Controllers\Map\MapColorDatabase\ChunkCluster_Harmony.cs" />
     <Compile Include="Source\Controllers\Map\MapColorDatabase\MapColorDatabase.cs" />
-    <Compile Include="Source\Controllers\Map\MapColorDatabase\MapChunkDatabase_Harmony.cs" />
+    <Compile Include="Source\Controllers\Map\MapColorDatabase\IMapChunkDatabase_Harmony.cs" />
     <Compile Include="Source\Controllers\Map\NavObject\NavObjectClassExtensions.cs" />
     <Compile Include="Source\Controllers\Map\NavObject\NavObjectClass_Harmony.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MiniMap.cs" />
@@ -158,10 +167,8 @@
     <Compile Include="Source\Controllers\Inventory\LootWindow\XUiC_LootContainer_Harmony.cs" />
     <Compile Include="Source\Controllers\Inventory\LootWindow\XUiC_LootWindow_Harmony.cs" />
     <Compile Include="Source\Controllers\Inventory\SearchUtil.cs" />
-    <Compile Include="Source\Controllers\Inventory\SortUtil.cs" />
     <Compile Include="Source\Controllers\Inventory\VehicleStorageWindow\XUiC_VehicleContainer.cs" />
     <Compile Include="Source\Controllers\Inventory\VehicleStorageWindow\XUiC_VehicleContainer_Harmony.cs" />
-    <Compile Include="Source\Controllers\MainMenu\MainMenuMusic_Harmony.cs" />
     <Compile Include="Source\Controllers\XUiC_RandomTexture.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MapInvitesListEntry.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MapWaypointListEntry.cs" />
@@ -170,16 +177,21 @@
     <Compile Include="Source\Controllers\XUiC_Spinner.cs" />
     <Compile Include="Source\Controllers\XUiC_RandomVideo.cs" />
     <Compile Include="Source\Controllers\XUiC_CVarTimer.cs" />
+    <Compile Include="Source\Debugging\QuartzDebug.cs" />
     <Compile Include="Source\Inputs\MinimapActions.cs" />
     <Compile Include="Source\Models\UIDisplay\DisplayInfoEntry.cs" />
     <Compile Include="Source\Models\UIDisplay\UIDisplayInfoFromXml_Harmony.cs" />
     <Compile Include="Source\Settings\MinimapSettings.cs" />
     <Compile Include="Source\Utils\TextureExtensions.cs" />
     <Compile Include="Source\Utils\VehicleExtensions.cs" />
+    <Compile Include="Source\Utils\XUiM_WorkstationExtensions.cs" />
+    <Compile Include="Source\Views\Harmony\QuartzResourcesAPI.cs" />
+    <Compile Include="Source\Views\Harmony\ResourcesAPI_Harmony.cs" />
     <Compile Include="Source\Views\MaskedTextures\UIMaskedTexture.cs" />
     <Compile Include="Source\Views\MaskedTextures\XUiV_MaskedPanel.cs" />
     <Compile Include="Source\Views\MaskedTextures\XUiV_MaskedTexture.cs" />
     <Compile Include="Source\Views\Harmony\UIDrawCall_Harmony.cs" />
+    <Compile Include="Source\Views\ScrollView\UIScrollView_Harmony.cs" />
     <Compile Include="Source\Views\XUiV_AnimatedSprite.cs" />
     <Compile Include="Source\XUI\XUi_Harmony.cs" />
     <Compile Include="Source\Managers\FontManager.cs" />
@@ -216,6 +228,9 @@
     <Folder Include="Source\Overhaul\Models\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="News\clquartz.png" />
+    <Content Include="News\clquartz.xml" />
+    <Content Include="News\noquartz.xml" />
     <Content Include="Quartz Mod Folder\Config\blocks.xml" />
     <Content Include="Quartz Mod Folder\Config\Localization.txt" />
     <Content Include="Quartz Mod Folder\UIAtlases\UIAtlas\quartz_scrollbar_background.png" />

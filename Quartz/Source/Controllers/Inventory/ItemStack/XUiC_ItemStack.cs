@@ -20,14 +20,10 @@ namespace Quartz
     {
         private const string TAG = "ItemStack";
 
-        private bool isALockedSlot;
         private bool matchesSearch;
         private bool isSearchActive;
 
-        protected bool isOver;
-
         protected Color32 lockedSlotColor = new Color32(96, 96, 96, byte.MaxValue);
-        protected Color32 selectColor = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
         protected Color32 searchColor = new Color32(96, 96, 96, byte.MaxValue);
         protected Color32 noMatchTintColor = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
 
@@ -38,24 +34,6 @@ namespace Quartz
         protected new Color32 selectionBorderColor;
 
         private readonly CachedStringFormatterXuiRgbaColor colorFormatter = new CachedStringFormatterXuiRgbaColor();
-
-        private readonly CachedStringFormatter<int> itemcountFormatter = new CachedStringFormatter<int>((int i) => i.ToString());
-
-        public bool IsALockedSlot
-        {
-            get
-            {
-                return isALockedSlot;
-            }
-            set
-            {
-                if (isALockedSlot != value)
-                {
-                    isALockedSlot = value;
-                    RefreshBindings(false);
-                }
-            }
-        }
 
         public bool IsSearchActive
         {
@@ -89,22 +67,6 @@ namespace Quartz
             }
         }
 
-        protected new Color32 SelectionBorderColor
-        {
-            get
-            {
-                return selectionBorderColor;
-            }
-            set
-            {
-                if (!selectionBorderColor.ColorEquals(value))
-                {
-                    selectionBorderColor = value;
-                    IsDirty = true;
-                }
-            }
-        }
-
         public override string ItemIconColor
         {
             get
@@ -128,9 +90,6 @@ namespace Quartz
         {
             switch (bindingName)
             {
-                case "isalockedslot":
-                    value = isALockedSlot.ToString();
-                    return true;
                 case "issearchactive":
                     value = isSearchActive.ToString();
                     return true;
@@ -199,18 +158,18 @@ namespace Quartz
             }
         }
 
-        protected override void OnHovered(bool isOver)
+        public override void OnHovered(bool isOver)
         {
             this.isOver = isOver;
             base.OnHovered(isOver);
         }
 
-        protected override void SelectedChanged(bool _isSelected)
+        public override void SelectedChanged(bool _isSelected)
         {
             
         }
 
-        protected virtual void updateBorderColor()
+        protected new virtual void updateBorderColor()
         {
             if (IsDragAndDrop)
             {
@@ -232,7 +191,7 @@ namespace Quartz
             {
                 SelectionBorderColor = searchColor;
             }
-            else if (isALockedSlot && isLockedSlotColorSet)
+            else if (userLockedSlot && isLockedSlotColorSet)
             {
                 SelectionBorderColor = lockedSlotColor;
             }
