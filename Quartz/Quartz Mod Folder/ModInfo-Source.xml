@@ -21,4 +21,6 @@ limitations under the License.*/-->
 	<Description value="A UI framework mod that adds some new XUi Widgets and XUi Controllers that can be used by modders" />
 	<Author value="Laydor" />
 	<Website value="https://github.com/s7092910/Quartz" />
+	<Icon value="Textures/Q_logo_icon.png" />
+	<Banner value="Textures/Q_logo_subtle_shadow.png" />
 </xml>
