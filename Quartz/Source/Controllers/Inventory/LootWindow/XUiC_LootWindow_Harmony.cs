@@ -70,4 +70,19 @@ public class XUiC_LootWindowPatch
 
         return false;
     }
+
+    [HarmonyPrefix]
+    [HarmonyPatch("GetBindingValue")]
+    public static bool GetBindingValue(XUiC_LootWindow __instance, ref bool __result, ref string _value, string _bindingName)
+    {
+        switch (_bindingName)
+        {
+            case "userlockmode":
+                _value = __instance.lootContainer != null && __instance.lootContainer is Quartz.XUiC_LootContainer lootContainer ? lootContainer.IsIndividualSlotLockingAllowed.ToString() : "False";
+                __result = true;
+                return false;
+            default:
+                return true;
+        }
+    }
 }

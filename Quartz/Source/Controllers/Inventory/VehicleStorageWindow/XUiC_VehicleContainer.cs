@@ -36,8 +36,30 @@ namespace Quartz
 		protected int ignoredLockedSlots;
 
 		private string searchResult;
+        protected bool userLockMode;
 
-        public bool IsIndividualSlotLockingAllowed { get; set; }
+        public bool IsIndividualSlotLockingAllowed
+        {
+            get
+            {
+                return userLockMode;
+            }
+            set
+            {
+                if (value == userLockMode)
+                {
+                    return;
+                }
+                if (standardControls != null)
+                {
+                    standardControls.LockModeChanged(value);
+                }
+                userLockMode = value;
+                WindowGroup.isEscClosable = !userLockMode;
+                xui.playerUI.windowManager.GetModalWindow().isEscClosable = !userLockMode;
+                RefreshBindings();
+            }
+        }
 
         public override void Init()
 		{
@@ -125,6 +147,16 @@ namespace Quartz
             }
 		}
 
+        public override void UpdateInput()
+        {
+            base.UpdateInput();
+            PlayerActionsLocal playerInput = xui.playerUI.playerInput;
+            if (IsIndividualSlotLockingAllowed && (playerInput.GUIActions.Cancel.WasPressed || playerInput.PermanentActions.Cancel.WasPressed))
+            {
+                IsIndividualSlotLockingAllowed = false;
+            }
+        }
+
         public override void OnOpen()
         {
             base.OnOpen();
@@ -136,7 +168,20 @@ namespace Quartz
         {
             base.OnClose();
             QuartzInputManager.inventoryActions.Enabled = false;
+            IsIndividualSlotLockingAllowed = false;
             vehicle = null;
+        }
+
+        public override bool GetBindingValue(ref string value, string bindingName)
+        {
+            switch (bindingName)
+            {
+                case "userlockmode":
+                    value = userLockMode.ToString();
+                    return true;
+                default:
+                    return base.GetBindingValue(ref value, bindingName);
+            }
         }
 
         public virtual void SetCurrentVehicle()
@@ -263,7 +308,7 @@ namespace Quartz
                 if(index >= ignoredLockedSlots)
                 {
                     itemStack.UserLockedSlot = !itemStack.UserLockedSlot;
-                    Manager.PlayButtonClick();
+                    Manager.PlayXUiSound(xui.uiClickSound, 0.75f);
                     SaveLockedSlots();
                 }
             }

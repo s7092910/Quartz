@@ -238,6 +238,8 @@
     <Content Include="News\noquartz.xml" />
     <Content Include="Quartz Mod Folder\Config\blocks.xml" />
     <Content Include="Quartz Mod Folder\Config\Localization.txt" />
+    <Content Include="Quartz Mod Folder\Textures\Q_logo_icon.png" />
+    <Content Include="Quartz Mod Folder\Textures\Q_logo_subtle_shadow.png" />
     <Content Include="Quartz Mod Folder\UIAtlases\UIAtlas\quartz_scrollbar_background.png" />
     <Content Include="Quartz Mod Folder\UIAtlases\UIAtlas\quartz_scrollbar_handler.png" />
     <Content Include="Quartz Mod Folder\Config\XUi\windows.xml" />

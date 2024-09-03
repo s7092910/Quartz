@@ -29,6 +29,7 @@ namespace Quartz
         private const string lockedSlotsCvarName = "$varQuartzLootContainerLockedSlots";
 
         protected global::XUiC_ContainerStandardControls standardControls;
+        protected XUiC_LootWindow lootWindow;
         protected XUiC_ComboBoxInt comboBox;
         protected XUiV_Button toggleLockModeButton;
 
@@ -36,18 +37,45 @@ namespace Quartz
 
         protected string searchResult;
 
-        public bool IsIndividualSlotLockingAllowed { get; set; }
+        protected bool userLockMode;
+
+        public bool IsIndividualSlotLockingAllowed
+        {
+            get
+            {
+                return userLockMode;
+            }
+            set
+            {
+                if (value == userLockMode)
+                {
+                    return;
+                }
+                if (standardControls != null)
+                {
+                    standardControls.LockModeChanged(value);
+                }
+                userLockMode = value;
+                WindowGroup.isEscClosable = !userLockMode;
+                xui.playerUI.windowManager.GetModalWindow().isEscClosable = !userLockMode;
+                RefreshBindings();
+                if(lootWindow != null)
+                {
+                    lootWindow.RefreshBindings();
+                }
+            }
+        }
 
         public override void Init()
 		{
 			base.Init();
-			XUiController parent = GetParentByType<XUiC_LootWindow>();
-			if (parent == null)
+			lootWindow = GetParentByType<XUiC_LootWindow>();
+			if (lootWindow == null)
 			{
 				return;
 			}
 
-            standardControls = parent.GetChildByType<global::XUiC_ContainerStandardControls>();
+            standardControls = lootWindow.GetChildByType<global::XUiC_ContainerStandardControls>();
             standardControls.LockModeToggled = OnLockModeToggled;
 
             comboBox = standardControls.GetChildByType<XUiC_ComboBoxInt>();
@@ -56,7 +84,7 @@ namespace Quartz
                 comboBox.OnValueChanged += OnLockedSlotsChange;
             }
 
-            XUiC_TextInput searchInput = parent.GetChildByType<XUiC_TextInput>();
+            XUiC_TextInput searchInput = lootWindow.GetChildByType<XUiC_TextInput>();
             if (searchInput != null)
             {
                 searchInput.OnChangeHandler += OnSearchInputChange;
@@ -79,6 +107,17 @@ namespace Quartz
             }
         }
 
+        public override void UpdateInput()
+        {
+            base.UpdateInput();
+            PlayerActionsLocal playerInput = xui.playerUI.playerInput;
+            if (IsIndividualSlotLockingAllowed && (playerInput.GUIActions.Cancel.WasPressed || playerInput.PermanentActions.Cancel.WasPressed))
+            {
+                IsIndividualSlotLockingAllowed = false;
+            }
+        }
+
+
         public override void OnOpen()
         {
             base.OnOpen();
@@ -90,6 +129,19 @@ namespace Quartz
         {
             base.OnClose();
             QuartzInputManager.inventoryActions.Enabled = false;
+            IsIndividualSlotLockingAllowed = false;
+        }
+
+        public override bool GetBindingValue(ref string value, string bindingName)
+        {
+            switch (bindingName)
+            {
+                case "userlockmode":
+                    value = userLockMode.ToString();
+                    return true;
+                default:
+                    return base.GetBindingValue(ref value, bindingName);
+            }
         }
 
         public virtual void SetCurrentTileEntity(ITileEntityLootable container)
@@ -149,6 +201,7 @@ namespace Quartz
         public void OnLockModeToggled()
         {
             IsIndividualSlotLockingAllowed = !IsIndividualSlotLockingAllowed;
+
         }
 
         public int TotalLockedSlotsCount()
@@ -222,7 +275,7 @@ namespace Quartz
                 if (index >= ignoredLockedSlots)
                 {
                     itemStack.UserLockedSlot = !itemStack.UserLockedSlot;
-                    Manager.PlayButtonClick();
+                    Manager.PlayXUiSound(xui.uiClickSound, 0.75f);
                     SaveLockedSlots();
                 }
             }
