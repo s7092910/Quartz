@@ -83,6 +83,27 @@ namespace Quartz
                 case "itemammoname":
                     value = GetAmmoName();
                     return true;
+                case "itemql":
+                    value = "";
+                    if (itemStack != null && !itemStack.IsEmpty() && itemClass != null && itemClass.ShowQualityBar)
+                    {
+                        value = itemStack.itemValue.Quality > 0 ? durabilitytextFormatter.Format(itemStack.itemValue.Quality) : itemStack.itemValue.IsMod ? "*" : "";
+                    }
+                    return true;
+                case "stackcount":
+                    value = "";
+                    if (itemStack != null && !itemStack.IsEmpty() && itemClass != null && !itemClass.ShowQualityBar)
+                    {
+                        value = itemClass.Stacknumber == 1 ? "" : durabilitytextFormatter.Format(itemStack.count);
+                    }
+                    return true;
+                case "weapontype":
+                    value = "";
+                    if (itemClass != null && itemClass.Properties.Contains("WeaponType"))
+                    {
+                        value = itemClass.Properties.GetString("WeaponType");
+                    }
+                    return true;
                 default:
                     return base.GetBindingValue(ref value, bindingName);
             }
