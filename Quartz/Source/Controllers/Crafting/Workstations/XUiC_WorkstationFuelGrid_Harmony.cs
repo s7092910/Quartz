@@ -31,6 +31,25 @@ public static class XUiC_WorkstationFuelGridPatch
         // its a stub so it has no initial content
         throw new NotImplementedException(TAG + "onFuelItemsChanged()");
     }
+
+    [HarmonyPrefix]
+    [HarmonyPatch("AddItem", new Type[] {typeof(ItemStack) })]
+    public static bool AddItem(XUiC_WorkstationFuelGrid __instance, ItemStack _item, ref bool __result)
+    {
+        for (int i = 0; i < __instance.itemControllers.Length; i++)
+        {
+            XUiC_ItemStack xuiC_ItemStack = __instance.itemControllers[i];
+            ItemStack itemStack = xuiC_ItemStack.ItemStack;
+            if ((itemStack == null || itemStack.IsEmpty()) && xuiC_ItemStack.CanSwap(_item))
+            {
+                xuiC_ItemStack.ItemStack = _item;
+                __result = true;
+                return false;
+            }
+        }
+        __result = false;
+        return false;
+    }
 }
 
 [HarmonyPatch(typeof(TileEntity))]
