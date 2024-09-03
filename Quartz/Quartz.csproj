@@ -126,6 +126,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\Bindings\BindingInfo_Harmony.cs" />
     <Compile Include="Source\Console\ConsoleCmdQuartz.cs" />
+    <Compile Include="Source\Controllers\Challenges\XUiC_ChallengeEntryDescriptionWindow.cs" />
+    <Compile Include="Source\Controllers\Challenges\XUiC_ChallengeEntryDescriptionWindow_Harmony.cs" />
+    <Compile Include="Source\Controllers\Challenges\XUiC_ChallengeEntryObjectiveEntry.cs" />
+    <Compile Include="Source\Controllers\CharacterFrame\XUiC_CharacterFrameWindow_Harmony.cs" />
     <Compile Include="Source\Controllers\Crafting\Workstations\XUiC_WorkstationFuelGrid_Harmony.cs" />
     <Compile Include="Source\Controllers\Crafting\Workstations\XUiC_WorkstationWindowGroup.cs" />
     <Compile Include="Source\Controllers\Crafting\XUiC_RecipeEntry.cs" />

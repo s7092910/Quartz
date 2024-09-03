@@ -43,3 +43,4 @@ quartzUiSpriteWindowHeader,UI,Menu,x,,UIAtlas Sprites
 quartzXuiExport,UI,Menu,x,,Export Sprites
 quartzXuiExplorer,UI,Menu,x,,Open Export Folder
 quartzTooltipShowModSprites,UI,Menu,x,,Switch to show modded UIAtlas sprites
+quartzMaxLevel,UI,,x,,Max Level
