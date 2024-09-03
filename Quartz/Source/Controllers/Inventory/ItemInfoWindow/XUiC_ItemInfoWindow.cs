@@ -101,7 +101,7 @@ namespace Quartz
                     value = "";
                     if (itemClass != null && itemClass.Properties.Contains("WeaponType"))
                     {
-                        value = itemClass.Properties.GetString("WeaponType");
+                        value = Localization.Get(itemClass.Properties.GetString("WeaponType"));
                     }
                     return true;
                 default:
