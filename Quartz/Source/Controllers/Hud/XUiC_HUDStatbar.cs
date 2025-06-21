@@ -19,7 +19,7 @@ namespace Quartz.Hud
 {
     public abstract class XUiC_HUDStatbar : XUiController
     {
-        private EntityPlayerLocal localPlayer;
+        protected EntityPlayerLocal localPlayer;
 
         private XUiV_Sprite barContent;
 

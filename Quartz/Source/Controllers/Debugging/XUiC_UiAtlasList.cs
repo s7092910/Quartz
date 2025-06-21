@@ -279,7 +279,7 @@ namespace Quartz.Debugging
         }
 
 
-        public class ListEntry : XUiListEntry
+        public class ListEntry : XUiListEntry<ListEntry>
         {
             private UISpriteData spriteData;
 
@@ -288,7 +288,7 @@ namespace Quartz.Debugging
                 this.spriteData = spriteData;
             }
 
-            public override int CompareTo(object otherEntry)
+            public override int CompareTo(ListEntry otherEntry)
             {
                 if (otherEntry is ListEntry entry)
                 {

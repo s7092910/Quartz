@@ -13,11 +13,14 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using Quartz.Hud;
+using UnityEngine;
 
 namespace Quartz
 {
     public class XUiC_HUDStealth : XUiC_HUDStatbar
     {
+        public readonly CachedStringFormatterXuiRgbaColor stealthColorFormatter = new CachedStringFormatterXuiRgbaColor();
+
         private int buffOffset = 52;
 
         public override bool ParseAttribute(string attribute, string value, XUiController _parent)
@@ -37,6 +40,18 @@ namespace Quartz
             }
 
             return false;
+        }
+
+        public override bool GetBindingValue(ref string value, string bindingName)
+        {
+            switch (bindingName)
+            {
+                case "stealthcolor":
+                    value = stealthColorFormatter.Format(localPlayer ? localPlayer.Stealth.ValueColorUI : default);
+                    return true;
+                default:
+                    return base.GetBindingValue(ref value, bindingName);
+            }
         }
 
         protected override bool IsStatVisible()

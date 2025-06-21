@@ -105,7 +105,8 @@
       <HintPath>$(PATH_7D2D_MANAGED)\UnityEngine.TextRenderingModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.UnityWebRequestModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="UnityEngine.UnityWebRequestModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestTextureModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -141,10 +142,10 @@
     <Compile Include="Source\Controllers\Map\MapColorDatabase\ChunkCluster_Harmony.cs" />
     <Compile Include="Source\Controllers\Map\MapColorDatabase\MapColorDatabase.cs" />
     <Compile Include="Source\Controllers\Map\MapColorDatabase\IMapChunkDatabase_Harmony.cs" />
-    <Compile Include="Source\Controllers\Map\NavObject\NavObjectClassExtensions.cs" />
-    <Compile Include="Source\Controllers\Map\NavObject\NavObjectClass_Harmony.cs" />
+    <Compile Include="Source\Controllers\Map\NavObject\NavObjectExtensions.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MiniMap.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MinimapStats.cs" />
+    <Compile Include="Source\Controllers\PlayerStats\StatBinding.cs" />
     <Compile Include="Source\Controllers\Trader\XUiC_TraderWindow.cs" />
     <Compile Include="Source\Controllers\XUiC_DialIndicator.cs" />
     <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_AttitudeIndictator.cs" />
@@ -174,6 +175,7 @@
     <Compile Include="Source\Controllers\Inventory\SearchUtil.cs" />
     <Compile Include="Source\Controllers\Inventory\VehicleStorageWindow\XUiC_VehicleContainer.cs" />
     <Compile Include="Source\Controllers\Inventory\VehicleStorageWindow\XUiC_VehicleContainer_Harmony.cs" />
+    <Compile Include="Source\Controllers\PlayerStats\XUiC_PlayerStats.cs" />
     <Compile Include="Source\Controllers\XUiC_RandomTexture.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MapInvitesListEntry.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MapWaypointListEntry.cs" />
