@@ -189,7 +189,10 @@ namespace Quartz
                 QuartzInputManager.minimapActions.Enabled = true;
 
                 InitMap();
-                UpdateFullMap();
+                if (MinimapSettings.Enabled)
+                {
+                    UpdateFullMap();
+                }
                 LocalPlayerCamera localPlayerCamera = xui.playerUI.GetComponentInParent<LocalPlayerCamera>();
 
                 if (localPlayerCamera != null)
