@@ -212,7 +212,7 @@ namespace Quartz
                 if (itemValue.ItemClass.IsGun())
                 {
                     ItemActionAttack itemActionAttack = itemValue.ItemClass.Actions[0] as ItemActionAttack;
-                    if (itemActionAttack == null || itemActionAttack is ItemActionMelee || (int)EffectManager.GetValue(PassiveEffects.MagazineSize, localPlayer.inventory.holdingItemItemValue, 0f, localPlayer) <= 0)
+                    if (itemActionAttack == null || itemActionAttack is ItemActionMelee || itemActionAttack.InfiniteAmmo && !itemActionAttack.ForceShowAmmo || (int)EffectManager.GetValue(PassiveEffects.MagazineSize, localPlayer.inventory.holdingItemItemValue, 0f, localPlayer) <= 0)
                     {
                         currentAmmoCount = 0;
                         return;
