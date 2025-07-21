@@ -1,4 +1,5 @@
-﻿/*Copyright 2023 Christopher Beda
+﻿
+/*Copyright 2023 Christopher Beda
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,7 +13,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
-
 namespace Quartz
 {
     public class XUiC_ItemInfoWindow : global::XUiC_ItemInfoWindow
@@ -21,11 +21,14 @@ namespace Quartz
 
         private XUiC_ItemStatEntry[] itemStatControllers;
 
+        private static ItemClass sledgeRobotItemClass;
+
         public override void Init()
         {
             base.Init();
 
             itemStatControllers = GetChildrenByType<XUiC_ItemStatEntry>();
+            sledgeRobotItemClass = ItemClass.GetItemClass("gunBotT1JunkSledge");
             foreach(var controller in itemStatControllers )
             {
                 controller.ItemInfoWindow = this;
@@ -75,7 +78,35 @@ namespace Quartz
                 }
             }
 
-            return base.GetBindingValue(ref value, bindingName);
+            switch (bindingName)
+            {
+                case "itemammoname":
+                    value = GetAmmoName();
+                    return true;
+                case "itemql":
+                    value = "";
+                    if (itemStack != null && !itemStack.IsEmpty() && itemClass != null && itemClass.ShowQualityBar)
+                    {
+                        value = itemStack.itemValue.Quality > 0 ? durabilitytextFormatter.Format(itemStack.itemValue.Quality) : itemStack.itemValue.IsMod ? "*" : "";
+                    }
+                    return true;
+                case "stackcount":
+                    value = "";
+                    if (itemStack != null && !itemStack.IsEmpty() && itemClass != null && !itemClass.ShowQualityBar)
+                    {
+                        value = itemClass.Stacknumber == 1 ? "" : durabilitytextFormatter.Format(itemStack.count);
+                    }
+                    return true;
+                case "weapontype":
+                    value = "";
+                    if (itemClass != null && itemClass.Properties.Contains("WeaponType"))
+                    {
+                        value = Localization.Get(itemClass.Properties.GetString("WeaponType"));
+                    }
+                    return true;
+                default:
+                    return base.GetBindingValue(ref value, bindingName);
+            }
         }
 
         public void SetItemStats(ItemStack itemStack, ItemDisplayEntry itemDisplayEntry)
@@ -143,6 +174,34 @@ namespace Quartz
             if (sepIndex != -1)
             {
                 value = value.Substring(sepIndex + 9, value.Length - sepIndex - 10);
+            }
+
+            return value;
+        }
+
+        private string GetAmmoName()
+        {
+            string value = string.Empty;
+            if (itemClass != null && sledgeRobotItemClass.Id != itemClass.Id)
+            {
+                ItemActionRanged itemActionRanged = itemClass.Actions[0] as ItemActionRanged;
+                if (itemActionRanged != null)
+                {
+                    if (itemActionRanged.MagazineItemNames.Length > 1)
+                    {
+                        ItemClass itemClass = ItemClass.GetItemClass(itemActionRanged.MagazineItemNames[itemStack.itemValue.SelectedAmmoTypeIndex], false);
+                        value = itemClass.GetLocalizedItemName();
+                    }
+                }
+                else
+                {
+                    ItemActionLauncher itemActionLauncher = itemClass.Actions[0] as ItemActionLauncher;
+                    if (itemActionLauncher != null && itemActionLauncher.MagazineItemNames.Length > 1)
+                    {
+                        ItemClass itemClass2 = ItemClass.GetItemClass(itemActionLauncher.MagazineItemNames[itemStack.itemValue.SelectedAmmoTypeIndex], false);
+                        value = itemClass2.GetLocalizedItemName();
+                    }
+                }
             }
 
             return value;

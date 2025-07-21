@@ -12,27 +12,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
-using Quartz.Settings;
+using HarmonyLib;
 
-namespace Quartz.Map
+[HarmonyPatch(typeof(XUiC_ChallengeEntryDescriptionWindow))]
+public static class XUiC_ChallengeEntryDescriptionWindowPatch
 {
-    public static class NavObjectClassExtensions
+
+    [HarmonyPostfix]
+    [HarmonyPatch("SetChallenge")]
+    public static void SetChallenge(global::XUiC_ChallengeEntryDescriptionWindow __instance, XUiC_ChallengeEntry challengeEntry)
     {
-        public static bool IsOnMiniMap(this NavObjectClass instance, bool isActive)
+        if (__instance is Quartz.XUiC_ChallengeEntryDescriptionWindow descriptionWindow)
         {
-            NavObjectMapSettings mapSettings = instance.GetMapSettings(isActive);
-
-            if(mapSettings == null)
-            {
-                return false;
-            }
-
-            if(!mapSettings.Properties.Contains("minimap_only"))
-            {
-                return true;
-            }
-
-            return MinimapSettings.ShowMinimapOnlyIcons || !mapSettings.Properties.GetBool("minimap_only");
+            descriptionWindow.SetObjectives();
         }
     }
 }

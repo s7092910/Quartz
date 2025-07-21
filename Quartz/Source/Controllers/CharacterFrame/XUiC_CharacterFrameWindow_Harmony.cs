@@ -14,18 +14,21 @@ limitations under the License.*/
 
 using HarmonyLib;
 
-namespace Quartz.Map
+namespace Quartz
 {
-    [HarmonyPatch(typeof(NavObjectClass))]
-    public class NavObjectClass_Harmony
+
+    [HarmonyPatch(typeof(XUiC_CharacterFrameWindow))]
+    public static class XUiC_CharacterFrameWindowPatch
     {
-        [HarmonyPrefix]
-        [HarmonyPatch("IsOnMap")]
-        private static bool IsOnMap(NavObjectClass __instance, bool isActive, ref bool __result)
+
+        [HarmonyPostfix]
+        [HarmonyPatch("GetBindingValue")]
+        public static void GetBindingValue(XUiC_CharacterFrameWindow __instance, ref string value, string bindingName)
         {
-            NavObjectMapSettings mapSettings = __instance.GetMapSettings(isActive);
-            __result = mapSettings != null && !(mapSettings.Properties.Contains("minimap_only") && mapSettings.Properties.GetBool("minimap_only"));
-            return false;
+            if (__instance.player != null && bindingName == "playerxptonextlevel" && XUiM_Player.GetLevel(__instance.player) == Progression.MaxLevel)
+            {
+                value = Localization.Get("quartzMaxLevel");
+            }
         }
     }
 }

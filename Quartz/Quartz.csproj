@@ -105,7 +105,8 @@
       <HintPath>$(PATH_7D2D_MANAGED)\UnityEngine.TextRenderingModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.UnityWebRequestModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="UnityEngine.UnityWebRequestModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestTextureModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -126,6 +127,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\Bindings\BindingInfo_Harmony.cs" />
     <Compile Include="Source\Console\ConsoleCmdQuartz.cs" />
+    <Compile Include="Source\Controllers\Challenges\XUiC_ChallengeEntryDescriptionWindow.cs" />
+    <Compile Include="Source\Controllers\Challenges\XUiC_ChallengeEntryDescriptionWindow_Harmony.cs" />
+    <Compile Include="Source\Controllers\Challenges\XUiC_ChallengeEntryObjectiveEntry.cs" />
+    <Compile Include="Source\Controllers\CharacterFrame\XUiC_CharacterFrameWindow_Harmony.cs" />
     <Compile Include="Source\Controllers\Crafting\Workstations\XUiC_WorkstationFuelGrid_Harmony.cs" />
     <Compile Include="Source\Controllers\Crafting\Workstations\XUiC_WorkstationWindowGroup.cs" />
     <Compile Include="Source\Controllers\Crafting\XUiC_RecipeEntry.cs" />
@@ -133,13 +138,14 @@
     <Compile Include="Source\Controllers\Crafting\Workstations\XUiC_WorkstationToolGrid.cs" />
     <Compile Include="Source\Controllers\Debugging\XUiC_UiAtlasList.cs" />
     <Compile Include="Source\Controllers\Inventory\ItemStack\XUiC_RequiredItemStack_Harmony.cs" />
+    <Compile Include="Source\Controllers\Inventory\XUiC_ItemCounter.cs" />
     <Compile Include="Source\Controllers\Map\MapColorDatabase\ChunkCluster_Harmony.cs" />
     <Compile Include="Source\Controllers\Map\MapColorDatabase\MapColorDatabase.cs" />
     <Compile Include="Source\Controllers\Map\MapColorDatabase\IMapChunkDatabase_Harmony.cs" />
-    <Compile Include="Source\Controllers\Map\NavObject\NavObjectClassExtensions.cs" />
-    <Compile Include="Source\Controllers\Map\NavObject\NavObjectClass_Harmony.cs" />
+    <Compile Include="Source\Controllers\Map\NavObject\NavObjectExtensions.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MiniMap.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MinimapStats.cs" />
+    <Compile Include="Source\Controllers\PlayerStats\StatBinding.cs" />
     <Compile Include="Source\Controllers\Trader\XUiC_TraderWindow.cs" />
     <Compile Include="Source\Controllers\XUiC_DialIndicator.cs" />
     <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_AttitudeIndictator.cs" />
@@ -169,6 +175,7 @@
     <Compile Include="Source\Controllers\Inventory\SearchUtil.cs" />
     <Compile Include="Source\Controllers\Inventory\VehicleStorageWindow\XUiC_VehicleContainer.cs" />
     <Compile Include="Source\Controllers\Inventory\VehicleStorageWindow\XUiC_VehicleContainer_Harmony.cs" />
+    <Compile Include="Source\Controllers\PlayerStats\XUiC_PlayerStats.cs" />
     <Compile Include="Source\Controllers\XUiC_RandomTexture.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MapInvitesListEntry.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MapWaypointListEntry.cs" />
@@ -191,6 +198,7 @@
     <Compile Include="Source\Views\MaskedTextures\XUiV_MaskedPanel.cs" />
     <Compile Include="Source\Views\MaskedTextures\XUiV_MaskedTexture.cs" />
     <Compile Include="Source\Views\Harmony\UIDrawCall_Harmony.cs" />
+    <Compile Include="Source\Views\ScrollView\UIScrollView.cs" />
     <Compile Include="Source\Views\ScrollView\UIScrollView_Harmony.cs" />
     <Compile Include="Source\Views\XUiV_AnimatedSprite.cs" />
     <Compile Include="Source\XUI\XUi_Harmony.cs" />
@@ -233,6 +241,8 @@
     <Content Include="News\noquartz.xml" />
     <Content Include="Quartz Mod Folder\Config\blocks.xml" />
     <Content Include="Quartz Mod Folder\Config\Localization.txt" />
+    <Content Include="Quartz Mod Folder\Textures\Q_logo_icon.png" />
+    <Content Include="Quartz Mod Folder\Textures\Q_logo_subtle_shadow.png" />
     <Content Include="Quartz Mod Folder\UIAtlases\UIAtlas\quartz_scrollbar_background.png" />
     <Content Include="Quartz Mod Folder\UIAtlases\UIAtlas\quartz_scrollbar_handler.png" />
     <Content Include="Quartz Mod Folder\Config\XUi\windows.xml" />

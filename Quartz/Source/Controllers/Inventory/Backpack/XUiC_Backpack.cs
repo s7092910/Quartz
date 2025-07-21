@@ -16,6 +16,7 @@ using Audio;
 using Quartz.Inputs;
 using Quartz.Inventory;
 using System;
+using UnityEngine;
 
 namespace Quartz
 {
@@ -150,7 +151,7 @@ namespace Quartz
                 if (index >= ignoredLockedSlots)
                 {
                     itemStack.UserLockedSlot = !itemStack.UserLockedSlot;
-                    Manager.PlayButtonClick();
+                    Manager.PlayXUiSound(xui.uiClickSound, 0.75f);
                     backpackWindow.UpdateLockedSlots(standardControls);
                 }
             }

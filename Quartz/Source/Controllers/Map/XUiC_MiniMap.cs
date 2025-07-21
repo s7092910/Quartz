@@ -189,7 +189,10 @@ namespace Quartz
                 QuartzInputManager.minimapActions.Enabled = true;
 
                 InitMap();
-                UpdateFullMap();
+                if (MinimapSettings.Enabled)
+                {
+                    UpdateFullMap();
+                }
                 LocalPlayerCamera localPlayerCamera = xui.playerUI.GetComponentInParent<LocalPlayerCamera>();
 
                 if (localPlayerCamera != null)
@@ -572,9 +575,9 @@ namespace Quartz
             {
                 NavObject navObject = navObjectList[i];
                 int key = navObject.Key;
-                if (navObject.HasRequirements && navObject.NavObjectClass.IsOnMiniMap(navObject.IsActive))
+                NavObjectMapSettings currentMapSettings = navObject.CurrentMapSettings;
+                if (currentMapSettings != null && navObject.IsOnMiniMap())
                 {
-                    NavObjectMapSettings currentMapSettings = navObject.CurrentMapSettings;
                     MinimapMarker mapObject;
                     if (!keyToNavSprite.ContainsKey(key))
                     {

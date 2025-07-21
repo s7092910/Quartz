@@ -589,15 +589,15 @@ namespace QuartzOverhaul
             DisplayInfoEntry infoEntry = itemDisplayEntry.DisplayStats[index];
             if (!CompareStack.IsEmpty())
             {
-                return XUiM_ItemStack.GetStatItemValueTextWithCompareInfo(itemStack, CompareStack, base.xui.playerUI.entityPlayer, infoEntry, flipCompare: false, useMods: false);
+                return XUiM_ItemStack.GetStatItemValueTextWithCompareInfo(itemStack.itemValue, CompareStack.itemValue, base.xui.playerUI.entityPlayer, infoEntry, flipCompare: false, useMods: false);
             }
 
             if (!EquippedStack.IsEmpty())
             {
-                return XUiM_ItemStack.GetStatItemValueTextWithCompareInfo(itemStack, EquippedStack, base.xui.playerUI.entityPlayer, infoEntry, flipCompare: true, useMods: false);
+                return XUiM_ItemStack.GetStatItemValueTextWithCompareInfo(itemStack.itemValue, EquippedStack.itemValue, base.xui.playerUI.entityPlayer, infoEntry, flipCompare: true, useMods: false);
             }
 
-            return XUiM_ItemStack.GetStatItemValueTextWithCompareInfo(itemStack, CompareStack, base.xui.playerUI.entityPlayer, infoEntry);
+            return XUiM_ItemStack.GetStatItemValueTextWithCompareInfo(itemStack.itemValue, CompareStack.itemValue, base.xui.playerUI.entityPlayer, infoEntry);
         }
 
         private void makeVisible(bool _makeVisible)

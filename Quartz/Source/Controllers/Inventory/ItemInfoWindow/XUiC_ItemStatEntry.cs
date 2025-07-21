@@ -133,13 +133,13 @@ namespace Quartz
             }
             if (!itemInfoWindow.CompareStack.IsEmpty())
             {
-                return XUiM_ItemStack.GetStatItemValueTextWithCompareInfo(itemStack, itemInfoWindow.CompareStack, xui.playerUI.entityPlayer, displayInfoEntry, false, false);
+                return XUiM_ItemStack.GetStatItemValueTextWithCompareInfo(itemStack.itemValue, itemInfoWindow.CompareStack.itemValue, xui.playerUI.entityPlayer, displayInfoEntry, false, false);
             }
             if (!itemInfoWindow.EquippedStack.IsEmpty())
             {
-                return XUiM_ItemStack.GetStatItemValueTextWithCompareInfo(itemStack, itemInfoWindow.EquippedStack, xui.playerUI.entityPlayer, displayInfoEntry, true, false);
+                return XUiM_ItemStack.GetStatItemValueTextWithCompareInfo(itemStack.itemValue, itemInfoWindow.EquippedStack.itemValue, xui.playerUI.entityPlayer, displayInfoEntry, true, false);
             }
-            return XUiM_ItemStack.GetStatItemValueTextWithCompareInfo(itemStack, itemInfoWindow.CompareStack, xui.playerUI.entityPlayer, displayInfoEntry, false, true);
+            return XUiM_ItemStack.GetStatItemValueTextWithCompareInfo(itemStack.itemValue, itemInfoWindow.CompareStack.itemValue, xui.playerUI.entityPlayer, displayInfoEntry, false, true);
         }
 
         private string GetStatIcon()

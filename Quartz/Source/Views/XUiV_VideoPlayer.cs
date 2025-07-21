@@ -12,6 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
+using System;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -107,6 +108,11 @@ namespace Quartz
             videoPlayer.loopPointReached += VideoPlayer_loopPointReached;
 
             ModEvents.GameShutdown.RegisterHandler(OnShutdown);
+        }
+
+        private void OnShutdown(ref ModEvents.SGameShutdownData _data)
+        {
+            videoPlayer.Pause();
         }
 
         public override void UpdateData()
@@ -248,11 +254,6 @@ namespace Quartz
                 renderTexture.Release();
                 videoPlayer.Stop();
             }
-        }
-
-        private void OnShutdown()
-        {
-            videoPlayer.Pause();
         }
 
         private void VideoPlayer_errorReceived(VideoPlayer source, string message)

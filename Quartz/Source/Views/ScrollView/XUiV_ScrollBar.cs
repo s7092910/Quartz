@@ -201,11 +201,11 @@ namespace Quartz.Views
         public override void UpdateData()
         {
             base.UpdateData();
-            Logging.Out(TAG, "UpdateData");
+            Logging.Out(TAG, id + ":UpdateData");
 
             if (isDirty)
             {
-                Logging.Out(TAG, "UpdateData Dirty");
+                Logging.Out(TAG, id + ":UpdateData Dirty");
 
                 panel.depth = depth;
 

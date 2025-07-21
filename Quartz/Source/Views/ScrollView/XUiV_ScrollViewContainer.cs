@@ -83,11 +83,11 @@ namespace Quartz.Views
         public override void UpdateData()
         {
             base.UpdateData();
-            Logging.Out(TAG, "UpdateData");
+            Logging.Out(TAG, id + ":UpdateData");
 
             if (isDirty)
             {
-                Logging.Out(TAG, "UpdateData Dirty");
+                Logging.Out(TAG, id + ":UpdateData Dirty");
                 if (collider != null)
                 {
                     float x = size.x * 0.5f;
@@ -195,7 +195,7 @@ namespace Quartz.Views
             while (q.Count > 0)
             {
                 XUiController curr = q.Dequeue();
-                Logging.Out(TAG, "Find Grid curr view component = " + curr.ViewComponent);
+                Logging.Out(TAG, id + ":Find Grid curr view component = " + curr.ViewComponent);
                 grid = curr.ViewComponent as XUiV_Grid;
                 if (grid != null)
                 {

@@ -14,6 +14,8 @@ limitations under the License.*/
 
 using Audio;
 using HarmonyLib;
+using Quartz;
+using System.Collections.Generic;
 using UnityEngine;
 
 [HarmonyPatch(typeof(XUiC_MapArea))]
@@ -144,6 +146,76 @@ public class XUiC_MapAreaPatch
             y = GameManager.Instance.World.GetHeightAt(x, z);
         }
         __result = new Vector3(x, y, z);
+
+        return false;
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch("updateNavObjectList")]
+    public static bool updateNavObjectList(XUiC_MapArea __instance)
+    {
+        bool flag = true;
+        bool flag2 = false;
+        List<NavObject> navObjectList = NavObjectManager.Instance.NavObjectList;
+        __instance.navObjectsOnMapAlive.Clear();
+        for (int i = 0; i < navObjectList.Count; i++)
+        {
+            NavObject navObject = navObjectList[i];
+            NavObjectMapSettings currentMapSettings = navObject.CurrentMapSettings;
+            if (currentMapSettings != null && navObject.IsOnMap())
+            {
+                int key = navObject.Key;
+                GameObject gameObject;
+                UISprite uisprite;
+                if (!__instance.keyToNavObject.ContainsKey(key))
+                {
+                    gameObject = __instance.transformSpritesParent.gameObject.AddChild(__instance.prefabMapSprite);
+                    uisprite = gameObject.transform.Find("Sprite").GetComponent<UISprite>();
+                    string spriteName = navObject.GetSpriteName(currentMapSettings);
+                    uisprite.atlas = __instance.xui.GetAtlasByName(((global::UnityEngine.Object)uisprite.atlas).name, spriteName);
+                    uisprite.spriteName = spriteName;
+                    uisprite.depth = currentMapSettings.Layer;
+                    __instance.keyToNavObject[key] = navObject;
+                    __instance.keyToNavSprite[key] = gameObject;
+                }
+                else
+                {
+                    gameObject = __instance.keyToNavSprite[key];
+                }
+                EntityPlayer entityPlayer = navObject.TrackedEntity as EntityPlayer;
+                string text = ((entityPlayer != null) ? entityPlayer.PlayerDisplayName : navObject.DisplayName);
+                if (!string.IsNullOrEmpty(text))
+                {
+                    UILabel component = gameObject.transform.Find("Name").GetComponent<UILabel>();
+                    component.text = text;
+                    component.font = __instance.xui.GetUIFontByName("ReferenceFont", true);
+                    component.gameObject.SetActive(true);
+                    component.color = (navObject.UseOverrideColor ? navObject.OverrideColor : currentMapSettings.Color);
+                }
+                else
+                {
+                    gameObject.transform.Find("Name").GetComponent<UILabel>().text = "";
+                }
+                float spriteZoomScaleFac = __instance.getSpriteZoomScaleFac();
+                uisprite = gameObject.transform.Find("Sprite").GetComponent<UISprite>();
+                Vector3 vector = currentMapSettings.IconScaleVector * spriteZoomScaleFac;
+                uisprite.width = Mathf.Clamp((int)((float)__instance.cSpriteScale * vector.x), 9, 100);
+                uisprite.height = Mathf.Clamp((int)((float)__instance.cSpriteScale * vector.y), 9, 100);
+                uisprite.color = (navObject.hiddenOnCompass ? Color.grey : (navObject.UseOverrideColor ? navObject.OverrideColor : currentMapSettings.Color));
+                uisprite.gameObject.transform.localEulerAngles = new Vector3(0f, 0f, -navObject.Rotation.y);
+                gameObject.transform.localPosition = __instance.worldPosToScreenPos(navObject.GetPosition() + Origin.position);
+                if (currentMapSettings.AdjustCenter)
+                {
+                    gameObject.transform.localPosition += new Vector3((float)(uisprite.width / 2), (float)(uisprite.height / 2), 0f);
+                }
+                __instance.navObjectsOnMapAlive.Add((long)key);
+            }
+        }
+        if (flag && !flag2 && __instance.bMapCursorSet)
+        {
+            __instance.SetMapCursor(false);
+            __instance.xui.currentToolTip.ToolTip = string.Empty;
+        }
 
         return false;
     }
