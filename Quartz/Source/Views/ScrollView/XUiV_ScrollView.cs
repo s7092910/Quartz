@@ -12,6 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,7 +28,7 @@ namespace Quartz.Views
 
         protected XUiV_ScrollViewContainer container;
 
-        private bool opened;
+        private bool resetPositionOnNextUpdate;
 
         public UIScrollView UiScrollView
         {
@@ -160,10 +161,10 @@ namespace Quartz.Views
         public override void UpdateData()
         {
 
-            Logging.Out(TAG, "UpdateData");
+            Logging.Out(TAG, id + ":UpdateData");
             if (isDirty)
             {
-                Logging.Out(TAG, "UpdateData Dirty");
+                Logging.Out(TAG, id + ":UpdateData Dirty");
                 uiScrollView.panel.depth = depth;
                 uiScrollView.panel.softBorderPadding = true;
                 uiScrollView.contentPivot = pivot;
@@ -192,12 +193,24 @@ namespace Quartz.Views
                 uiScrollView.movement = movement;
                 uiScrollView.disableDragIfFits = true;
             }
+        }
 
-            if (opened)
+        public override void Update(float _dt)
+        {
+            //Fix for if parent is opened but not calling OnOpen to children
+            if (!uiScrollView.IsOpen && NGUITools.GetActive(uiScrollView))
             {
-                opened = false;
+                OnOpen();
+            }
+
+            base.Update(_dt);
+
+            if (resetPositionOnNextUpdate)
+            {
+                resetPositionOnNextUpdate = false;
                 ResetPosition();
             }
+
         }
 
         public override void CreateComponents(GameObject go)
@@ -209,7 +222,9 @@ namespace Quartz.Views
         public override void OnOpen()
         {
             base.OnOpen();
-            opened = true;
+            uiScrollView.IsOpen = true;
+            isDirty = true;
+            resetPositionOnNextUpdate = resetPositionOnOpen && (uiScrollView.shouldMoveVertically || uiScrollView.shouldMoveHorizontally);
         }
 
         public new void OnScroll(GameObject go, float delta)
@@ -221,15 +236,25 @@ namespace Quartz.Views
 
         public void ResetPosition()
         {
-            if (resetPositionOnOpen && (uiScrollView.shouldMoveVertically || uiScrollView.shouldMoveHorizontally))
-            {
-                uiScrollView.ResetPosition();
-            }
+            Logging.Out(TAG, id + ":ResetPosition");
+            uiScrollView.ResetPosition();
+        }
+
+        public void ResetPositionOnNextFrame()
+        {
+            resetPositionOnNextUpdate = true;
         }
 
         public void ForceResetPosition()
         {
-            uiScrollView.ResetPosition();
+            if (NGUITools.GetActive(uiScrollView))
+            {
+                uiScrollView.ResetPosition();
+            }
+            else
+            {
+                resetPositionOnNextUpdate = true;
+            }
         }
 
         private void SetScrollbar()

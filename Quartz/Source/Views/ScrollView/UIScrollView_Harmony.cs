@@ -21,23 +21,33 @@ using System.Linq;
 using System.Xml.Linq;
 using UnityEngine;
 
-//[HarmonyPatch(typeof(UIScrollView))]
-//public class UIScrollViewPatch
-//{
-//    private const string TAG = "UIScrollView";
+[HarmonyPatch(typeof(UIScrollView))]
+public class UIScrollViewPatch
+{
+    private const string TAG = "UIScrollView";
 
-//    [HarmonyPrefix]
-//    [HarmonyPatch("ResetPosition")]
-//    public static bool ResetPosition(UIScrollView __instance, ref bool ___mCalculatedBounds, UIWidget.Pivot ___contentPivot)
-//    {
-//        if (NGUITools.GetActive(__instance))
-//        {
-//            ___mCalculatedBounds = false;
-//            Vector2 pivotOffset = NGUIMath.GetPivotOffset(___contentPivot);
-//            __instance.SetDragAmount(pivotOffset.x, 1f - pivotOffset.y, updateScrollbars: false);
-//            __instance.SetDragAmount(pivotOffset.x, 1f - pivotOffset.y, updateScrollbars: true);
-//        }
+    //[HarmonyPrefix]
+    //[HarmonyPatch("ResetPosition")]
+    //public static bool ResetPosition(UIScrollView __instance, ref bool ___mCalculatedBounds, UIWidget.Pivot ___contentPivot)
+    //{
+    //    if (NGUITools.GetActive(__instance))
+    //    {
+    //        ___mCalculatedBounds = false;
+    //        Vector2 pivotOffset = NGUIMath.GetPivotOffset(___contentPivot);
+    //        __instance.SetDragAmount(pivotOffset.x, 1f - pivotOffset.y, updateScrollbars: false);
+    //        __instance.SetDragAmount(pivotOffset.x, 1f - pivotOffset.y, updateScrollbars: true);
+    //    }
 
-//        return false;
-//    }
-//}
+    //    return false;
+    //}
+
+    [HarmonyPostfix]
+    [HarmonyPatch("OnDisable")]
+    public static void ResetPosition(UIScrollView __instance)
+    {
+        if(__instance is Quartz.UIScrollView scrollview)
+        {
+            scrollview.IsOpen = false;
+        }
+    }
+}

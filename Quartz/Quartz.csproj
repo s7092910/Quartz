@@ -198,6 +198,7 @@
     <Compile Include="Source\Views\MaskedTextures\XUiV_MaskedPanel.cs" />
     <Compile Include="Source\Views\MaskedTextures\XUiV_MaskedTexture.cs" />
     <Compile Include="Source\Views\Harmony\UIDrawCall_Harmony.cs" />
+    <Compile Include="Source\Views\ScrollView\UIScrollView.cs" />
     <Compile Include="Source\Views\ScrollView\UIScrollView_Harmony.cs" />
     <Compile Include="Source\Views\XUiV_AnimatedSprite.cs" />
     <Compile Include="Source\XUI\XUi_Harmony.cs" />

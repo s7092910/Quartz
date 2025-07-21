@@ -171,7 +171,9 @@ public class XUiFromXmlPatch
         {
             view.xui = windowGroup.xui;
             XUiFromXmlReversePatch.setController(node, view, parent);
+            view.SetDefaults(parent);
             XUiFromXmlReversePatch.parseAttributes(node, view, parent, _controlParams);
+            view.SetPostParsingDefaults(parent);
 
             view.Controller.WindowGroup = windowGroup;
         }
