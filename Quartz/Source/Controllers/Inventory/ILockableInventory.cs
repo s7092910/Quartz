@@ -21,5 +21,7 @@ namespace Quartz.Inventory
         int IndividualLockedSlotsCount();
 
         int UnlockedSlotCount();
+
+        bool HasLockSlotSupport();
     }
 }

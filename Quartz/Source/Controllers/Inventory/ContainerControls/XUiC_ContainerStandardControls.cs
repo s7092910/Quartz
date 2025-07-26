@@ -85,13 +85,13 @@ namespace Quartz
             switch(bindingName)
             {
                 case "totallockedslotscount":
-                    value = inventory != null ? inventory.TotalLockedSlotsCount().ToString() : "0";
+                    value = inventory != null && inventory.HasLockSlotSupport() ? inventory.TotalLockedSlotsCount().ToString() : "";
                     return true;
                 case "individuallockedslotscount":
-                    value = inventory != null ? inventory.IndividualLockedSlotsCount().ToString() : "0";
+                    value = inventory != null && inventory.HasLockSlotSupport() ? inventory.IndividualLockedSlotsCount().ToString() : "";
                     return true;
                 case "unlockedslotscount":
-                    value = inventory != null ? inventory.UnlockedSlotCount().ToString() : "0";
+                    value = inventory != null && inventory.HasLockSlotSupport() ? inventory.UnlockedSlotCount().ToString() : "";
                     return true;
                 default:
                     return base.GetBindingValue(ref value, bindingName);

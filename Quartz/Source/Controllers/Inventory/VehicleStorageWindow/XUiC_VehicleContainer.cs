@@ -13,12 +13,9 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using Audio;
-using Platform.Local;
 using Quartz.Inputs;
 using Quartz.Inventory;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Quartz
 {
@@ -173,6 +170,11 @@ namespace Quartz
             }
 
             return count;
+        }
+
+        public bool HasLockSlotSupport()
+        {
+            return currentVehicleEntity.bag.LockedSlots != null;
         }
 
         public override void HandleSlotChangedEvent(int slotNumber, ItemStack stack)

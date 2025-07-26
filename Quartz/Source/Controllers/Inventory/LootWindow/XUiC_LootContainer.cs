@@ -145,6 +145,11 @@ namespace Quartz
             return count;
         }
 
+        public bool HasLockSlotSupport()
+        {
+            return localTileEntity.HasSlotLocksSupport;
+        }
+
         protected virtual void OnItemStackPress(XUiController sender, int mouseButton)
         {
             if (localTileEntity.HasSlotLocksSupport && sender is global::XUiC_ItemStack itemStack

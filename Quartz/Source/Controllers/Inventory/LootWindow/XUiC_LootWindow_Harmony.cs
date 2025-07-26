@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using HarmonyLib;
+using UnityEngine;
 
 [HarmonyPatch(typeof(XUiC_LootWindow))]
 public class XUiC_LootWindowPatch
@@ -21,31 +22,43 @@ public class XUiC_LootWindowPatch
 
     [HarmonyPrefix]
     [HarmonyPatch("Update")]
-    public static bool Update(XUiC_LootWindow __instance, float _dt,
-        ref bool ___activeKeyDown, ref bool ___wasReleased, ref bool ___isClosing,
-        ref XUiC_ContainerStandardControls ___standardControls, 
-        ref XUiWindowGroup ___windowGroup)
+    public static bool Update(XUiC_LootWindow __instance, float _dt)
     {
         XUiControllerPatch.Update(__instance, _dt);
 
-        if (___windowGroup.isShowing)
+        if (__instance.windowGroup.isShowing)
         {
             if (!__instance.xui.playerUI.playerInput.PermanentActions.Activate.IsPressed)
             {
-                ___wasReleased = true;
+                __instance.wasReleased = true;
             }
 
-            if (___wasReleased)
+            if (__instance.wasReleased)
             {
                 if (__instance.xui.playerUI.playerInput.PermanentActions.Activate.IsPressed)
                 {
-                    ___activeKeyDown = true;
+                    __instance.activeKeyDown = true;
                 }
 
-                if (__instance.xui.playerUI.playerInput.PermanentActions.Activate.WasReleased && ___activeKeyDown && !__instance.xui.playerUI.windowManager.IsInputActive())
+                if (__instance.xui.playerUI.playerInput.PermanentActions.Activate.WasReleased && __instance.activeKeyDown && !__instance.xui.playerUI.windowManager.IsInputActive())
                 {
-                    ___activeKeyDown = false;
+                    __instance.activeKeyDown = false;
                     __instance.xui.playerUI.windowManager.CloseAllOpenWindows();
+                }
+            }
+        }
+        if (__instance.te != null)
+        {
+            Vector3 vector = __instance.te.ToWorldCenterPos();
+            if (vector != Vector3.zero)
+            {
+                float num = Constants.cCollectItemDistance + 30f;
+                float sqrMagnitude = (__instance.xui.playerUI.entityPlayer.position - vector).sqrMagnitude;
+                if (sqrMagnitude > num * num)
+                {
+                    Log.Out("Loot Window closed at distance {0}", new object[] { Mathf.Sqrt(sqrMagnitude) });
+                    __instance.xui.playerUI.windowManager.CloseAllOpenWindows(null, false);
+                    __instance.CloseContainer(false);
                 }
             }
         }
@@ -54,16 +67,16 @@ public class XUiC_LootWindowPatch
             return false;
         }
 
-        if (!___isClosing && __instance.ViewComponent != null && __instance.ViewComponent.IsVisible && !__instance.xui.playerUI.windowManager.IsInputActive()
+        if (!__instance.isClosing && __instance.ViewComponent != null && __instance.ViewComponent.IsVisible && !__instance.xui.playerUI.windowManager.IsInputActive()
             && (__instance.xui.playerUI.playerInput.GUIActions.LeftStick.WasPressed || __instance.xui.playerUI.playerInput.PermanentActions.Reload.WasPressed))
         {
-            if (___standardControls is Quartz.XUiC_ContainerStandardControls controls)
+            if (__instance.standardControls is Quartz.XUiC_ContainerStandardControls controls)
             {
                 controls.MoveAllButLocked();
             }
             else
             {
-                ___standardControls.MoveAll();
+                __instance.standardControls.MoveAll();
             }
         }
 

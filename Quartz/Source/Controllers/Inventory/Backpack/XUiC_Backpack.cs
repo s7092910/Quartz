@@ -138,6 +138,11 @@ namespace Quartz
             return count;
         }
 
+        public bool HasLockSlotSupport()
+        {
+            return true;
+        }
+
         protected void OnSearchInputChange(XUiController sender, string text, bool changeFromCode)
         {
             searchResult = text;
