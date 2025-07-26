@@ -13,7 +13,6 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using HarmonyLib;
-using Quartz;
 
 [HarmonyPatch(typeof(XUiC_LootWindow))]
 public class XUiC_LootWindowPatch
@@ -24,7 +23,7 @@ public class XUiC_LootWindowPatch
     [HarmonyPatch("Update")]
     public static bool Update(XUiC_LootWindow __instance, float _dt,
         ref bool ___activeKeyDown, ref bool ___wasReleased, ref bool ___isClosing,
-        ref XUiC_ContainerStandardControls ___controls, 
+        ref XUiC_ContainerStandardControls ___standardControls, 
         ref XUiWindowGroup ___windowGroup)
     {
         XUiControllerPatch.Update(__instance, _dt);
@@ -58,31 +57,16 @@ public class XUiC_LootWindowPatch
         if (!___isClosing && __instance.ViewComponent != null && __instance.ViewComponent.IsVisible && !__instance.xui.playerUI.windowManager.IsInputActive()
             && (__instance.xui.playerUI.playerInput.GUIActions.LeftStick.WasPressed || __instance.xui.playerUI.playerInput.PermanentActions.Reload.WasPressed))
         {
-            if (___controls is Quartz.XUiC_ContainerStandardControls controls)
+            if (___standardControls is Quartz.XUiC_ContainerStandardControls controls)
             {
                 controls.MoveAllButLocked();
             }
             else
             {
-                ___controls.MoveAll();
+                ___standardControls.MoveAll();
             }
         }
 
         return false;
-    }
-
-    [HarmonyPrefix]
-    [HarmonyPatch("GetBindingValue")]
-    public static bool GetBindingValue(XUiC_LootWindow __instance, ref bool __result, ref string _value, string _bindingName)
-    {
-        switch (_bindingName)
-        {
-            case "userlockmode":
-                _value = __instance.lootContainer != null && __instance.lootContainer is Quartz.XUiC_LootContainer lootContainer ? lootContainer.IsIndividualSlotLockingAllowed.ToString() : "False";
-                __result = true;
-                return false;
-            default:
-                return true;
-        }
     }
 }

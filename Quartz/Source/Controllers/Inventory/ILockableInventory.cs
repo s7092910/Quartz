@@ -16,16 +16,10 @@ namespace Quartz.Inventory
 {
     public interface ILockableInventory
     {
-        bool IsIndividualSlotLockingAllowed { get; set; }
-
-        void OnLockModeToggled();
-
         int TotalLockedSlotsCount();
 
         int IndividualLockedSlotsCount();
 
         int UnlockedSlotCount();
-
-        bool[] GetLockSlots();
     }
 }

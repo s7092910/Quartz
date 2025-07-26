@@ -16,7 +16,6 @@ using HarmonyLib;
 using Quartz.Inventory;
 using System;
 using System.Reflection;
-using UnityEngine;
 
 namespace Quartz
 {
@@ -88,9 +87,6 @@ namespace Quartz
                 case "totallockedslotscount":
                     value = inventory != null ? inventory.TotalLockedSlotsCount().ToString() : "0";
                     return true;
-                case "combolockedslots":
-                    value = comboBox != null ? comboBox.valueText : "0";
-                    return true;
                 case "individuallockedslotscount":
                     value = inventory != null ? inventory.IndividualLockedSlotsCount().ToString() : "0";
                     return true;
@@ -110,65 +106,22 @@ namespace Quartz
         protected virtual void MoveSmart(XUiController sender, int mouseButton)
         {
 
-            XUiController srcWindow;
-            XUiC_ItemStackGrid srcGrid;
-            IInventory dstInventory;
-            if (MoveAllowed(out srcWindow, out srcGrid, out dstInventory))
-            {
-                XUiM_LootContainer.StashItems(srcWindow, srcGrid, dstInventory, 0, inventory.GetLockSlots(), XUiM_LootContainer.EItemMoveKind.FillAndCreate, MoveStartBottomRight);
-            }
+            base.MoveSmart();
         }
 
         protected virtual void MoveFillStacks(XUiController sender, int mouseButton)
         {
-
-            XUiController srcWindow;
-            XUiC_ItemStackGrid srcGrid;
-            IInventory dstInventory;
-            if (MoveAllowed(out srcWindow, out srcGrid, out dstInventory))
-            {
-                XUiM_LootContainer.StashItems(srcWindow, srcGrid, dstInventory, 0, inventory.GetLockSlots(), XUiM_LootContainer.EItemMoveKind.FillOnly, MoveStartBottomRight);
-            }
+            base.MoveFillStacks();
         }
 
         protected virtual void MoveFillAndSmart(XUiController sender, int mouseButton)
         {
-
-            XUiController srcWindow;
-            XUiC_ItemStackGrid srcGrid;
-            IInventory dstInventory;
-
-            float unscaledTime = Time.unscaledTime;
-            XUiM_LootContainer.EItemMoveKind moveKind = XUiM_LootContainer.EItemMoveKind.FillOnlyFirstCreateSecond;
-            if (unscaledTime - lastStashTime < 2f)
-            {
-                moveKind = XUiM_LootContainer.EItemMoveKind.FillAndCreate;
-            }
-
-            if (MoveAllowed(out srcWindow, out srcGrid, out dstInventory))
-            {
-                XUiM_LootContainer.StashItems(srcWindow, srcGrid, dstInventory, 0, inventory.GetLockSlots(), moveKind, MoveStartBottomRight);
-                lastStashTime = unscaledTime;
-            }
+            base.MoveFillAndSmart();
         }
 
         protected virtual void MoveAll(XUiController sender, int mouseButton)
         {
-            XUiController srcWindow;
-            XUiC_ItemStackGrid srcGrid;
-            IInventory dstInventory;
-            if (MoveAllowed(out srcWindow, out srcGrid, out dstInventory))
-            {
-                ValueTuple<bool, bool> valueTuple = XUiM_LootContainer.StashItems(srcWindow, srcGrid, dstInventory, 0, inventory.GetLockSlots(), XUiM_LootContainer.EItemMoveKind.All, MoveStartBottomRight);
-                bool item = valueTuple.Item1;
-                bool item2 = valueTuple.Item2;
-                Action<bool, bool> moveAllDone = MoveAllDone;
-                if (moveAllDone == null)
-                {
-                    return;
-                }
-                moveAllDone(item, item2);
-            }
+            base.MoveAll();
         }
 
         private void ClearEventHandlers(XUiController controller, string eventName)
