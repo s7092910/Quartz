@@ -22,8 +22,8 @@ namespace Quartz
     {
 
         [HarmonyPostfix]
-        [HarmonyPatch("GetBindingValue")]
-        public static void GetBindingValue(XUiC_CharacterFrameWindow __instance, ref string value, string bindingName)
+        [HarmonyPatch("GetBindingValueInternal")]
+        public static void GetBindingValueInternal(XUiC_CharacterFrameWindow __instance, ref string value, string bindingName)
         {
             if (__instance.player != null && bindingName == "playerxptonextlevel" && XUiM_Player.GetLevel(__instance.player) == Progression.MaxLevel)
             {

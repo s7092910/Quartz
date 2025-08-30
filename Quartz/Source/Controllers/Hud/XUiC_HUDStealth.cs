@@ -50,7 +50,7 @@ namespace Quartz
                     value = stealthColorFormatter.Format(localPlayer ? localPlayer.Stealth.ValueColorUI : default);
                     return true;
                 default:
-                    return base.GetBindingValue(ref value, bindingName);
+                    return base.GetBindingValueInternal(ref value, bindingName);
             }
         }
 

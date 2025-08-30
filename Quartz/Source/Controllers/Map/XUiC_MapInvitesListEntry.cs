@@ -56,7 +56,7 @@ namespace Quartz
                     value = Waypoint == null ? "true" : "false";
                     return true;
                 default:
-                    return base.GetBindingValue(ref value, bindingName);
+                    return base.GetBindingValueInternal(ref value, bindingName);
             }
         }
     }

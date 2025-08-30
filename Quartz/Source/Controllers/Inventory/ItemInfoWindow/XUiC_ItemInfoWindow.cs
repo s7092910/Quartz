@@ -74,7 +74,7 @@ namespace Quartz
                         value = XUiC_ItemInfoWindowPatch.GetStatValue(this, index);
                         return true;
                     default:
-                        return base.GetBindingValue(ref value, bindingName);
+                        return base.GetBindingValueInternal(ref value, bindingName);
                 }
             }
 
@@ -105,7 +105,7 @@ namespace Quartz
                     }
                     return true;
                 default:
-                    return base.GetBindingValue(ref value, bindingName);
+                    return base.GetBindingValueInternal(ref value, bindingName);
             }
         }
 

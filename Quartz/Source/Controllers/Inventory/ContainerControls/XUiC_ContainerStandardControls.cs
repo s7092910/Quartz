@@ -94,7 +94,7 @@ namespace Quartz
                     value = inventory != null && inventory.HasLockSlotSupport() ? inventory.UnlockedSlotCount().ToString() : "";
                     return true;
                 default:
-                    return base.GetBindingValue(ref value, bindingName);
+                    return base.GetBindingValueInternal(ref value, bindingName);
             }
         }
 

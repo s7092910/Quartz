@@ -104,7 +104,7 @@ namespace Quartz
                     value = textureOpacity.ToString();
                     return true;
                 default:
-                    return base.GetBindingValue(ref value, bindingName);
+                    return base.GetBindingValueInternal(ref value, bindingName);
             }
         }
     }
