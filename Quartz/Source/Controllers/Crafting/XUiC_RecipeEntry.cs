@@ -33,7 +33,7 @@ namespace Quartz
                 background = backgroundController.ViewComponent as XUiV_Sprite;
             }
         }
-        public override bool GetBindingValue(ref string value, string bindingName)
+        public override bool GetBindingValueInternal(ref string value, string bindingName)
         {
             switch(bindingName)
             {
