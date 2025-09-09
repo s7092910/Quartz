@@ -55,7 +55,7 @@ namespace Quartz
             }
         }
 
-        public override bool GetBindingValue(ref string value, string bindingName)
+        public override bool GetBindingValueInternal(ref string value, string bindingName)
         {
             switch (bindingName)
             {
@@ -81,7 +81,7 @@ namespace Quartz
                     value = HasStatEntry().ToString();
                     return true;
                 default:
-                    return base.GetBindingValue(ref value, bindingName);
+                    return base.GetBindingValueInternal(ref value, bindingName);
             }
         }
 

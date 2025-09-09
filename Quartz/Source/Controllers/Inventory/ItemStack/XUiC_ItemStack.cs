@@ -86,7 +86,7 @@ namespace Quartz
             base.Update(_dt);
         }
 
-        public override bool GetBindingValue(ref string value, string bindingName)
+        public override bool GetBindingValueInternal(ref string value, string bindingName)
         {
             switch (bindingName)
             {
@@ -130,7 +130,7 @@ namespace Quartz
                     value = itemStack.IsEmpty() ? "true" : "false";
                     return true;
                 default:
-                    return base.GetBindingValue(ref value, bindingName);
+                    return base.GetBindingValueInternal(ref value, bindingName);
             }
         }
 

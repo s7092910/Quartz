@@ -40,7 +40,7 @@ namespace Quartz
             base.Update(_dt);
         }
 
-        public override bool GetBindingValue(ref string value, string bindingName)
+        public override bool GetBindingValueInternal(ref string value, string bindingName)
         {
             if (bindingName.StartsWith("itemstat") && bindingName.Contains("-"))
             {
@@ -74,7 +74,7 @@ namespace Quartz
                         value = XUiC_ItemInfoWindowPatch.GetStatValue(this, index);
                         return true;
                     default:
-                        return base.GetBindingValue(ref value, bindingName);
+                        return base.GetBindingValueInternal(ref value, bindingName);
                 }
             }
 
@@ -105,7 +105,7 @@ namespace Quartz
                     }
                     return true;
                 default:
-                    return base.GetBindingValue(ref value, bindingName);
+                    return base.GetBindingValueInternal(ref value, bindingName);
             }
         }
 
