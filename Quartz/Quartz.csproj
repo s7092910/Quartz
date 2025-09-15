@@ -143,6 +143,7 @@
     <Compile Include="Source\Controllers\Map\MapColorDatabase\MapColorDatabase.cs" />
     <Compile Include="Source\Controllers\Map\MapColorDatabase\IMapChunkDatabase_Harmony.cs" />
     <Compile Include="Source\Controllers\Map\NavObject\NavObjectExtensions.cs" />
+    <Compile Include="Source\Controllers\Map\XUiC_MiniMapJobs.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MiniMap.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MinimapStats.cs" />
     <Compile Include="Source\Controllers\PlayerStats\StatBinding.cs" />
