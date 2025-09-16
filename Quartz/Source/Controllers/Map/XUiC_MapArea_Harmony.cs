@@ -41,7 +41,7 @@ public class XUiC_MapAreaPatch
     [HarmonyPrefix]
     [HarmonyPatch("OnPreRender")]
     private static bool OnPreRender(LocalPlayerCamera _localPlayerCamera, XUiV_Texture ___xuiTexture, float ___mapScale,
-        Vector2 ___mapBGPos, Vector2 ___mapPos)
+    Vector2 ___mapBGPos, Vector2 ___mapPos)
     {
         float xScale = ___xuiTexture.Size.x / 712f;
         float yScale = ___xuiTexture.Size.y / 712f;
@@ -149,6 +149,18 @@ public class XUiC_MapAreaPatch
 
         return false;
     }
+
+    //[HarmonyPrefix]
+    //[HarmonyPatch("worldPosToScreenPos")]
+    //private static bool worldPosToScreenPos(ref Vector3 __result, XUiC_MapArea __instance, Vector3 _worldPos)
+    //{
+    //    float scaleX = __instance.xuiTexture.size.x / XUiC_MapArea.MapSizeZoom1;
+    //    float scaleY = __instance.xuiTexture.size.y / XUiC_MapArea.MapSizeZoom1;
+    //    __result = new Vector3((_worldPos.x - __instance.mapMiddlePosPixel.x) * scaleX / __instance.zoomScale + (float)__instance.cTexMiddle.x, 
+    //        (_worldPos.z - __instance.mapMiddlePosPixel.y) * scaleY / __instance.zoomScale - (float)__instance.cTexMiddle.y, 0f);
+
+    //    return false;
+    //}
 
     [HarmonyPrefix]
     [HarmonyPatch("updateNavObjectList")]
