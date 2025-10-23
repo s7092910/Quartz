@@ -53,7 +53,6 @@
       <HintPath>$(PATH_7D2D_MANAGED)\LogLibrary.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="NGUI">
       <HintPath>$(PATH_7D2D_MANAGED)\NGUI.dll</HintPath>
       <Private>False</Private>
