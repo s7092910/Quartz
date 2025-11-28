@@ -20,14 +20,14 @@ namespace Quartz
 
         protected string requiredFuels;
 
-        private XUiC_WorkstationWindowGroup workstationGroup;
+        private global::XUiC_WorkstationWindowGroup workstationGroup;
 
         private bool updateBackend = false;
 
         public override void Init()
         {
             base.Init();
-            workstationGroup = GetParentByType<XUiC_WorkstationWindowGroup>();
+            workstationGroup = GetParentByType<global::XUiC_WorkstationWindowGroup>();
         }
 
         public override void Update(float _dt)
@@ -106,7 +106,6 @@ namespace Quartz
                     Block block = te.blockValue.Block;
 
                     requiredFuels = block.Properties.GetString("Workstation.RequiredFuels");
-
                     string[] fuelNames = requiredFuels.Split(',');
                     for (int i = 0; i < itemControllers.Length; i++)
                     {
@@ -126,6 +125,7 @@ namespace Quartz
                     }
                 }
             }
+
             base.OnOpen();
         }
 

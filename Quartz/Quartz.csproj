@@ -1,16 +1,19 @@
 ﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <PATH_7D2D_MANAGED Condition=" '$(PATH_7D2D_MANAGED)' == '' ">..\..\7DaysToDie_Data\Managed</PATH_7D2D_MANAGED>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{B7F7D85F-6596-48B0-B607-BEAC55EF2943}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AssemblyName>Quartz</AssemblyName>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Quartz</RootNamespace>
+    <AssemblyName>Quartz</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <LangVersion>9</LangVersion>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -160,6 +163,10 @@
     <Compile Include="Source\Controllers\Map\NavObject\NavObjectExtensions.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MiniMap.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MinimapStats.cs" />
+    <Compile Include="Source\Controllers\PlayerStats\CharacterStats\CharacterBag.cs" />
+    <Compile Include="Source\Controllers\PlayerStats\CharacterStats\CharacterDisplayInfoStat.cs" />
+    <Compile Include="Source\Controllers\PlayerStats\CharacterStats\CharacterSheetStats.cs" />
+    <Compile Include="Source\Controllers\PlayerStats\CharacterStats\Flashlights.cs" />
     <Compile Include="Source\Controllers\PlayerStats\StatBinding.cs" />
     <Compile Include="Source\Controllers\Trader\XUiC_TraderWindow.cs" />
     <Compile Include="Source\Controllers\XUiC_DialIndicator.cs" />
