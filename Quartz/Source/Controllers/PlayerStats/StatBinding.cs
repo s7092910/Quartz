@@ -106,7 +106,7 @@ namespace Quartz.PlayerStats
         /// <param name="binding"></param>
         public static void AddNewBinding(StatBinding binding)
         {
-            supportedBindings.Add(binding.Name, binding);
+            supportedBindings.Add(binding.Name.ToLower(), binding);
         }
     }
 
