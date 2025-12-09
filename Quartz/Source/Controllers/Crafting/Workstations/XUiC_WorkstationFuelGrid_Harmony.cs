@@ -74,7 +74,7 @@ public static class TileEntityWorkstationPatch
 
     [HarmonyPrefix]
     [HarmonyPatch("HandleFuel")]
-    public static bool HandleFuel(TileEntityWorkstation __instance, World _world, float _timePassed, ref bool __result, ItemStack[] ___fuel, bool ___isBurning, ref float ___currentBurnTimeLeft, XUiEvent_FuelStackChanged ___FuelChanged)
+    public static bool HandleFuel(TileEntityWorkstation __instance, World _world, float _timePassed, ref bool __result, XUiEvent_FuelStackChanged ___FuelChanged)
     {
         Block block = __instance.blockValue.Block;
 
@@ -85,28 +85,28 @@ public static class TileEntityWorkstationPatch
             return true;
         }
 
-        if (!___isBurning)
+        if (!__instance.isBurning)
         {
             __result = false;
             return false;
         }
 
-        TileEntityPatch.emitHeatMapEvent(__instance, _world, EnumAIDirectorChunkEvent.Campfire);
+        __instance.emitHeatMapEvent(_world, EnumAIDirectorChunkEvent.Campfire);
         bool flag = false;
-        if (___currentBurnTimeLeft > 0f || (___currentBurnTimeLeft == 0f && getTotalFuelSeconds(___fuel) > 0f))
+        if (__instance.currentBurnTimeLeft > 0f || (__instance.currentBurnTimeLeft == 0f && __instance.getTotalFuelSeconds() > 0f))
         {
-            ___currentBurnTimeLeft -= _timePassed;
-            ___currentBurnTimeLeft = (float)Mathf.FloorToInt(___currentBurnTimeLeft * 100f) / 100f;
+            __instance.currentBurnTimeLeft -= _timePassed;
+            __instance.currentBurnTimeLeft = (float)Mathf.FloorToInt(__instance.currentBurnTimeLeft * 100f) / 100f;
             flag = true;
         }
-        if (___currentBurnTimeLeft < 0f && getTotalFuelSeconds(___fuel) > 0f)
+        while(__instance.currentBurnTimeLeft < 0f && __instance.getTotalFuelSeconds() > 0f)
         {
-            for(int i = 0; i < ___fuel.Length; i++)
+            for(int i = 0; i < __instance.fuel.Length; i++)
             {
-                if (___fuel[i].count > 0)
+                if (__instance.fuel[i].count > 0)
                 {
-                    ___fuel[i].count--;
-                    ___currentBurnTimeLeft += GetFuelTime(___fuel[i]);
+                    __instance.fuel[i].count--;
+                    __instance.currentBurnTimeLeft += __instance.GetFuelTime(__instance.fuel[i]);
                     flag = true;
                     if (___FuelChanged != null)
                     {
@@ -117,92 +117,14 @@ public static class TileEntityWorkstationPatch
             }
 
         }
-        if (getTotalFuelSeconds(___fuel) == 0f && ___currentBurnTimeLeft < 0f)
+        if (__instance.getTotalFuelSeconds() == 0f && __instance.currentBurnTimeLeft < 0f)
         {
-            ___currentBurnTimeLeft = 0f;
+            __instance.currentBurnTimeLeft = 0f;
             flag = true;
         }
         __result = flag;
 
 
-        return false;
-    }
-
-    private static float getTotalFuelSeconds(ItemStack[] fuel)
-    {
-        float num = 0f;
-        for (int i = 0; i < fuel.Length; i++)
-        {
-            if (!fuel[i].IsEmpty())
-            {
-                num += ItemClass.GetFuelValue(fuel[i].itemValue) * fuel[i].count;
-            }
-        }
-        return num;
-    }
-
-    private static float GetFuelTime(ItemStack _fuel)
-    {
-        if (_fuel.itemValue.type == 0)
-        {
-            return 0f;
-        }
-        return ItemClass.GetFuelValue(_fuel.itemValue);
-    }
-
-    private static bool ShouldCycleStacks(ItemClass[] reqItemClasses, ItemStack[] fuel)
-    {
-        if (!XUi.IsGameRunning())
-        {
-            return false;
-        }
-
-        int num = 0;
-        ItemClass reqItemClass = null;
-        for (int i = 0; i < fuel.Length; i++)
-        {
-            int currentFuelValue = 0;
-            ItemStack itemStack = fuel[i];
-            if (itemStack != null && !itemStack.IsEmpty())
-            {
-                ItemClass itemClass = itemStack.itemValue.ItemClass;
-                if (itemClass != null)
-                {
-
-                    if (!itemClass.IsBlock())
-                    {
-                        if (itemClass.FuelValue != null)
-                        {
-                            currentFuelValue = itemClass.FuelValue.Value;
-                        }
-                    }
-                    else
-                    {
-                        Block block = Block.list[itemClass.Id];
-                        if (block != null)
-                        {
-                            currentFuelValue = block.FuelValue;
-                        }
-                    }
-                }
-            }
-
-            if (itemStack == null)
-            {
-                continue;
-            }
-
-            if (reqItemClasses[i] != reqItemClass)
-            {
-                reqItemClass = reqItemClasses[i];
-            }
-            else if (num == 0 && currentFuelValue != 0 && i != 0)
-            {
-                return true;
-            }
-
-            num = currentFuelValue;
-        }
         return false;
     }
 }

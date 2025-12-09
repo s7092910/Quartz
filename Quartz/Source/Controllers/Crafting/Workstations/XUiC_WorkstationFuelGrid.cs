@@ -58,7 +58,7 @@ namespace Quartz
             if (isOn && (!HasRequirement(null) || workstationData.GetIsBesideWater()))
             {
                 TurnOff();
-                XUiC_WorkstationFuelGridPatch.onFuelItemsChanged(this);
+                onFuelItemsChanged();
                 return;
             }
 

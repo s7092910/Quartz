@@ -17,7 +17,7 @@ limitations under the License.*/-->
 <xml>
 	<Name value="Quartz" />
 	<DisplayName value="Quartz" />
-	<Version value="6.2.1" />
+	<Version value="6.2.2" />
 	<Description value="A UI framework mod that adds some new XUi Widgets and XUi Controllers that can be used by modders" />
 	<Author value="Laydor" />
 	<Website value="https://github.com/s7092910/Quartz" />
