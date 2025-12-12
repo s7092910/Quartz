@@ -23,11 +23,11 @@ namespace Quartz
 
         [HarmonyPostfix]
         [HarmonyPatch("GetBindingValueInternal")]
-        public static void GetBindingValueInternal(XUiC_CharacterFrameWindow __instance, ref string value, string bindingName)
+        public static void GetBindingValueInternal(XUiC_CharacterFrameWindow __instance, ref string _value, string _bindingName)
         {
-            if (__instance.player != null && bindingName == "playerxptonextlevel" && XUiM_Player.GetLevel(__instance.player) == Progression.MaxLevel)
+            if (__instance.player != null && _bindingName == "playerxptonextlevel" && XUiM_Player.GetLevel(__instance.player) == Progression.MaxLevel)
             {
-                value = Localization.Get("quartzMaxLevel");
+                _value = Localization.Get("quartzMaxLevel");
             }
         }
     }

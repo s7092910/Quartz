@@ -46,7 +46,7 @@ public class XUiFromXmlPatch
 
         if (_controlParams != null)
         {
-            XUiFromXmlReversePatch.parseControlParams(_node, _controlParams);
+            XUiFromXmlReversePatch.parseControlParams(_node, _parent, _controlParams);
         }
 
         XUiView view = null;
@@ -150,7 +150,7 @@ public class XUiFromXmlPatch
 
         if (_controlParams != null)
         {
-            XUiFromXmlReversePatch.parseControlParams(node, _controlParams);
+            XUiFromXmlReversePatch.parseControlParams(node, parent, _controlParams);
         }
 
         XUiView view = null;
@@ -187,7 +187,7 @@ public class XUiFromXmlReversePatch
 
     [HarmonyReversePatch]
     [HarmonyPatch("parseControlParams")]
-    public static void parseControlParams(XElement _node, Dictionary<string, object> _controlParams)
+    public static void parseControlParams(XElement _node, XUiController _parent, Dictionary<string, object> _controlParams)
     {
         // its a stub so it has no initial content
         throw new NotImplementedException(TAG + "parseControlParams");
