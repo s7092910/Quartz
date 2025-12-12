@@ -113,12 +113,12 @@ namespace Quartz
                         {
                             if (i < fuelNames.Length)
                             {
-                                itemStack.RequiredItemClass = ItemClass.GetItemClass(fuelNames[i], false);
+                                itemStack.SetAllowedItemClassSingle(fuelNames[i]);
                                 itemStack.RequiredItemOnly = true;
                             }
                             else
                             {
-                                itemStack.RequiredItemClass = null;
+                                itemStack.ClearAllowedItemClasses();
                                 itemStack.RequiredItemOnly = false;
                             }
                         }
@@ -221,9 +221,9 @@ namespace Quartz
                     continue;
                 }
 
-                if (xuiC_ItemStack.RequiredItemClass != reqItemClass)
+                if (xuiC_ItemStack.HasAllowedItemClass && !xuiC_ItemStack.allowedItemClasses.Contains(reqItemClass))
                 {
-                    reqItemClass = xuiC_ItemStack.RequiredItemClass;
+                    reqItemClass = xuiC_ItemStack.allowedItemClasses[0];
                 }
                 else if (previousFuelValue == 0 && currentFuelValue != 0 && i != 0)
                 {
@@ -243,7 +243,8 @@ namespace Quartz
                 if (xuiC_ItemStack != null && !xuiC_ItemStack.ItemStack.IsEmpty())
                 {
                     XUiC_RequiredItemStack xuiC_ItemStack2 = itemControllers[i - 1] as XUiC_RequiredItemStack;
-                    if (xuiC_ItemStack2 != null && xuiC_ItemStack2.ItemStack.IsEmpty() && xuiC_ItemStack.RequiredItemClass == xuiC_ItemStack2.RequiredItemClass)
+                    if (xuiC_ItemStack2 != null && xuiC_ItemStack2.ItemStack.IsEmpty() && 
+                        (xuiC_ItemStack.HasAllowedItemClass && xuiC_ItemStack2.HasAllowedItemClass && xuiC_ItemStack.allowedItemClasses[0] == xuiC_ItemStack2.allowedItemClasses[0]))
                     {
                         xuiC_ItemStack2.ItemStack = xuiC_ItemStack.ItemStack.Clone();
                         xuiC_ItemStack.ItemStack = ItemStack.Empty.Clone();

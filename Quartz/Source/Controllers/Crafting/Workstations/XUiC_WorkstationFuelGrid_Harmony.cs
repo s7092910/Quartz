@@ -31,9 +31,13 @@ public static class XUiC_WorkstationFuelGridPatch
         // its a stub so it has no initial content
         throw new NotImplementedException(TAG + "onFuelItemsChanged()");
     }
+}
 
+[HarmonyPatch(typeof(XUiC_WorkstationGrid))]
+public static class XUiC_WorkstationGridPatch
+{
     [HarmonyPrefix]
-    [HarmonyPatch("AddItem", new Type[] {typeof(ItemStack) })]
+    [HarmonyPatch("AddItem", new Type[] { typeof(ItemStack) })]
     public static bool AddItem(XUiC_WorkstationFuelGrid __instance, ItemStack _item, ref bool __result)
     {
         for (int i = 0; i < __instance.itemControllers.Length; i++)

@@ -43,12 +43,12 @@ namespace Quartz
                         {
                             if (i < toolNames.Length)
                             {
-                                itemStack.RequiredItemClass = ItemClass.GetItemClass(toolNames[i], false);
+                                itemStack.SetAllowedItemClassSingle(toolNames[i]);
                                 itemStack.RequiredItemOnly = true;
                             }
                             else
                             {
-                                itemStack.RequiredItemClass = null;
+                                itemStack.ClearAllowedItemClasses();
                                 itemStack.RequiredItemOnly = false;
                             }
                         }
