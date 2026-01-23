@@ -13,7 +13,6 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <LangVersion>9</LangVersion>
-    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -149,6 +148,8 @@
     <Compile Include="Source\Controllers\Challenges\XUiC_ChallengeEntryDescriptionWindow_Harmony.cs" />
     <Compile Include="Source\Controllers\Challenges\XUiC_ChallengeEntryObjectiveEntry.cs" />
     <Compile Include="Source\Controllers\CharacterFrame\XUiC_CharacterFrameWindow_Harmony.cs" />
+    <Compile Include="Source\Controllers\ComboBoxes\XUiC_ComboBoxFloat.cs" />
+    <Compile Include="Source\Controllers\ComboBoxes\XUiC_ComboBoxInt.cs" />
     <Compile Include="Source\Controllers\Crafting\Workstations\XUiC_WorkstationFuelGrid_Harmony.cs" />
     <Compile Include="Source\Controllers\Crafting\Workstations\XUiC_WorkstationWindowGroup.cs" />
     <Compile Include="Source\Controllers\Crafting\XUiC_RecipeEntry.cs" />
@@ -168,6 +169,7 @@
     <Compile Include="Source\Controllers\PlayerStats\CharacterStats\CharacterSheetStats.cs" />
     <Compile Include="Source\Controllers\PlayerStats\CharacterStats\Flashlights.cs" />
     <Compile Include="Source\Controllers\PlayerStats\StatBinding.cs" />
+    <Compile Include="Source\Controllers\PowerSource\XUiC_PowerSourceStats.cs" />
     <Compile Include="Source\Controllers\Trader\XUiC_TraderWindow.cs" />
     <Compile Include="Source\Controllers\XUiC_DialIndicator.cs" />
     <Compile Include="Source\Controllers\Hud\Vehicle\XUiC_AttitudeIndictator.cs" />

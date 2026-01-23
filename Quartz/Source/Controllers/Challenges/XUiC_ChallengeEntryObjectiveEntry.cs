@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using Challenges;
+using System;
 
 namespace Quartz
 {
@@ -42,6 +43,12 @@ namespace Quartz
                     return true;
                 case "objectivefill":
                     value = GetObjectiveFill();
+                    return true;
+                case "description":
+                    value = GetDescriptionText();
+                    return true;
+                case "status":
+                    value = GetStatusText();
                     return true;
                 default:
                     return base.GetBindingValueInternal(ref value, bindingName);
@@ -86,6 +93,26 @@ namespace Quartz
             }
 
             return "0";
+        }
+
+        private string GetStatusText()
+        {
+            if (objective != null)
+            {
+                return objective.StatusText;
+            }
+
+            return "";
+        }
+
+        private string GetDescriptionText()
+        {
+            if (objective != null)
+            {
+                return objective.DescriptionText;
+            }
+
+            return "";
         }
 
     }
