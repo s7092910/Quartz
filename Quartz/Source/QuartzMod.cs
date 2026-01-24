@@ -19,7 +19,6 @@ using System.Reflection;
 using GearsAPI.Settings;
 using GearsAPI.Settings.Global;
 using GearsAPI.Settings.World;
-using Quartz.Source.Views.Harmony;
 
 namespace Quartz
 {
