@@ -56,7 +56,7 @@ namespace Quartz
                 switch (split[0])
                 {
                     case "itemstattitle":
-                        value = XUiC_ItemInfoWindowPatch.GetStatTitle(this, index);
+                        value = GetStatTitle(index);
                         return true;
                     case "itemstaticon":
                         value = GetStatIcon(index);
@@ -68,10 +68,10 @@ namespace Quartz
                         value = GetStatValueCompare(index);
                         return true;
                     case "itemstatincrease":
-                        value = XUiC_ItemInfoWindowPatch.GetStatValue(this, index).Contains("[00FF00]").ToString();
+                        value = GetStatValue(index).Contains("[00FF00]").ToString();
                         return true;
                     case "itemstat":
-                        value = XUiC_ItemInfoWindowPatch.GetStatValue(this, index);
+                        value = GetStatValue(index);
                         return true;
                     default:
                         return base.GetBindingValueInternal(ref value, bindingName);
@@ -141,8 +141,8 @@ namespace Quartz
             {
                 return string.Empty;
             }
-            Models.DisplayInfoEntry displayInfoEntry = displayEntry.DisplayStats[index] as Models.DisplayInfoEntry;
-            if (displayInfoEntry != null && !string.IsNullOrEmpty(displayInfoEntry.icon))
+
+            if (displayEntry.DisplayStats[index] is Models.DisplayInfoEntry displayInfoEntry)
             {
                 return displayInfoEntry.icon;
             }
@@ -151,7 +151,7 @@ namespace Quartz
 
         private string GetStatValueMain(int index)
         {
-            string value = XUiC_ItemInfoWindowPatch.GetStatValue(this, index);
+            string value = GetStatValue(index);
             int sepIndex = value.IndexOf('(');
             if (sepIndex != -1)
             {
@@ -169,7 +169,7 @@ namespace Quartz
                 return string.Empty;
             }
 
-            string value = XUiC_ItemInfoWindowPatch.GetStatValue(this, index);
+            string value = GetStatValue(index);
             int sepIndex = value.IndexOf('(');
             if (sepIndex != -1)
             {

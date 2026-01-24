@@ -15,7 +15,7 @@ limitations under the License.*/
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Quartz.Source.Views.Harmony
+namespace Quartz
 {
     internal class QuartzResourcesAPI : ResourcesAPI
     {

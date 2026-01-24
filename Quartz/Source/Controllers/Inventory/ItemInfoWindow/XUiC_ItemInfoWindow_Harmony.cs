@@ -21,24 +21,6 @@ public static class XUiC_ItemInfoWindowPatch
 {
     private const string TAG = "Error Reverse Patching XUiC_ItemInfoWindow method: ";
 
-    [HarmonyReversePatch]
-    [HarmonyPatch("GetStatTitle")]
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    public static string GetStatTitle(XUiC_ItemInfoWindow instance, int index)
-    {
-        // its a stub so it has no initial content
-        throw new NotImplementedException(TAG + "GetStatTitle()");
-    }
-
-    [HarmonyReversePatch]
-    [HarmonyPatch("GetStatValue")]
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    public static string GetStatValue(XUiC_ItemInfoWindow instance, int index)
-    {
-        // its a stub so it has no initial content
-        throw new NotImplementedException(TAG + "GetStatValue()");
-    }
-
     [HarmonyPostfix]
     [HarmonyPatch("SetInfo")]
     public static void SetInfo(XUiC_ItemInfoWindow __instance, ItemStack stack, XUiController controller, XUiC_ItemActionList.ItemActionListTypes actionListType, ItemDisplayEntry ___itemDisplayEntry)

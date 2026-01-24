@@ -1,4 +1,4 @@
-﻿/*Copyright 2023 Christopher Beda
+﻿/*Copyright 2026 Christopher Beda
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,11 +14,9 @@ limitations under the License.*/
 
 namespace Quartz
 {
-    public class XUiC_ItemStatEntry : XUiController
+    public class XUiC_AssembleItemStatEntry : XUiController
     {
         private Models.DisplayInfoEntry displayInfoEntry;
-
-        private XUiC_ItemInfoWindow itemInfoWindow;
 
         private ItemStack itemStack;
 
@@ -29,18 +27,6 @@ namespace Quartz
             get
             {
                 return displayInfoEntry;
-            }
-        }
-
-        public XUiC_ItemInfoWindow ItemInfoWindow
-        {
-            get
-            {
-                return itemInfoWindow;
-            }
-            set
-            {
-                itemInfoWindow = value;
             }
         }
 
@@ -65,17 +51,8 @@ namespace Quartz
                 case "icon":
                     value = GetStatIcon();
                     return true;
-                case "statmain":
-                    value = GetStatValueMain();
-                    return true;
-                case "statcompare":
-                    value = GetStatValueCompare();
-                    return true;
                 case "stat":
                     value = statValue;
-                    return true;
-                case "isincrease":
-                    value = statValue.Contains("[00FF00]").ToString();
                     return true;
                 case "hasentry":
                     value = HasStatEntry().ToString();
@@ -131,15 +108,9 @@ namespace Quartz
             {
                 return string.Empty;
             }
-            if (!itemInfoWindow.CompareStack.IsEmpty())
-            {
-                return XUiM_ItemStack.GetStatItemValueTextWithCompareInfo(itemStack.itemValue, itemInfoWindow.CompareStack.itemValue, xui.playerUI.entityPlayer, displayInfoEntry, false, false);
-            }
-            if (!itemInfoWindow.EquippedStack.IsEmpty())
-            {
-                return XUiM_ItemStack.GetStatItemValueTextWithCompareInfo(itemStack.itemValue, itemInfoWindow.EquippedStack.itemValue, xui.playerUI.entityPlayer, displayInfoEntry, true, false);
-            }
-            return XUiM_ItemStack.GetStatItemValueTextWithCompareInfo(itemStack.itemValue, itemInfoWindow.CompareStack.itemValue, xui.playerUI.entityPlayer, displayInfoEntry, false, true);
+
+            return XUiM_ItemStack.GetStatItemValueTextWithModInfo(itemStack, xui.playerUI.entityPlayer, displayInfoEntry);
+
         }
 
         private string GetStatIcon()
@@ -150,38 +121,6 @@ namespace Quartz
             }
 
             return displayInfoEntry.icon;
-        }
-
-        private string GetStatValueMain()
-        {
-            if (itemStack == null || displayInfoEntry == null || itemInfoWindow.CompareStack.IsEmpty())
-            {
-                return string.Empty;
-            }
-            int sepIndex = statValue.IndexOf('(');
-            if (sepIndex != -1)
-            {
-                return statValue.Substring(0, sepIndex - 1);
-            }
-
-            return statValue;
-
-        }
-
-        private string GetStatValueCompare()
-        {
-            if (itemStack == null || displayInfoEntry == null || itemInfoWindow.CompareStack.IsEmpty())
-            {
-                return string.Empty;
-            }
-
-            int sepIndex = statValue.IndexOf('(');
-            if (sepIndex != -1)
-            {
-                return statValue.Substring(sepIndex + 9, statValue.Length - sepIndex - 10);
-            }
-
-            return statValue;
         }
     }
 }

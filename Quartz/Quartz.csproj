@@ -156,6 +156,9 @@
     <Compile Include="Source\Controllers\Crafting\Workstations\XUiC_WorkstationFuelGrid.cs" />
     <Compile Include="Source\Controllers\Crafting\Workstations\XUiC_WorkstationToolGrid.cs" />
     <Compile Include="Source\Controllers\Debugging\XUiC_UiAtlasList.cs" />
+    <Compile Include="Source\Controllers\Inventory\AssemblyWindow\XUiC_AssembleItemStatEntry.cs" />
+    <Compile Include="Source\Controllers\Inventory\AssemblyWindow\XUiC_AssembleWindow.cs" />
+    <Compile Include="Source\Controllers\Inventory\AssemblyWindow\XUiC_AssembleWindow_Harmony.cs" />
     <Compile Include="Source\Controllers\Inventory\ItemStack\XUiC_RequiredItemStack_Harmony.cs" />
     <Compile Include="Source\Controllers\Inventory\XUiC_ItemCounter.cs" />
     <Compile Include="Source\Controllers\Map\MapColorDatabase\ChunkCluster_Harmony.cs" />
