@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using HarmonyLib;
+using Quartz;
 using Quartz.Map;
 using System;
 
@@ -25,6 +26,7 @@ public class ChunkCluster_Harmony
     [HarmonyPatch(new Type[] { typeof(Vector3i), typeof(bool), typeof(BlockValue), typeof(bool), typeof(sbyte), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(int) })]
     public static void SetBlock(ChunkCluster __instance, Vector3i _pos, bool _isChangeBV, BlockValue _bv, bool _isChangeDensity, sbyte _density, bool _isNotify, bool _isUpdateLight, bool _isForceDensity, bool _wasChild, int _changedByEntityId)
     {
+
         int x = World.toChunkXZ(_pos.x);
         int z = World.toChunkXZ(_pos.z);
 
@@ -32,7 +34,7 @@ public class ChunkCluster_Harmony
 
         if (chunk != null && !chunk.NeedsDecoration)
         {
-            int key = IMapChunkDatabase.ToChunkDBKey(x , z);
+            long key = WorldChunkCache.MakeChunkKey(x, z);
             MapColorDatabase.AddPackedMapColors(key, chunk.GetMapColors());
         }
     }
