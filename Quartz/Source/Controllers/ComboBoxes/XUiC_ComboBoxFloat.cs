@@ -18,13 +18,16 @@ namespace Quartz
 {
     public class XUiC_ComboBoxFloat : global::XUiC_ComboBoxFloat
     {
-        public override void setRelativeValue(double _value)
+        public override double RelativeValue
         {
-            double oldValue = Value;
-            double value = (Max - Min) * _value + Min;
-            value = Math.Round(value / IncrementSize) * IncrementSize;
-            Value = value;
-            TriggerValueChangedEvent(oldValue);
+            set
+            {
+                double oldValue = Value;
+                double newValue = (Max - Min) * value + Min;
+                newValue = Math.Round(newValue / incrementSize) * incrementSize;
+                Value = newValue;
+                TriggerValueChangedEvent(oldValue);
+            }
         }
 
         public override void incrementalChangeValue(double _value)
@@ -34,11 +37,11 @@ namespace Quartz
             double num = 0;
             if (_value > 0.0)
             {
-                num = IncrementSize;
+                num = incrementSize;
             }
             else if (_value < 0.0)
             {
-                num = -IncrementSize;
+                num = -incrementSize;
             }
 
             double value = oldValue + num;
