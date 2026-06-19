@@ -31,7 +31,74 @@ namespace Quartz.Views
         private bool flipText = false;
         private bool drawOutwards = false;
 
-        public XUiV_CurvedLabel(string _id) : base(_id)
+        [XuiXmlAttribute("radius")]
+        public float Radius 
+        { 
+            get => radius; 
+            set 
+            {
+                isDirty |= value != radius;
+                radius = value;
+            }
+        }
+
+        [XuiXmlAttribute("arc_degrees")]
+        public float ArcDegrees 
+        { 
+            get => arcDegrees;
+            set
+            {
+                isDirty |= value != arcDegrees;
+                arcDegrees = value;
+            }
+        }
+
+        [XuiXmlAttribute("angular_offset")]
+        public float AngularOffsetXml 
+        { 
+            get => angularOffsetXml;
+            set
+            {
+                isDirty |= value != angularOffsetXml;
+                angularOffsetXml = value;
+            }
+        }
+
+        [XuiXmlAttribute("max_degrees_per_letter")]
+        public int MaxDegreesPerLetter 
+        { 
+            get => maxDegreesPerLetter;
+            set
+            {
+                isDirty |= value != maxDegreesPerLetter;
+                maxDegreesPerLetter = value;
+            }
+        }
+
+        [XuiXmlAttribute("flip")]
+        public bool FlipText 
+        { 
+            get => flipText;
+            set
+            {
+                isDirty |= value != flipText;
+                flipText = value;
+            }
+        }
+
+        [XuiXmlAttribute("draw_outwards")]
+        public bool DrawOutwards 
+        { 
+            get => drawOutwards;
+            set
+            {
+                isDirty |= value != drawOutwards;
+                drawOutwards = value;
+            }
+        }
+
+        public XUiV_CurvedLabel(XUi _xui, string _id)
+        : base(_xui, _id)
         {
         }
 
@@ -42,9 +109,9 @@ namespace Quartz.Views
 
         }
 
-        public override void UpdateData()
+        public override void updateData()
         {
-            base.UpdateData();
+            base.updateData();
             switch (alignment)
             {
                 case NGUIText.Alignment.Left:
@@ -62,50 +129,6 @@ namespace Quartz.Views
             {
                 angularOffset += 180;
             }
-        }
-
-        public override bool ParseAttribute(string attribute, string value, XUiController _parent)
-        {
-            float tempFloat = 0;
-            if (attribute != null)
-            {
-                switch (attribute)
-                {
-                    case "radius":
-                        tempFloat = radius;
-                        float.TryParse(value, out radius);
-                        isDirty |= tempFloat != radius;
-                        return true;
-                    case "arc_degrees":
-                        tempFloat = arcDegrees;
-                        float.TryParse(value, out arcDegrees);
-                        isDirty |= tempFloat != arcDegrees;
-                        return true;
-                    case "angular_offset":
-                        tempFloat = angularOffsetXml;
-                        float.TryParse(value, out angularOffsetXml);
-                        isDirty |= tempFloat != angularOffsetXml;
-                        return true;
-                    case "max_degrees_per_letter":
-                        int tempInt = maxDegreesPerLetter;
-                        int.TryParse(value, out maxDegreesPerLetter);
-                        isDirty |= tempInt != maxDegreesPerLetter;
-                        return true;
-                    case "flip":
-                        bool b = flipText;
-                        flipText = StringParsers.ParseBool(value, 0, -1, true);
-                        isDirty |= b != flipText;
-                        return true;
-                    case "draw_outwards":
-                        bool outwards = flipText;
-                        drawOutwards = StringParsers.ParseBool(value, 0, -1, true);
-                        isDirty |= outwards != drawOutwards;
-                        return true;
-                    default:
-                        return base.ParseAttribute(attribute, value, _parent);
-                }
-            }
-            return false;
         }
 
         private void OnPostFillCallback(UIWidget widget, int bufferOffset, List<Vector3> verts, List<Vector2> uvs, List<Color> cols)
