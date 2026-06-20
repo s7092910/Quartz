@@ -30,6 +30,12 @@ namespace Quartz
             }
         }
 
+        [XuiXmlBinding("stat")]
+        public string StatValue
+        {
+            get => statValue;
+        }
+
         public override void Update(float _dt)
         {
             base.Update(_dt);
@@ -38,27 +44,6 @@ namespace Quartz
                 statValue = GetStatValue();
                 RefreshBindings();
                 IsDirty = false;
-            }
-        }
-
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
-        {
-            switch (bindingName)
-            {
-                case "title":
-                    value = GetStatTitle();
-                    return true;
-                case "icon":
-                    value = GetStatIcon();
-                    return true;
-                case "stat":
-                    value = statValue;
-                    return true;
-                case "hasentry":
-                    value = HasStatEntry().ToString();
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
             }
         }
 
@@ -84,11 +69,24 @@ namespace Quartz
             IsDirty = true;
         }
 
+        private string GetStatValue()
+        {
+            if (itemStack == null || displayInfoEntry == null)
+            {
+                return string.Empty;
+            }
+
+            return XUiM_ItemStack.GetStatItemValueTextWithModInfo(itemStack, xui.playerUI.entityPlayer, displayInfoEntry);
+
+        }
+
+        [XuiXmlBinding("hasentry")]
         private bool HasStatEntry()
         {
             return itemStack != null && displayInfoEntry != null;
         }
 
+        [XuiXmlBinding("title")]
         private string GetStatTitle()
         {
             if (displayInfoEntry == null)
@@ -102,17 +100,7 @@ namespace Quartz
             return UIDisplayInfoManager.Current.GetLocalizedName(displayInfoEntry.StatType);
         }
 
-        private string GetStatValue()
-        {
-            if (itemStack == null || displayInfoEntry == null)
-            {
-                return string.Empty;
-            }
-
-            return XUiM_ItemStack.GetStatItemValueTextWithModInfo(itemStack, xui.playerUI.entityPlayer, displayInfoEntry);
-
-        }
-
+        [XuiXmlBinding("icon")]
         private string GetStatIcon()
         {
             if (itemStack == null || displayInfoEntry == null)
