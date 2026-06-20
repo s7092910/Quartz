@@ -37,6 +37,11 @@ namespace Quartz
         private const float maxZoomScale = 5f;
         private const float minZoomScale = 0.5f;
 
+        [XuiBindComponent("mapViewTexture", true)]
+        private XUiView_WidgetBased xuiTexture;
+        [XuiBindComponent("clippingPanel", true)]
+        private XUiView clippingPanel;
+
         public int bufferRowLength = MapDrawnSizeInChunks * 128;
         public int mapUpdateSizeRadius = 512;
 
@@ -75,8 +80,6 @@ namespace Quartz
         private int targetZoomIndex = 1;
         private float[] zoomSteps = new float[] {0.5f, 1f, 2f, 5f};
 
-        private XUiView xuiTexture;
-        private XUiView clippingPanel;
         private Transform transformSpritesParent;
         private Material mapMaterial;
 
@@ -97,6 +100,18 @@ namespace Quartz
 
         private bool forceTextOff = false;
 
+        [XuiXmlAttribute("iconsize")]
+        public int SpriteSize { get => spriteSize; set => spriteSize = value; }
+
+        [XuiXmlAttribute("iconscalemax")]
+        public int SpriteMax { get => spriteMax; set => spriteMax = value; }
+
+        [XuiXmlAttribute("iconscalemin")]
+        public int SpriteMin { get => spriteMin; set => spriteMin = value; }
+
+        [XuiXmlAttribute("forceicontextoff")]
+        public bool ForceTextOff { get => forceTextOff; set => forceTextOff = value; }
+
         public override void Init()
         {
             base.Init();
@@ -113,20 +128,10 @@ namespace Quartz
 
             rawBuffer = new NativeArray<uint>(MapDrawnSize * MapDrawnSize / 2, Allocator.Persistent);
 
-            XUiController childById = GetChildById("mapViewTexture");
-            if (childById != null)
-            {
-                xuiTexture = childById.ViewComponent;
-                xuiTexture.IsVisible = MinimapSettings.Enabled;
-            }
+            xuiTexture.IsVisible = MinimapSettings.Enabled;
 
-            childById = GetChildById("clippingPanel");
-            if (childById != null)
-            {
-                clippingPanel = childById.ViewComponent;
-                clippingPanel.IsVisible = MinimapSettings.Enabled;
-                transformSpritesParent = clippingPanel.UiTransform;
-            }
+            clippingPanel.IsVisible = MinimapSettings.Enabled;
+            transformSpritesParent = clippingPanel.UiTransform;
 
             zoomScale = mapScale;
             targetZoomScale = mapScale;
@@ -180,12 +185,13 @@ namespace Quartz
                 {
                     UpdateFullMap();
                 }
-                LocalPlayerCamera localPlayerCamera = xui.playerUI.GetComponentInParent<LocalPlayerCamera>();
 
-                if (localPlayerCamera != null)
-                {
-                    localPlayerCamera.PreRender += OnPreRender;
-                }
+                //if(localPlayerCamera != null)
+                //{
+                //    localPlayerCamera.PreRender += OnPreRender;
+                //}
+
+                xuiTexture.widget.onRender += OnRenderDrawcall;
             }
         }
 
@@ -200,11 +206,13 @@ namespace Quartz
                 QuartzInputManager.minimapActions.Enabled = false;
 
                 LocalPlayerCamera localPlayerCamera = xui.playerUI.GetComponentInParent<LocalPlayerCamera>();
-                
-                if(localPlayerCamera != null)
-                {
-                    localPlayerCamera.PreRender -= OnPreRender;
-                }
+
+                //if(localPlayerCamera != null)
+                //{
+                //    localPlayerCamera.PreRender -= OnPreRender;
+                //}
+
+                xuiTexture.widget.onRender -= OnRenderDrawcall;
             }
         }
 
@@ -283,65 +291,35 @@ namespace Quartz
             UpdateMapObjects();
         }
 
-        public override bool ParseAttribute(string attribute, string value, XUiController parent)
+        [XuiXmlAttribute("zoomscalesteps")]
+        private void SetZoomscaleSteps(string value)
         {
-            switch (attribute)
+            HashSet<float> zoomStepsSet = new HashSet<float>();
+            string[] zoomStepsStrings = value.Split(',');
+
+            for (int i = 0; i < zoomStepsStrings.Length; i++)
             {
-                case "zoomscalesteps":
-                    HashSet<float> zoomStepsSet = new HashSet<float>();
-                    string[] zoomStepsStrings = value.Split(',');
-
-                    for (int i = 0; i < zoomStepsStrings.Length; i++)
+                if (float.TryParse(zoomStepsStrings[i], out float result))
+                {
+                    if (minZoomScale <= result && result <= maxZoomScale)
                     {
-                        if (float.TryParse(zoomStepsStrings[i], out float result))
-                        {
-                            if(minZoomScale <= result && result <= maxZoomScale)
-                            {
-                                zoomStepsSet.Add(result);
-                            }
-                        }
+                        zoomStepsSet.Add(result);
                     }
+                }
+            }
 
-                    zoomStepsSet.Add(1f);
+            zoomStepsSet.Add(1f);
 
-                    zoomSteps = zoomStepsSet.ToArray();
-                    Array.Sort(zoomSteps);
+            zoomSteps = zoomStepsSet.ToArray();
+            Array.Sort(zoomSteps);
 
-                    for (int i = 0; i < zoomSteps.Length; i++)
-                    {
-                        if (zoomSteps[i] == 1f)
-                        {
-                            targetZoomIndex = i;
-                            break;
-                        }
-                    }
-
-                    return true;
-                case "iconscalemax":
-                    if(int.TryParse(value, out int max)) {
-                        spriteMax = max;
-                    }
-                    return true;
-                case "iconscalemin":
-                    if (int.TryParse(value, out int min))
-                    {
-                        spriteMin = min;
-                    }
-                    return true;
-                case "iconsize":
-                    if (int.TryParse(value, out int scale))
-                    {
-                        spriteSize = scale;
-                    }
-                    return true;
-                case "forceicontextoff":
-                    if (bool.TryParse(value, out bool force))
-                    {
-                        forceTextOff = force;
-                    }
-                    return true;
-                default:
-                    return base.ParseAttribute(attribute, value, parent);
+            for (int i = 0; i < zoomSteps.Length; i++)
+            {
+                if (zoomSteps[i] == 1f)
+                {
+                    targetZoomIndex = i;
+                    break;
+                }
             }
         }
 
@@ -536,7 +514,7 @@ namespace Quartz
             UIDrawCall drawCall = null;
             if (xuiTexture is XUiV_Texture texture)
             {
-                drawCall = texture.UITexture.drawCall;
+                drawCall = texture.uiTexture.drawCall;
             }
 
             if (xuiTexture is XUiV_MaskedTexture maskedTexture)
@@ -550,6 +528,18 @@ namespace Quartz
                 drawCall.dynamicMaterial.SetFloat("_MapRotation", rotation);
                 drawCall.dynamicMaterial.SetFloat("_MapOpacity", MinimapSettings.TextureOpacity);
             }
+
+        }
+
+        private void OnRenderDrawcall(Material mat)
+        {
+
+            float yScale = xuiTexture.Size.y / (float)xuiTexture.Size.x;
+            float rotation = MinimapSettings.FollowPlayerView ? -localPlayer.rotation.y * Mathf.Deg2Rad : 0f;
+
+            mat.SetVector("_MainMapPosAndScale", new Vector4(mapPos.x, mapPos.y, mapScale, mapScale * yScale));
+            mat.SetFloat("_MapRotation", rotation);
+            mat.SetFloat("_MapOpacity", MinimapSettings.TextureOpacity);
 
         }
 

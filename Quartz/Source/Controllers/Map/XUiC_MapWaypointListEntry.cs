@@ -48,16 +48,10 @@ namespace Quartz
             IsDirty = true;
         }
 
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
+        [XuiXmlBinding("isempty")]
+        public bool IsEntryEmpty()
         {
-            switch (bindingName)
-            {
-                case "isempty":
-                    value = Waypoint == null ? "true" : "false";
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
-            }
+            return Waypoint == null;
         }
     }
 }
