@@ -234,7 +234,6 @@
     <Compile Include="Source\Inputs\PlayerActionsBaseExtensions.cs" />
     <Compile Include="Source\Inputs\QuartzInputManager.cs" />
     <Compile Include="Source\Logging\Logging.cs" />
-    <Compile Include="Source\Overhaul\Controllers\Extensions\XuiExtensions.cs" />
     <Compile Include="Source\QuartzMod.cs" />
     <Compile Include="Source\Settings\DebuggingSettings.cs" />
     <Compile Include="Source\Settings\GlobalSettings.cs" />
