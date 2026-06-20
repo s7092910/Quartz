@@ -40,74 +40,44 @@ namespace Quartz
             base.Update(_dt);
         }
 
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
-        {
-            if (bindingName.StartsWith("itemstat") && bindingName.Contains("-"))
-            {
-                string[] split = bindingName.Split('-');
-                int index = 0;
-                if (split.Length == 2)
-                {
-                    if (int.TryParse(split[1], out index))
-                    {
-                        index--;
-                    }
-                }
-                switch (split[0])
-                {
-                    case "itemstattitle":
-                        value = GetStatTitle(index);
-                        return true;
-                    case "itemstaticon":
-                        value = GetStatIcon(index);
-                        return true;
-                    case "itemstatmain":
-                        value = GetStatValueMain(index);
-                        return true;
-                    case "itemstatcompare":
-                        value = GetStatValueCompare(index);
-                        return true;
-                    case "itemstatincrease":
-                        value = GetStatValue(index).Contains("[00FF00]").ToString();
-                        return true;
-                    case "itemstat":
-                        value = GetStatValue(index);
-                        return true;
-                    default:
-                        return base.GetBindingValueInternal(ref value, bindingName);
-                }
-            }
-
-            switch (bindingName)
-            {
-                case "itemammoname":
-                    value = GetAmmoName();
-                    return true;
-                case "itemql":
-                    value = "";
-                    if (itemStack != null && !itemStack.IsEmpty() && itemClass != null && itemClass.ShowQualityBar)
-                    {
-                        value = itemStack.itemValue.Quality > 0 ? durabilitytextFormatter.Format(itemStack.itemValue.Quality) : itemStack.itemValue.IsMod ? "*" : "";
-                    }
-                    return true;
-                case "stackcount":
-                    value = "";
-                    if (itemStack != null && !itemStack.IsEmpty() && itemClass != null && !itemClass.ShowQualityBar)
-                    {
-                        value = itemClass.Stacknumber == 1 ? "" : durabilitytextFormatter.Format(itemStack.count);
-                    }
-                    return true;
-                case "weapontype":
-                    value = "";
-                    if (itemClass != null && itemClass.Properties.Contains("WeaponType"))
-                    {
-                        value = Localization.Get(itemClass.Properties.GetString("WeaponType"));
-                    }
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
-            }
-        }
+        //public override bool GetBindingValueInternal(ref string value, string bindingName)
+        //{
+        //    if (bindingName.StartsWith("itemstat") && bindingName.Contains("-"))
+        //    {
+        //        string[] split = bindingName.Split('-');
+        //        int index = 0;
+        //        if (split.Length == 2)
+        //        {
+        //            if (int.TryParse(split[1], out index))
+        //            {
+        //                index--;
+        //            }
+        //        }
+        //        switch (split[0])
+        //        {
+        //            case "itemstattitle":
+        //                value = GetStatTitle(index);
+        //                return true;
+        //            case "itemstaticon":
+        //                value = GetStatIcon(index);
+        //                return true;
+        //            case "itemstatmain":
+        //                value = GetStatValueMain(index);
+        //                return true;
+        //            case "itemstatcompare":
+        //                value = GetStatValueCompare(index);
+        //                return true;
+        //            case "itemstatincrease":
+        //                value = GetStatValue(index).Contains("[00FF00]").ToString();
+        //                return true;
+        //            case "itemstat":
+        //                value = GetStatValue(index);
+        //                return true;
+        //            default:
+        //                return base.GetBindingValueInternal(ref value, bindingName);
+        //        }
+        //    }
+        //}
 
         public void SetItemStats(ItemStack itemStack, ItemDisplayEntry itemDisplayEntry)
         {
@@ -179,6 +149,7 @@ namespace Quartz
             return value;
         }
 
+        [XuiXmlBinding("itemammoname")]
         private string GetAmmoName()
         {
             string value = string.Empty;
@@ -206,5 +177,42 @@ namespace Quartz
 
             return value;
         }
+
+        [XuiXmlBinding("weapontype")]
+        private string GetWeaponType()
+        {
+            string value = "";
+            if (itemClass != null && itemClass.Properties.Contains("WeaponType"))
+            {
+                value = Localization.Get(itemClass.Properties.GetString("WeaponType"));
+            }
+
+            return value;
+        }
+
+        [XuiXmlBinding("stackcount")]
+        private string GetStackCount()
+        {
+            string value = "";
+            if (itemStack != null && !itemStack.IsEmpty() && itemClass != null && !itemClass.ShowQualityBar)
+            {
+                value = itemClass.Stacknumber == 1 ? "" : durabilitytextFormatter.Format(itemStack.count);
+            }
+
+            return value;
+        }
+
+        [XuiXmlBinding("itemql")]
+        private string GetItemQualityLevel()
+        {
+            string value = "";
+            if (itemStack != null && !itemStack.IsEmpty() && itemClass != null && itemClass.ShowQualityBar)
+            {
+                value = itemStack.itemValue.Quality > 0 ? durabilitytextFormatter.Format(itemStack.itemValue.Quality) : itemStack.itemValue.IsMod ? "*" : "";
+            }
+
+            return value;
+        }
+
     }
 }
