@@ -19,33 +19,24 @@ namespace Quartz
         public readonly CachedStringFormatterInt maxBatteryCapacityFormatter = new CachedStringFormatterInt();
         public readonly CachedStringFormatterInt currentBatteryCapacityFormatter = new CachedStringFormatterInt();
         public readonly CachedStringFormatterFloat batteryCapacityFillFormatter = new CachedStringFormatterFloat();
-        
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
-        {
-            switch (bindingName)
-            {
-                case "showbattery":
-                    value = tileEntity == null ? "false" : (tileEntity.PowerItemType == PowerItem.PowerItemTypes.BatteryBank).ToString();
-                    return true;
-                case "maxbatterycapacity":
-                    value = GetMaxBatteryCapacity();
-                        return true;
-                case "batterycapacity":
-                    value = GetCurrentBatteryCapacity();
-                    return true;
-                case "batterycapacityfill":
-                    value = GetBatteryCapacityFill();
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
-            }
-        }
 
-        private string GetMaxBatteryCapacity()
+        [XuiXmlBinding("showbattery")]
+        public bool ShowBattery()
         {
             if (tileEntity == null)
             {
-                return "0";
+                return false;
+            }
+
+            return tileEntity.PowerItemType == PowerItem.PowerItemTypes.BatteryBank;
+        }
+
+        [XuiXmlBinding("maxbatterycapacity")]
+        private int GetMaxBatteryCapacity()
+        {
+            if (tileEntity == null)
+            {
+                return 0;
             }
 
             int maxCapacity = 0;
@@ -57,14 +48,15 @@ namespace Quartz
                 }
             }
 
-            return maxBatteryCapacityFormatter.Format(maxCapacity);
+            return maxCapacity;
         }
 
-        private string GetCurrentBatteryCapacity()
+        [XuiXmlBinding("batterycapacity")]
+        private int GetCurrentBatteryCapacity()
         {
             if (tileEntity == null)
             {
-                return "0";
+                return 0;
             }
 
             int currentCapacity = 0;
@@ -76,14 +68,15 @@ namespace Quartz
                 }
             }
 
-            return currentBatteryCapacityFormatter.Format(currentCapacity);
+            return currentCapacity;
         }
 
-        private string GetBatteryCapacityFill()
+        [XuiXmlBinding("batterycapacityfill")]
+        private float GetBatteryCapacityFill()
         {
             if (tileEntity == null)
             {
-                return "0";
+                return 0f;
             }
 
             float maxCapacity = 0;
@@ -97,7 +90,7 @@ namespace Quartz
                 }
             }
 
-            return batteryCapacityFillFormatter.Format(currentCapacity/maxCapacity);
+            return currentCapacity/maxCapacity;
         }
     }
 }
