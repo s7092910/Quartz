@@ -235,13 +235,6 @@
     <Compile Include="Source\Inputs\QuartzInputManager.cs" />
     <Compile Include="Source\Logging\Logging.cs" />
     <Compile Include="Source\Overhaul\Controllers\Extensions\XuiExtensions.cs" />
-    <Compile Include="Source\Overhaul\Controllers\InfoWindow\InfoWindow.cs" />
-    <Compile Include="Source\Overhaul\Controllers\ItemStacks\ItemInfoWindow.cs" />
-    <Compile Include="Source\Overhaul\Controllers\ItemStacks\InventoryItemStack.cs" />
-    <Compile Include="Source\Overhaul\Controllers\ItemStacks\ItemStackBase.cs" />
-    <Compile Include="Source\Overhaul\Controllers\ItemStacks\ItemStackGrid.cs" />
-    <Compile Include="Source\Overhaul\Controllers\ItemStacks\SelectableEntry.cs" />
-    <Compile Include="Source\Overhaul\Controllers\XUiBaseController.cs" />
     <Compile Include="Source\QuartzMod.cs" />
     <Compile Include="Source\Settings\DebuggingSettings.cs" />
     <Compile Include="Source\Settings\GlobalSettings.cs" />
@@ -250,10 +243,7 @@
     <Compile Include="Source\XUI\XUiFromXml_Harmony.cs" />
     <Compile Include="Source\Views\Harmony\XUiV_Label_Harmony.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Source\Overhaul\Controllers\Hud\" />
-    <Folder Include="Source\Overhaul\Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="News\clquartz.png" />
     <Content Include="News\clquartz.xml" />
