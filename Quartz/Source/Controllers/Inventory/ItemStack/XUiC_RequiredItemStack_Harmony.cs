@@ -25,47 +25,47 @@ public class XUiC_RequiredItemStackPatch
 
     private const string ERRORTAG = "Error Reverse Patching XUiC_RequiredItemStack method: ";
 
-    [HarmonyReversePatch]
-    [HarmonyPatch("CanSwap")]
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    public static bool CanSwap(XUiC_RequiredItemStack instance, ItemStack stack)
-    {
-        // its a stub so it has no initial content
-        throw new NotImplementedException(ERRORTAG + "CanSwap()");
-    }
+    //[HarmonyReversePatch]
+    //[HarmonyPatch("CanSwap")]
+    //[MethodImpl(MethodImplOptions.NoInlining)]
+    //public static bool CanSwap(XUiC_RequiredItemStack instance, ItemStack stack)
+    //{
+    //    // its a stub so it has no initial content
+    //    throw new NotImplementedException(ERRORTAG + "CanSwap()");
+    //}
 
-    [HarmonyPrefix]
-    [HarmonyPatch("HandleDropOne")]
-    public static bool HandleDropOne(XUiC_RequiredItemStack __instance, AudioClip ___placeSound)
-    {
-        ItemStack currentStack = __instance.xui.dragAndDrop.CurrentStack;
+    //[HarmonyPrefix]
+    //[HarmonyPatch("HandleDropOne")]
+    //public static bool HandleDropOne(XUiC_RequiredItemStack __instance, AudioClip ___placeSound)
+    //{
+    //    ItemStack currentStack = __instance.xui.DragAndDropWindow.CurrentStack;
 
-        if (!currentStack.IsEmpty() && XUiC_RequiredItemStackPatch.CanSwap(__instance, currentStack))
-        {
-            ItemStack itemStack = __instance.ItemStack.Clone();
-            if (itemStack.IsEmpty())
-            {
-                itemStack = currentStack.Clone();
-                itemStack.count = 0;
-            }
+    //    if (!currentStack.IsEmpty() && XUiC_RequiredItemStackPatch.CanSwap(__instance, currentStack))
+    //    {
+    //        ItemStack itemStack = __instance.ItemStack.Clone();
+    //        if (itemStack.IsEmpty())
+    //        {
+    //            itemStack = currentStack.Clone();
+    //            itemStack.count = 0;
+    //        }
 
-            ItemClass itemClass = currentStack.itemValue.ItemClass;
-            int stackMax = ((__instance.OverrideStackCount == -1) ? itemClass.Stacknumber.Value : Mathf.Min(itemClass.Stacknumber.Value, __instance.OverrideStackCount));
-            if (itemStack.count + 1 <= stackMax)
-            {
-                itemStack.count++;
-                currentStack.count--;
-                __instance.xui.dragAndDrop.CurrentStack = currentStack;
-                __instance.xui.dragAndDrop.PickUpType = __instance.StackLocation;
-                __instance.ItemStack = itemStack.Clone();
-            }
+    //        ItemClass itemClass = currentStack.itemValue.ItemClass;
+    //        int stackMax = ((__instance.OverrideStackCount == -1) ? itemClass.Stacknumber.Value : Mathf.Min(itemClass.Stacknumber.Value, __instance.OverrideStackCount));
+    //        if (itemStack.count + 1 <= stackMax)
+    //        {
+    //            itemStack.count++;
+    //            currentStack.count--;
+    //            __instance.xui.DragAndDropWindow.CurrentStack = currentStack;
+    //            __instance.xui.DragAndDropWindow.PickUpType = __instance.StackLocation;
+    //            __instance.ItemStack = itemStack.Clone();
+    //        }
 
-            if (___placeSound != null)
-            {
-                Manager.PlayXUiSound(___placeSound, 0.75f);
-            }
-        }
-        return false;
-    }
+    //        if (___placeSound != null)
+    //        {
+    //            Manager.PlayXUiSound(___placeSound, 0.75f);
+    //        }
+    //    }
+    //    return false;
+    //}
 
 }

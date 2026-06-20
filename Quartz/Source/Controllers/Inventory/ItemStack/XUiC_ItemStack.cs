@@ -23,18 +23,17 @@ namespace Quartz
         private bool matchesSearch;
         private bool isSearchActive;
 
-        protected Color32 lockedSlotColor = new Color32(96, 96, 96, byte.MaxValue);
-        protected Color32 searchColor = new Color32(96, 96, 96, byte.MaxValue);
-        protected Color32 noMatchTintColor = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
+        private Color32 lockedSlotColor = new Color32(96, 96, 96, byte.MaxValue);
+        private Color32 searchColor = new Color32(96, 96, 96, byte.MaxValue);
+        private Color32 noMatchTintColor = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
 
         protected bool isLockedSlotColorSet;
         protected bool isSearchColorSet;
         protected bool isNoMatchTintColorSet;
 
-        protected new Color32 selectionBorderColor;
-
         private readonly CachedStringFormatterXuiRgbaColor colorFormatter = new CachedStringFormatterXuiRgbaColor();
 
+        [XuiXmlBinding("issearchactive")]
         public bool IsSearchActive
         {
             get
@@ -46,11 +45,12 @@ namespace Quartz
                 if (isSearchActive != value)
                 {
                     isSearchActive = value;
-                    RefreshBindings(false);
+                    RefreshBindings();
                 }
             }
         }
 
+        [XuiXmlBinding("matchessearch")]
         public bool MatchesSearch
         {
             get
@@ -62,8 +62,41 @@ namespace Quartz
                 if (matchesSearch != value)
                 {
                     matchesSearch = value;
-                    RefreshBindings(false);
+                    RefreshBindings();
                 }
+            }
+        }
+
+        [XuiXmlAttribute("lockedslot_color")]
+        public Color32 LockedSlotColor 
+        { 
+            get => lockedSlotColor;
+            set
+            {
+                lockedSlotColor = value;
+                isLockedSlotColorSet = true;
+            }
+        }
+
+        [XuiXmlAttribute("search_color")]
+        public Color32 SearchColor 
+        { 
+            get => searchColor;
+            set
+            {
+                searchColor = value;
+                isSearchColorSet = true;
+            }
+        }
+
+        [XuiXmlAttribute("nomatch_iconcolor")]
+        public Color32 NoMatchTintColor 
+        { 
+            get => noMatchTintColor; 
+            set
+            {
+                noMatchTintColor = value;
+                isNoMatchTintColorSet = true;
             }
         }
 
@@ -86,87 +119,10 @@ namespace Quartz
             base.Update(_dt);
         }
 
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
-        {
-            switch (bindingName)
-            {
-                case "issearchactive":
-                    value = isSearchActive.ToString();
-                    return true;
-                case "matchessearch":
-                    value = matchesSearch.ToString();
-                    return true;
-                case "selectionbordercolor":
-                    value = colorFormatter.Format(SelectionBorderColor);
-                    return true;
-                case "itemql":
-                    if (itemClass == null || !ShowDurability)
-                    {
-                        value = "";
-                        return true;
-                    }
-
-                    value = ((itemStack.itemValue.Quality > 0) ? itemcountFormatter.Format(itemStack.itemValue.Quality) : (itemStack.itemValue.IsMod ? "*" : ""));
-                    return true;
-                case "stackcount":
-                    if (itemClass == null || ShowDurability)
-                    {
-                        value = "";
-                        return true;
-                    }
-
-                    value = ((itemClass.Stacknumber == 1) ? "" : itemcountFormatter.Format(itemStack.count));
-                    return true;
-                case "durabilitycolor":
-                    Color32 color = QualityInfo.GetQualityColor(itemStack?.itemValue.Quality ?? 0);
-                    if (isSearchActive && !matchesSearch)
-                    {
-                        color = color.Over(noMatchTintColor);
-                    }
-
-                    value = colorFormatter.Format(color);
-                    return true;
-                case "isempty":
-                    value = itemStack.IsEmpty() ? "true" : "false";
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
-            }
-        }
-
-        public override bool ParseAttribute(string name, string value, XUiController parent)
-        {
-            switch (name)
-            {
-                case "lockedslot_color":
-                    lockedSlotColor = StringParsers.ParseColor32(value);
-                    isLockedSlotColorSet = true;
-                    return true;
-                case "search_color":
-                    searchColor = StringParsers.ParseColor32(value);
-                    isSearchColorSet = true;
-                    return true;
-                case "nomatch_iconcolor":
-                    noMatchTintColor = StringParsers.ParseColor32(value);
-                    isNoMatchTintColorSet = true;
-                    return true;
-                case "select_color":
-                    selectColor = StringParsers.ParseColor32(value);
-                    return true;
-                default:
-                    return base.ParseAttribute(name, value, parent);
-            }
-        }
-
         public override void OnHovered(bool isOver)
         {
             this.isOver = isOver;
             base.OnHovered(isOver);
-        }
-
-        public override void SelectedChanged(bool _isSelected)
-        {
-            
         }
 
         protected new virtual void updateBorderColor()
@@ -175,7 +131,7 @@ namespace Quartz
             {
                 SelectionBorderColor = Color.clear;
             }
-            else if (Selected)
+            else if (IsSelected)
             {
                 SelectionBorderColor = selectColor;
             }
@@ -199,6 +155,46 @@ namespace Quartz
             {
                 SelectionBorderColor = backgroundColor;
             }
+        }
+
+        [XuiXmlBinding("itemql")]
+        private string GetItemQualityLevel()
+        {
+            if (itemClass == null || !ShowDurability)
+            {
+                return "";
+            }
+
+            return itemStack.itemValue.Quality > 0 ? itemcountFormatter.Format(itemStack.itemValue.Quality) : (itemStack.itemValue.IsMod ? "*" : "");
+        }
+
+        [XuiXmlBinding("stackcount")]
+        private string GetStackCount()
+        {
+            if (itemClass == null || ShowDurability)
+            {
+                return "";
+            }
+
+            return itemClass.Stacknumber == 1 ? "" : itemcountFormatter.Format(itemStack.count);
+        }
+
+        [XuiXmlBinding("durabilitycolor")]
+        private Color32 GetDurabilityColor()
+        {
+            Color32 color = QualityInfo.GetQualityColor(itemStack?.itemValue.Quality ?? 0);
+            if (isSearchActive && !matchesSearch)
+            {
+                color = color.Over(noMatchTintColor);
+            }
+
+            return color;
+        }
+
+        [XuiXmlBinding("isempty")]
+        private bool IsEmptySlot()
+        {
+            return itemStack.IsEmpty();
         }
     }
 }
