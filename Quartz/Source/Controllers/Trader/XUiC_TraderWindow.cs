@@ -60,13 +60,14 @@ namespace Quartz
         [XuiXmlBinding("headername")]
         private string GetHeaderText()
         {
-            if (CurrentVending is TileEntityVendingMachine tileEntityVendingMachine)
+            if (IsVending)
             {
-                if (tileEntityVendingMachine.IsRentable || tileEntityVendingMachine.TraderData.TraderInfo.PlayerOwned)
+                if (IsRentable || IsPlayerOwned)
                 {
-                    if (tileEntityVendingMachine.GetOwner() != null)
+                    PlatformUserIdentifierAbs owner = CurrentVending.GetOwner();
+                    if (owner != null)
                     {
-                        string playerName = GameManager.Instance.persistentPlayers.GetPlayerData(tileEntityVendingMachine.GetOwner()).PlayerName.DisplayName;
+                        string playerName = GameManager.Instance.persistentPlayers.GetPlayerData(owner).PlayerName.DisplayName;
                         return string.Format(ownedVendingMachine, playerName);
                     }
                     else
