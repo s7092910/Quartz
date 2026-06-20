@@ -30,34 +30,7 @@ namespace Quartz
             RefreshBindings();
         }
 
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
-        {
-            switch (bindingName)
-            {
-                case "randomvideo":
-                    value = getRandomVideo();
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
-            }
-        }
-
-        public override bool ParseAttribute(string attribute, string value, XUiController parent)
-        {
-            if (attribute != null)
-            {
-                switch (attribute)
-                {
-                    case "videos":
-                        parseVideos(value);
-                        return true;
-                    default:
-                        return base.ParseAttribute(attribute, value, parent);
-                }
-            }
-            return false;
-        }
-
+        [XuiXmlAttribute("videos")]
         private void parseVideos(string videoString)
         {
             if (string.IsNullOrEmpty(videoString))
@@ -68,6 +41,7 @@ namespace Quartz
             videos = videoString.Split(SPLITTER);
         }
 
+        [XuiXmlBinding("randomvideo")]
         private string getRandomVideo()
         {
             if (videos == null)

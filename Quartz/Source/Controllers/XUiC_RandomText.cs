@@ -30,34 +30,7 @@ namespace Quartz
             RefreshBindings();
         }
 
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
-        {
-            switch( bindingName )
-            {
-                case "randomtext":
-                    value = Localization.Get(getRandomText());
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
-            }
-        }
-
-        public override bool ParseAttribute(string attribute, string value, XUiController parent)
-        {
-            if (attribute != null)
-            {
-                switch (attribute)
-                {
-                    case "texts":
-                        parseTexts(value);
-                        return true;
-                    default:
-                        return base.ParseAttribute(attribute, value, parent);
-                }
-            }
-            return false;
-        }
-
+        [XuiXmlAttribute("text")]
         private void parseTexts(string textsString)
         {
             if (string.IsNullOrEmpty(textsString))
@@ -68,6 +41,7 @@ namespace Quartz
             texts = textsString.Split(SPLITTER);
         }
 
+        [XuiXmlBinding("randomtext")]
         private string getRandomText()
         {
             if(texts == null)

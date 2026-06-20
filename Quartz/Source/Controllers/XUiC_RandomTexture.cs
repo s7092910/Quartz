@@ -30,34 +30,7 @@ namespace Quartz
             RefreshBindings();
         }
 
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
-        {
-            switch (bindingName)
-            {
-                case "randomtexture":
-                    value = getRandomTexture();
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
-            }
-        }
-
-        public override bool ParseAttribute(string attribute, string value, XUiController parent)
-        {
-            if (attribute != null)
-            {
-                switch (attribute)
-                {
-                    case "textures":
-                        parseTextures(value);
-                        return true;
-                    default:
-                        return base.ParseAttribute(attribute, value, parent);
-                }
-            }
-            return false;
-        }
-
+        [XuiXmlAttribute("textures")]
         private void parseTextures(string texturesString)
         {
             if (string.IsNullOrEmpty(texturesString))
@@ -68,6 +41,7 @@ namespace Quartz
             textures = texturesString.Split(SPLITTER);
         }
 
+        [XuiXmlBinding("randomtexture")]
         private string getRandomTexture()
         {
             if (textures == null)
