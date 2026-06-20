@@ -14,26 +14,26 @@ limitations under the License.*/
 
 using HarmonyLib;
 
-[HarmonyPatch(typeof(XUiC_VehicleContainer))]
-public class XUiC_VehicleContainerPatch
+[HarmonyPatch(typeof(XUiC_BagContainer))]
+public class XUiC_BagContainerPatch
 {
-    private const string TAG = "XUiC_VehicleContainerPatch";
+    private const string TAG = "XUiC_BagContainerPatch";
 
     [HarmonyPostfix]
-    [HarmonyPatch("HandleLootSlotChangedEvent")]
-    public static void HandleLootSlotChangedEvent(XUiC_VehicleContainer __instance, int slotNumber, ItemStack stack)
+    [HarmonyPatch(nameof(XUiC_BagContainer.HandleBagSlotChangedEvent))]
+    public static void HandleBagSlotChangedEvent(XUiC_BagContainer __instance, int slotNumber, ItemStack stack)
     {
-        if(__instance is Quartz.XUiC_VehicleContainer instance)
+        if(__instance is Quartz.XUiC_BagContainer instance)
         {
-            instance.HandleSlotChangedEvent(slotNumber, stack);
+            instance.HandleBagSlotChangedEventPost(slotNumber, stack);
         }
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch("SetSlots")]
-    public static void SetSlotsPostfix(XUiC_VehicleContainer __instance, ItemStack[] stackList)
+    [HarmonyPatch(nameof(XUiC_BagContainer.SetBag))]
+    public static void SetBagsPostfix(XUiC_BagContainer __instance, ItemStack[] stackList)
     {
-        if (__instance is Quartz.XUiC_VehicleContainer instance)
+        if (__instance is Quartz.XUiC_BagContainer instance)
         {
             instance.UpdateFilterFromSearch();
         }

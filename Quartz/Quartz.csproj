@@ -200,8 +200,8 @@
     <Compile Include="Source\Controllers\Inventory\LootWindow\XUiC_LootContainer_Harmony.cs" />
     <Compile Include="Source\Controllers\Inventory\LootWindow\XUiC_LootWindow_Harmony.cs" />
     <Compile Include="Source\Controllers\Inventory\SearchUtil.cs" />
-    <Compile Include="Source\Controllers\Inventory\VehicleStorageWindow\XUiC_VehicleContainer.cs" />
-    <Compile Include="Source\Controllers\Inventory\VehicleStorageWindow\XUiC_VehicleContainer_Harmony.cs" />
+    <Compile Include="Source\Controllers\Inventory\BagStorageWindow\XUiC_BagContainer.cs" />
+    <Compile Include="Source\Controllers\Inventory\BagStorageWindow\XUiC_BagContainer_Harmony.cs" />
     <Compile Include="Source\Controllers\PlayerStats\XUiC_PlayerStats.cs" />
     <Compile Include="Source\Controllers\XUiC_RandomTexture.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MapInvitesListEntry.cs" />
