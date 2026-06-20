@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using HarmonyLib;
+using Platform;
 using UnityEngine;
 
 [HarmonyPatch(typeof(XUiC_LootWindow))]
@@ -26,25 +27,22 @@ public class XUiC_LootWindowPatch
     {
         XUiControllerPatch.Update(__instance, _dt);
 
-        if (__instance.windowGroup.isShowing)
+        if (!__instance.xui.playerUI.playerInput.PermanentActions.Activate.IsPressed)
         {
-            if (!__instance.xui.playerUI.playerInput.PermanentActions.Activate.IsPressed)
+            __instance.wasReleased = true;
+        }
+
+        if (__instance.wasReleased)
+        {
+            if (__instance.xui.playerUI.playerInput.PermanentActions.Activate.IsPressed)
             {
-                __instance.wasReleased = true;
+                __instance.activeKeyDown = true;
             }
 
-            if (__instance.wasReleased)
+            if (__instance.xui.playerUI.playerInput.PermanentActions.Activate.WasReleased && __instance.activeKeyDown && !__instance.xui.playerUI.windowManager.IsInputActive())
             {
-                if (__instance.xui.playerUI.playerInput.PermanentActions.Activate.IsPressed)
-                {
-                    __instance.activeKeyDown = true;
-                }
-
-                if (__instance.xui.playerUI.playerInput.PermanentActions.Activate.WasReleased && __instance.activeKeyDown && !__instance.xui.playerUI.windowManager.IsInputActive())
-                {
-                    __instance.activeKeyDown = false;
-                    __instance.xui.playerUI.windowManager.CloseAllOpenWindows();
-                }
+                __instance.activeKeyDown = false;
+                __instance.xui.playerUI.windowManager.CloseAllOpenModalWindows();
             }
         }
         if (__instance.te != null)
@@ -57,8 +55,7 @@ public class XUiC_LootWindowPatch
                 if (sqrMagnitude > num * num)
                 {
                     Log.Out("Loot Window closed at distance {0}", new object[] { Mathf.Sqrt(sqrMagnitude) });
-                    __instance.xui.playerUI.windowManager.CloseAllOpenWindows(null, false);
-                    __instance.CloseContainer(false);
+                    __instance.xui.playerUI.windowManager.CloseAllOpenModalWindows(null, false);
                 }
             }
         }
@@ -67,7 +64,8 @@ public class XUiC_LootWindowPatch
             return false;
         }
 
-        if (!__instance.isClosing && __instance.ViewComponent != null && __instance.ViewComponent.IsVisible && !__instance.xui.playerUI.windowManager.IsInputActive()
+        if (!__instance.isClosing && __instance.ViewComponent != null && __instance.ViewComponent.IsVisible 
+            && (PlatformManager.NativePlatform.Input.CurrentInputStyle != PlayerInputManager.InputStyle.Keyboard || !__instance.xui.playerUI.windowManager.IsInputActive())
             && (__instance.xui.playerUI.playerInput.GUIActions.LeftStick.WasPressed || __instance.xui.playerUI.playerInput.PermanentActions.Reload.WasPressed))
         {
             if (__instance.standardControls is Quartz.XUiC_ContainerStandardControls controls)
@@ -78,6 +76,12 @@ public class XUiC_LootWindowPatch
             {
                 __instance.standardControls.MoveAll();
             }
+        }
+
+        PlayerActionsLocal playerInput = __instance.xui.playerUI.playerInput;
+        if (__instance.UserLockMode && (playerInput.GUIActions.Cancel.WasPressed || playerInput.PermanentActions.Cancel.WasPressed))
+        {
+            __instance.UserLockMode = false;
         }
 
         return false;
