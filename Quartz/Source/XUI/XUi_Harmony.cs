@@ -26,7 +26,7 @@ public static class XUiPatch
     private const string TAG = "Error Reverse Patching XUiController method: ";
 
     [HarmonyPrefix]
-    [HarmonyPatch("GetUIFontByName")]
+    [HarmonyPatch(nameof(XUi.GetUIFontByName))]
     public static bool GetUIFontByName(ref NGUIFont __result, string _name, bool _showWarning = true)
     {
 
@@ -44,8 +44,8 @@ public static class XUiPatch
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch("LoadAsync")]
-    public static IEnumerator LoadAsync(IEnumerator __result, XUi __instance, List<string> windowGroupSubset = null)
+    [HarmonyPatch(nameof(XUi.loadAsync))]
+    public static IEnumerator LoadAsync(IEnumerator __result, XUi __instance, List<string> _windowGroupSubset = null)
     {
         Dictionary<string, XUiFromXml.StyleData> styles = XUiFromXml.styles;
         yield return FontManager.LoadFonts(__instance);

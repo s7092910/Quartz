@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using HarmonyLib;
+using System;
 
 [HarmonyPatch(typeof(XUiC_BagContainer))]
 public class XUiC_BagContainerPatch
@@ -21,17 +22,17 @@ public class XUiC_BagContainerPatch
 
     [HarmonyPostfix]
     [HarmonyPatch(nameof(XUiC_BagContainer.HandleBagSlotChangedEvent))]
-    public static void HandleBagSlotChangedEvent(XUiC_BagContainer __instance, int slotNumber, ItemStack stack)
+    public static void HandleBagSlotChangedEvent(XUiC_BagContainer __instance, int _slotNumber, ItemStack _stack)
     {
         if(__instance is Quartz.XUiC_BagContainer instance)
         {
-            instance.HandleBagSlotChangedEventPost(slotNumber, stack);
+            instance.HandleBagSlotChangedEventPost(_slotNumber, _stack);
         }
     }
 
     [HarmonyPostfix]
     [HarmonyPatch(nameof(XUiC_BagContainer.SetBag))]
-    public static void SetBagsPostfix(XUiC_BagContainer __instance, ItemStack[] stackList)
+    public static void SetBagsPostfix(XUiC_BagContainer __instance, Bag _bag, LootContainer _lootContainer, string _containerName, Action _onModified = null)
     {
         if (__instance is Quartz.XUiC_BagContainer instance)
         {
