@@ -241,9 +241,7 @@
     <Compile Include="Source\XUI\XUiFromXml_Harmony.cs" />
     <Compile Include="Source\Views\Harmony\XUiV_Label_Harmony.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Source\Bindings\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="News\clquartz.png" />
     <Content Include="News\clquartz.xml" />
