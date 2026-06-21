@@ -24,7 +24,7 @@ public static class XUiC_WorkstationFuelGridPatch
     private const string TAG = "Error Reverse Patching XUiC_WorkstationFuelGrid method: ";
 
     [HarmonyReversePatch]
-    [HarmonyPatch("onFuelItemsChanged")]
+    [HarmonyPatch(nameof(XUiC_WorkstationFuelGrid.onFuelItemsChanged))]
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void onFuelItemsChanged(XUiC_WorkstationFuelGrid instance)
     {
@@ -37,16 +37,16 @@ public static class XUiC_WorkstationFuelGridPatch
 public static class XUiC_WorkstationGridPatch
 {
     [HarmonyPrefix]
-    [HarmonyPatch("AddItem", new Type[] { typeof(ItemStack) })]
-    public static bool AddItem(XUiC_WorkstationFuelGrid __instance, ItemStack _item, ref bool __result)
+    [HarmonyPatch(nameof(XUiC_WorkstationGrid.AddItem), new Type[] { typeof(ItemStack) })]
+    public static bool AddItem(XUiC_WorkstationFuelGrid __instance, ItemStack _itemStack, ref bool __result)
     {
         for (int i = 0; i < __instance.itemControllers.Length; i++)
         {
             XUiC_ItemStack xuiC_ItemStack = __instance.itemControllers[i];
             ItemStack itemStack = xuiC_ItemStack.ItemStack;
-            if ((itemStack == null || itemStack.IsEmpty()) && xuiC_ItemStack.CanSwap(_item))
+            if ((itemStack == null || itemStack.IsEmpty()) && xuiC_ItemStack.CanSwap(_itemStack))
             {
-                xuiC_ItemStack.ItemStack = _item;
+                xuiC_ItemStack.ItemStack = _itemStack;
                 __result = true;
                 return false;
             }
@@ -63,7 +63,7 @@ public static class TileEntityPatch
     private const string TAG = "Error Reverse Patching TileEntity method: ";
 
     [HarmonyReversePatch]
-    [HarmonyPatch("emitHeatMapEvent")]
+    [HarmonyPatch(nameof(TileEntity.emitHeatMapEvent))]
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void emitHeatMapEvent(TileEntity instance, World world, EnumAIDirectorChunkEvent eventType)
     {
@@ -77,7 +77,7 @@ public static class TileEntityWorkstationPatch
 {
 
     [HarmonyPrefix]
-    [HarmonyPatch("HandleFuel")]
+    [HarmonyPatch(nameof(TileEntityWorkstation.HandleFuel))]
     public static bool HandleFuel(TileEntityWorkstation __instance, World _world, float _timePassed, ref bool __result, XUiEvent_FuelStackChanged ___FuelChanged)
     {
         Block block = __instance.blockValue.Block;
