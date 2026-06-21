@@ -40,9 +40,12 @@ namespace Quartz
 
         private readonly CachedStringFormatter<int> statcurrentFormatterInt = new CachedStringFormatter<int>((int _i) => _i.ToString());
         private readonly CachedStringFormatter<int> currentPaintAmmoFormatter = new CachedStringFormatter<int>((int _i) => _i.ToString());
-        private readonly CachedStringFormatter<int, int> statcurrentWMaxFormatterAOfB = new CachedStringFormatter<int, int>((int _i, int _i1) => $"{_i}/{_i1}");
-        private readonly CachedStringFormatterXuiRgbaColor staticoncolorFormatter = new CachedStringFormatterXuiRgbaColor();
-        private readonly CachedStringFormatter<int> levelFormatter = new CachedStringFormatter<int>((int _i) => _i.ToString("+0;-#"));
+
+        [XuiXmlBinding("entitydamage")]
+        public string EntityDamage { get => entityDamage; }
+
+        [XuiXmlBinding("blockdamage")]
+        public string BlockDamage { get => blockDamage; }
 
         public override void Init()
         {
@@ -70,7 +73,7 @@ namespace Quartz
             {
                 SetupActiveItemEntry();
                 updateActiveItemAmmo();
-                RefreshBindings(true);
+                RefreshBindings();
                 IsDirty = false;
             }
         }
@@ -89,49 +92,25 @@ namespace Quartz
             xui.PlayerInventory.OnToolbeltItemsChanged -= PlayerInventory_OnToolbeltItemsChanged;
         }
 
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
+        [XuiXmlBinding("staticon")]
+        private string GetStatIcon()
         {
-            switch (bindingName)
-            {
-                case "loadedammo":
-                    value = GetLoadedAmmo();
-                    return true;
-                case "totalammo":
-                    value = GetTotalAmmo();
-                    return true;
-                case "staticon":
-                    value = (displayItemClass != null) ? displayItemClass.GetIconName() : "";
-                    return true;
-                case "staticonatlas":
-                    value = statAtlas;
-                    return true;
-                case "staticoncolor":
-                    Color32 v2 = ((displayItemClass != null) ? displayItemClass.GetIconTint() : Color.white);
-                    value = staticoncolorFormatter.Format(v2);
-                    return true;
-                case "statvisible":
-                    value = IsStatVisible().ToString();
-                    return true;
-                case "isgun":
-                    value = (heldItemClass != null && heldItemClass.IsGun()).ToString();
-                    return true;
-                case "istool":
-                    value = IsToolHeld().ToString();
-                    return true;
-                case "ismelee":
-                    value = IsMeleeHeld().ToString();
-                    return true;
-                case "entitydamage":
-                    value = entityDamage;
-                    return true;
-                case "blockdamage":
-                    value = blockDamage;
-                    return true;
-                default:
-                    return false;
-            }
+            return displayItemClass != null ? displayItemClass.GetIconName() : "";
         }
 
+        [XuiXmlBinding("staticonatlas")]
+        private string GetStatIconAtlas()
+        {
+            return statAtlas;
+        }
+
+        [XuiXmlBinding("staticoncolor")]
+        private Color32 GetStatIconColor()
+        {
+            return displayItemClass != null ? displayItemClass.GetIconTint() : Color.white;
+        }
+
+        [XuiXmlBinding("statvisible")]
         private bool IsStatVisible()
         {
             if (localPlayer == null)
@@ -147,6 +126,7 @@ namespace Quartz
             return heldItemClass != null;
         }
 
+        [XuiXmlBinding("loadedAmmo")]
         private string GetLoadedAmmo()
         {
             string currentStat = "";
@@ -167,6 +147,7 @@ namespace Quartz
             return currentStat;
         }
 
+        [XuiXmlBinding("totalammo")]
         private string GetTotalAmmo()
         {
             string maxStat = "";
@@ -180,11 +161,19 @@ namespace Quartz
             return maxStat;
         }
 
+        [XuiXmlBinding("isgun")]
+        private bool IsGunHeld()
+        {
+            return heldItemClass != null && heldItemClass.IsGun();
+        }
+
+        [XuiXmlBinding("istool")]
         private bool IsToolHeld()
         {
             return heldItemClass != null && heldItemClass.HasAnyTags(FastTags<TagGroup.Global>.Parse("tool")) && !heldItemClass.IsGun();
         }
 
+        [XuiXmlBinding("ismelee")]
         private bool IsMeleeHeld()
         {
             return heldItemClass != null && heldItemClass.IsDynamicMelee() && !IsToolHeld();
@@ -201,7 +190,7 @@ namespace Quartz
 
             if ((localPlayer == null) || localPlayer.inventory.GetItemInSlot(currentSlotIndex) == null)
             {
-                itemValue = ItemValue.None.Clone();
+                itemValue = ItemValue.None;
                 return;
             }
 

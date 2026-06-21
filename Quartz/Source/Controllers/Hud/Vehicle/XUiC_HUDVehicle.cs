@@ -24,6 +24,7 @@ namespace Quartz
         private bool isInFlyingVehicle;
         private bool isDriving;
         private bool isHeadlightOn;
+        private bool isTurbo;
 
         public EntityVehicle Vehicle
         {
@@ -63,7 +64,7 @@ namespace Quartz
                 }
             }
 
-            if (IsDirty || isHeadlightOn != IsHeadlightOn())
+            if (IsDirty || isHeadlightOn != IsHeadlightOn() || isTurbo != IsTurboOn())
             {
                 isHeadlightOn = IsHeadlightOn();
                 IsDirty = false;
@@ -83,47 +84,37 @@ namespace Quartz
             base.OnClose();
         }
 
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
+        [XuiXmlBinding("invehicle")]
+        private bool IsInVehicle()
         {
-            switch (bindingName)
-            {
-                case "invehicle":
-                    value = localPlayer != null 
-                        && !localPlayer.IsDead() 
-                        && vehicle != null 
-                        ? "true" : "false";
-                    return true;
-                case "isdriver":
-                    value = IsDriver() ? "true" : "false";
-                    return true;
-                case "isaflyingvehicle":
-                    value = isInFlyingVehicle ? "true" : "false";
-                    return true;
-                case "hasengine":
-                case "hasfuel":
-                    value = localPlayer != null
-                        && !localPlayer.IsDead()
-                        && vehicle != null
-                        && vehicle.GetVehicle().HasEnginePart()
-                        ? "true" : "false";
-                    return true;
-                case "hasheadlight":
-                    value = localPlayer != null
-                        && !localPlayer.IsDead()
-                        && headlight != null
-                        ? "true" : "false";
-                    return true;
-                case "isheadlighton":
-                    value = localPlayer != null
-                        && !localPlayer.IsDead()
-                        && IsHeadlightOn()
-                        ? "true" : "false";
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
-            }
+            return localPlayer != null
+                && !localPlayer.IsDead()
+                && vehicle != null;
         }
 
+        [XuiXmlBinding("isaflyingvehicle")]
+        private bool IsFlyingVehicle()
+        {
+            return isInFlyingVehicle;
+        }
+
+        [XuiXmlBinding("hasengine")]
+        private bool HasEngine()
+        {
+            return localPlayer != null
+                && !localPlayer.IsDead()
+                && vehicle != null
+                && vehicle.GetVehicle().HasEnginePart();
+        }
+
+        [XuiXmlBinding("hasfuel")]
+        private bool HasFuel()
+        {
+            return HasEngine()
+                && EntityVehicle.VehicleFuelUsageModifier > 0.0;
+        }
+
+        [XuiXmlBinding("isdriver")]
         private bool IsDriver()
         {
             return localPlayer != null 
@@ -133,9 +124,28 @@ namespace Quartz
                 && vehicle.AttachedMainEntity == localPlayer;
         }
 
+        [XuiXmlBinding("hasheadlight")]
+        private bool HasHeadLights()
+        {
+            return localPlayer != null
+                   && !localPlayer.IsDead()
+                   && headlight != null;
+        }
+
+        [XuiXmlBinding("isheadlighton")]
         private bool IsHeadlightOn()
         {
-            return headlight != null && headlight.IsOn();
+            return HasHeadLights()
+                && headlight.IsOn();
+        }
+
+        [XuiXmlBinding("isturboon")]
+        private bool IsTurboOn()
+        {
+            return localPlayer != null
+                && !localPlayer.IsDead()
+                && vehicle != null
+                && vehicle.vehicle.IsTurbo;
         }
     }
 }

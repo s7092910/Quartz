@@ -19,46 +19,30 @@ namespace Quartz
 {
     public class XUiC_HUDStealth : XUiC_HUDStatbar
     {
-        public readonly CachedStringFormatterXuiRgbaColor stealthColorFormatter = new CachedStringFormatterXuiRgbaColor();
-
         private int buffOffset = 52;
 
-        public override bool ParseAttribute(string attribute, string value, XUiController _parent)
-        {
-            if (attribute != null)
+        [XuiXmlAttribute("buff_offset")]
+        public int BuffOffset 
+        { 
+            get => buffOffset; 
+            set 
             {
-                switch (attribute)
-                {
-                    case "buff_offset":
-                        int temp = buffOffset;
-                        int.TryParse(value, out buffOffset);
-                        IsDirty |= temp != buffOffset;
-                        return true;
-                    default:
-                        return base.ParseAttribute(attribute, value, _parent);
-                }
-            }
-
-            return false;
+                IsDirty |= buffOffset != value;
+                buffOffset = value;
+            }  
         }
 
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
+        [XuiXmlBinding("stealthcolor")]
+        public Color32 GetStealthColor()
         {
-            switch (bindingName)
-            {
-                case "stealthcolor":
-                    value = stealthColorFormatter.Format(localPlayer ? localPlayer.Stealth.ValueColorUI : default);
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
-            }
+            return localPlayer ? localPlayer.Stealth.ValueColorUI : default;
         }
 
         protected override bool IsStatVisible()
         {
             if(base.IsStatVisible())
             {
-                xui.BuffPopoutList.SetYOffset(LocalPlayer.Crouching ? buffOffset : 0);
+                xui.BuffPopoutList.SetYOffset(LocalPlayer.Crouching ? BuffOffset : 0);
                 return LocalPlayer.Crouching;
             }
 

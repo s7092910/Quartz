@@ -23,8 +23,6 @@ namespace Quartz
 
         private float cachedValue;
 
-        protected readonly CachedStringFormatter<float> statcurrentFormatterFloat = new CachedStringFormatter<float>((float _i) => _i.ToCultureInvariantString());
-
         public EntityVehicle Vehicle
         {
             get => vehicle;
@@ -58,46 +56,6 @@ namespace Quartz
             }
         }
 
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
-        {
-            switch (bindingName)
-            {
-                case "currentspeed":
-                    value = "0";
-                    if (localPlayer != null && vehicle != null)
-                    {
-                        value = statcurrentFormatterFloat.Format(vehicle.GetVelocityPerSecond().magnitude * 3.6f);
-                    }
-                    return true;
-                case "currentforwardspeed":
-                    value = "0";
-                    if (localPlayer != null && vehicle != null)
-                    {
-                        value = statcurrentFormatterFloat.Format(Math.Abs(vehicle.GetVehicle().CurrentForwardVelocity * 3.6f));
-                    }
-                    return true;
-                case "maxspeed":
-                    value = "0";
-                    if (localPlayer != null && vehicle != null)
-                    {
-                        value = statcurrentFormatterFloat.Format(vehicle.GetVehicle().VelocityMaxForward * 3.6f);
-                    }
-                    return true;
-                case "maxspeedwithturbo":
-                    value = "0";
-                    if (localPlayer != null && vehicle != null)
-                    {
-                        value = statcurrentFormatterFloat.Format(vehicle.GetVehicle().MaxPossibleSpeed * 3.6f);
-                    }
-                    return true;
-                case "showspeed":
-                    value = IsStatVisible().ToString();
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
-            }
-        }
-
         protected bool HasChanged()
         {
             if (vehicle != null)
@@ -113,6 +71,55 @@ namespace Quartz
             return false;
         }
 
+        [XuiXmlBinding("currendspeed")]
+        private float GetCurrentSpeed()
+        {
+            float speed = 0f;
+            if (localPlayer != null && vehicle != null)
+            {
+                speed = vehicle.GetVelocityPerSecond().magnitude * 3.6f;
+            }
+
+            return speed;
+        }
+
+        [XuiXmlBinding("currendforwardspeed")]
+        private float GetCurrentForwardSpeed()
+        {
+            float speed = 0f;
+            if (localPlayer != null && vehicle != null)
+            {
+                speed = Math.Abs(vehicle.GetVehicle().CurrentForwardVelocity * 3.6f);
+            }
+
+            return speed;
+        }
+
+        [XuiXmlBinding("maxspeed")]
+        private float GetMaxSpeed()
+        {
+            float speed = 0f;
+            if (localPlayer != null && vehicle != null)
+            {
+                speed = vehicle.GetVehicle().VelocityMaxForward * 3.6f;
+            }
+
+            return speed;
+        }
+
+        [XuiXmlBinding("maxspeedwithturbo")]
+        private float GetMaxSpeedWithTurbo()
+        {
+            float speed = 0f;
+            if (localPlayer != null && vehicle != null)
+            {
+                speed = vehicle.GetVehicle().MaxPossibleSpeed * 3.6f;
+            }
+
+            return speed;
+        }
+
+        [XuiXmlBinding("showspeed")]
         protected bool IsStatVisible()
         {
             return localPlayer != null && vehicle != null && !localPlayer.IsDead();

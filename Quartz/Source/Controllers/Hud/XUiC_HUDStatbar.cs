@@ -21,6 +21,7 @@ namespace Quartz.Hud
     {
         protected EntityPlayerLocal localPlayer;
 
+        [XuiBindComponent("BarContent", false)]
         private XUiV_Sprite barContent;
 
         private float cachedFillPercentage;
@@ -35,16 +36,17 @@ namespace Quartz.Hud
 
         public EntityPlayerLocal LocalPlayer { get => localPlayer; }
 
+        [XuiXmlAttribute("animation_duration")]
+        public float AnimationDuration 
+        { 
+            get => smoothTime; 
+            set => smoothTime = value; 
+        }
+
         public override void Init()
         {
             base.Init();
             IsDirty = true;
-            XUiController childById = GetChildById("BarContent");
-            if (childById != null)
-            {
-                barContent = (XUiV_Sprite)childById.ViewComponent;
-            }
-
         }
 
         public override void Update(float _dt)
@@ -79,80 +81,6 @@ namespace Quartz.Hud
         public override void OnClose()
         {
             base.OnClose();
-        }
-
-        public override bool ParseAttribute(string attribute, string value, XUiController _parent)
-        {
-            switch (attribute)
-            {
-                case "animation_duration":
-                    float.TryParse(value, out smoothTime);
-                    return true;
-                default:
-                    return base.ParseAttribute(attribute, value, _parent);
-            }
-        }
-
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
-        {
-            switch (bindingName)
-            {
-                case "stat":
-                case "statcurrent":
-                    value = "0";
-                    if (localPlayer != null)
-                    {
-                        value = statcurrentFormatterInt.Format((int)GetCurrentStat());
-                    }
-                    return true;
-                case "statmax":
-                    value = "0";
-                    if (localPlayer != null)
-                    {
-                        value = statcurrentFormatterInt.Format((int)GetMaxStat());
-                    }
-                    return true;
-                case "statcurrentwithmax":
-                    value = "0";
-                    if (localPlayer != null)
-                    {
-                        value = statcurrentWMaxFormatterAOfB.Format((int)GetCurrentStat(), (int)GetMaxStat());
-                    }
-                    return true;
-                case "statwithmax":
-                    value = "0";
-                    if (localPlayer != null)
-                    {
-                        value = statcurrentWMaxFormatterAOfB.Format((int)GetCurrentStat(), (int)GetMaxStat());
-                    }
-                    return true;
-                case "statmodifiedmax":
-                    value = "0";
-                    if (localPlayer != null)
-                    {
-                        value = statmodifiedmaxFormatter.Format(GetModifiedMax(), GetMaxStat());
-                    }
-                    return true;
-                case "statuipercentage":
-                    value = "0";
-                    if (localPlayer != null)
-                    {
-                        value = statcurrentFormatterFloat.Format(GetStatUIPercentage());
-                    }
-                    return true;
-                case "statpercentage":
-                    value = "0";
-                    if(localPlayer != null)
-                    {
-                        value = statcurrentFormatterInt.Format((int)(GetStatUIPercentage() * 100));
-                    }
-                    return true;
-                case "statvisible":
-                    value = IsStatVisible().ToString();
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
-            }
         }
 
         public void RefreshFill()
@@ -197,7 +125,8 @@ namespace Quartz.Hud
 
         protected virtual bool IsStatVisible()
         {
-            if (localPlayer == null || localPlayer.IsDead())
+            if (localPlayer == null || localPlayer.IsDead() || xui.playerUI.windowManager.IsFullHUDDisabled() 
+                || (!xui.DragAndDropWindow.InMenu && xui.playerUI.windowManager.IsHUDPartialHidden()))
             {
                 return false;
             }
@@ -213,5 +142,94 @@ namespace Quartz.Hud
 
         protected abstract float GetModifiedMax();
 
+        [XuiXmlBinding("stat")]
+        private int GetStatBinding()
+        {
+            return GetStatCurrentBinding();
+        }
+
+        [XuiXmlBinding("statcurrent")]
+        private int GetStatCurrentBinding()
+        {
+            int current = 0;
+            if (localPlayer != null)
+            {
+                current = (int)GetCurrentStat();
+            }
+
+            return current;
+        }
+
+        [XuiXmlBinding("statmax")]
+        private int GetStatMaxBinding()
+        {
+            int max = 0;
+            if (localPlayer != null)
+            {
+                max = (int)GetMaxStat();
+            }
+
+            return max;
+        }
+
+        [XuiXmlBinding("statcurrentwithmax")]
+        private string GetStatCurrentWithMaxBinding()
+        {
+            return GetStatWithMaxBinding();
+        }
+
+        [XuiXmlBinding("statwithmax")]
+        private string GetStatWithMaxBinding()
+        {
+            string value = "0";
+            if (localPlayer != null)
+            {
+                value = statcurrentWMaxFormatterAOfB.Format((int)GetCurrentStat(), (int)GetMaxStat());
+            }
+
+            return value;
+        }
+
+        [XuiXmlBinding("statmodifiedmax")]
+        private float GetStatModifiedMaxBinding()
+        {
+            float percentage = 0;
+            if (localPlayer != null)
+            {
+                percentage = GetModifiedMax()/GetMaxStat();
+            }
+
+            return percentage;
+        }
+
+        [XuiXmlBinding("statpercentage")]
+        private int GetStatPrecentageBinding()
+        {
+            int percentage = 0;
+            if (localPlayer != null)
+            {
+                percentage = (int)(GetStatUIPercentage() * 100);
+            }
+
+            return percentage;
+        }
+
+        [XuiXmlBinding("statuipercentage")]
+        private float GetStatUiPrecentageBinding()
+        {
+            float percentage = 0;
+            if (localPlayer != null)
+            {
+                percentage = GetStatUIPercentage();
+            }
+
+            return percentage;
+        }
+
+        [XuiXmlBinding("statvisible")]
+        private bool IsStatVisibleBinding()
+        {
+            return IsStatVisible();
+        }
     }
 }
