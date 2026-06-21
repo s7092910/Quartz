@@ -40,8 +40,8 @@ limitations under the License.*/-->
 				</scrollbar>
 
 				<scrollview name="scrollview" depth="5" pos="2,-44" width="1172" height="609" scrollbar="scrollbar" reset_position="true" over_scroll="false" scroll_speed="2.5">
-					<grid name="list" rows="{#Round(spriteCount/4,0) + 1}" cols="4" pos="0,-44" cell_width="293" cell_height="110" repeat_content="true" arrangement="horizontal" >
-						<Quartz_UiAtlas_Entry width="293" height="110" controller="ListEntry`1[[Quartz.Debugging.XUiC_UiAtlasList+ListEntry, Quartz]]"/>
+					<grid name="list" rows="{%Round(spriteCount/4,0) + 1}" cols="4" pos="0,-44" cell_width="293" cell_height="110" repeat_content="true" arrangement="horizontal" >
+						<Quartz_UiAtlas_Entry width="293" height="110" controller="Quartz.Debugging.XUiC_UiAtlasList+EntryController, Quartz"/>
 					</grid>
 				</scrollview>
 			</rect>
