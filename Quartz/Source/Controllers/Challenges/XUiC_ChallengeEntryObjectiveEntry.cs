@@ -31,30 +31,6 @@ namespace Quartz
             }
         }
 
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
-        {
-            switch (bindingName)
-            {
-                case "hasobjective":
-                    value = HasObjective().ToString();
-                    return true;
-                case "objective":
-                    value = GetObjectiveText();
-                    return true;
-                case "objectivefill":
-                    value = GetObjectiveFill();
-                    return true;
-                case "description":
-                    value = GetDescriptionText();
-                    return true;
-                case "status":
-                    value = GetStatusText();
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
-            }
-        }
-
         public void SetEntry(BaseChallengeObjective objective)
         {
             if (this.objective != objective)
@@ -70,11 +46,13 @@ namespace Quartz
             IsDirty = true;
         }
 
+        [XuiXmlBinding("hasobjective")]
         private bool HasObjective()
         {
             return objective != null;
         }
 
+        [XuiXmlBinding("objective")]
         private string GetObjectiveText()
         {
             if (objective != null)
@@ -85,6 +63,7 @@ namespace Quartz
             return "";
         }
 
+        [XuiXmlBinding("objectivefill")]
         private string GetObjectiveFill()
         {
             if (objective != null)
@@ -95,6 +74,7 @@ namespace Quartz
             return "0";
         }
 
+        [XuiXmlBinding("status")]
         private string GetStatusText()
         {
             if (objective != null)
@@ -105,6 +85,7 @@ namespace Quartz
             return "";
         }
 
+        [XuiXmlBinding("description")]
         private string GetDescriptionText()
         {
             if (objective != null)
