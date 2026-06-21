@@ -219,6 +219,7 @@
     <Compile Include="Source\Utils\TextureExtensions.cs" />
     <Compile Include="Source\Utils\VehicleExtensions.cs" />
     <Compile Include="Source\Utils\XUiM_WorkstationExtensions.cs" />
+    <Compile Include="Source\Views\Extensions\ScrollViewExtensions.cs" />
     <Compile Include="Source\Views\Harmony\QuartzResourcesAPI.cs" />
     <Compile Include="Source\Views\Harmony\ResourcesAPI_Harmony.cs" />
     <Compile Include="Source\Views\MaskedTextures\UIMaskedTexture.cs" />
@@ -252,8 +253,8 @@
     <Content Include="Quartz Mod Folder\Textures\Q_logo_subtle_shadow.png" />
     <Content Include="Quartz Mod Folder\UIAtlases\UIAtlas\quartz_scrollbar_background.png" />
     <Content Include="Quartz Mod Folder\UIAtlases\UIAtlas\quartz_scrollbar_handler.png" />
-    <Content Include="Quartz Mod Folder\Config\XUi\windows.xml" />
-    <Content Include="Quartz Mod Folder\Config\XUi_Common\controls.xml" />
+    <Content Include="Quartz Mod Folder\Config\XUi_InGame\windows.xml" />
+    <Content Include="Quartz Mod Folder\Config\XUi_Common\templates.xml" />
     <Content Include="Quartz Mod Folder\Config\XUi_Common\styles.xml" />
     <Content Include="Quartz Mod Folder\Config\XUi_Menu\windows.xml" />
     <Content Include="Quartz Mod Folder\Config\XUi_Menu\xui.xml" />

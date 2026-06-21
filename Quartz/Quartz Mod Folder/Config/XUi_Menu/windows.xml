@@ -27,19 +27,21 @@ limitations under the License.*/-->
 				<sprite depth="8" name="border" sprite="menu_empty3px" color="[black]" type="sliced" fillcenter="false" />
 				<sprite depth="0" name="backgroundMain" pos="1,-1" height="654" width="1183" sprite="menu_empty3px" color="[mediumGrey]" type="sliced" fillcenter="true" />
 
-				<rect depth="4" name="searchControls" height="44" pos="0,-0">
+				<rect depth="4" name="searchControls" height="44" pos="0,0">
 					<sprite depth="8" name="backgroundMain" sprite="menu_empty" color="[black]" type="sliced" fillcenter="false" />
 
 					<sprite depth="4" name="searchIcon" style="icon30px" pos="5,-22" sprite="ui_game_symbol_search" pivot="Left"/>
-					<textfield name="searchInput" depth="5" pos="40,-22" width="550" height="30" pivot="Left" search_field="true" />
+					<textfield name="searchInput" depth="5" pos="40,-11" width="550" height="30" pivot="Left" search_field="true" />
 				</rect>
 
-				<defaultscrollbar />
-				<scrollview name="scrollview" depth="5" pos="2,-44" width="${parentinnerwidth-10-20}" height="609">
-					<grid name="list" rows="{%Round(spriteCount/4,0) + 1}" cols="4" pos="0,-44" cell_width="293" cell_height="110" repeat_content="true" arrangement="horizontal" >
-						<Quartz_UiAtlas_Entry width="293" height="110" controller="Quartz.Debugging.XUiC_UiAtlasList+EntryController, Quartz"/>
-					</grid>
-				</scrollview>
+				<rect pos="0,-44" height="${parentinnerheight-47}" width="${parentinnerwidth-3}">
+					<defaultscrollbar />
+					<scrollview name="scrollview" depth="5" width="${parentinnerwidth-16}">
+						<grid name="list" rows="{%Round(spriteCount/4,0) + 1}" cols="4" cell_width="293" cell_height="110" repeat_content="true" arrangement="horizontal" >
+							<Quartz_UiAtlas_Entry width="292" height="110" controller="Quartz.Debugging.XUiC_UiAtlasList+EntryController, Quartz"/>
+						</grid>
+					</scrollview>
+				</rect>
 			</rect>
 
 			<rect pos="0, -720">

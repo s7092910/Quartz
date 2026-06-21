@@ -1,0 +1,32 @@
+<Quartz name="XUi_Common/controls.xml">
+
+	<!--/*Copyright 2022 Christopher Beda
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/-->
+
+	<!-- Crispness Fix -->
+	<setattribute xpath="/templates/textfield[@crispness='Never']" name="crispness">OnDesktop</setattribute>
+
+	<!-- UiAtlas Entry-->
+	<append xpath="/templates">
+		<Quartz_UiAtlas_Entry>
+			<rect depth="1" height="${height}" width="${width}" style="hover" disabled_font_color="[disabledLabelColor]" enabled_font_color="[labelColor]" controller="${controller}" visible="{hasentry}">
+				<sprite depth="3" name="backgroundMain" sprite="menu_empty2px" height="${1+height}" pos="2,0" width="${width-4}" color="[black]" type="sliced" fillcenter="false" />
+				<sprite depth="2" name="background" color="[darkGrey]" pos="2,0" width="${width-4}" type="sliced" />
+				<sprite depth="4" name="sprite" pos="10,-5" width="100" height="100" sprite="{sprite}" type="simple" />
+				<label depth="4" name="spriteName" pos="120,-10" width="${width-130}" height="32" text="{spriteName}" font_size="16" justify="left" pivot="topleft" overflow="ResizeHeight"/>
+			</rect>
+		</Quartz_UiAtlas_Entry>
+	</append>
+	
+</Quartz>

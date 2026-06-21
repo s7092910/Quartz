@@ -106,11 +106,7 @@ namespace Quartz.Debugging
             RebuildListInternal();
             base.RebuildList(_resetFilter);
             XUiV_ScrollView scrollView = GetChildById("scrollview")?.ViewComponent as XUiV_ScrollView;
-
-            if (scrollView != null)
-            {
-                scrollView.ResetPosition();
-            }
+            scrollView.ResetPositionDelayed();
         }
 
         [XuiXmlBinding("spriteCount")]

@@ -1,6 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<Quartz name="XUi_Menu/xui.xml">
-<!--/*Copyright 2023 Christopher Beda 
+﻿/*Copyright 2026 Christopher Beda
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,13 +10,22 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
-limitations under the License.*/-->
+limitations under the License.*/
 
-	<append xpath="/xui" > 
-		<window_group name="quartzUiSprites"> 
-			<window name="UiSpritesWindow" />
-		</window_group>
-	</append>
+using System;
 
-</Quartz>
+namespace Quartz.Views
+{
+    public static class ScrollViewExtensions
+    {
+        public static void ResetPositionDelayed(this XUiV_ScrollView scrollview, int inFrames = 3)
+        {
+            if(scrollview == null)
+            {
+                return;
+            }
 
+            ThreadManager.RunTaskAfterFrames(new Action(scrollview.ResetPosition), inFrames);
+        }
+    }
+}
