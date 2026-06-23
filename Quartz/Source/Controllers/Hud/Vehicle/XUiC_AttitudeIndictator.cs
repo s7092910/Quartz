@@ -68,14 +68,14 @@ namespace Quartz
         }
 
         [XuiXmlBinding("angles")]
-        private bool GetAngles(out string value)
+        private string GetAngles()
         {
-            value = "";
+            string value = "";
             if (isInFlyingVehicle)
             {
                 value = "x{" + vehicle.transform.eulerAngles.x + "}, y{" + vehicle.transform.eulerAngles.y + "}, z{" + (360 - vehicle.transform.eulerAngles.z) + "}";
             }
-            return true;
+            return value;
         }
 
         [XuiXmlBinding("pitchangle")]
