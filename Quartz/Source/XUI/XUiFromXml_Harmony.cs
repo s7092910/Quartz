@@ -15,11 +15,8 @@ limitations under the License.*/
 using HarmonyLib;
 using Quartz;
 using Quartz.Views;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Xml.Linq;
-using UnityEngine;
 
 [HarmonyPatch(typeof(XUiFromXml))]
 public class XUiFromXmlPatch
@@ -53,6 +50,7 @@ public class XUiFromXmlPatch
 
         if(view != null)
         {
+            __result = view;
             return false;
         }
 
