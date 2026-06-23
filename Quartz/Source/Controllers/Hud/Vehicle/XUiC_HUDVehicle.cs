@@ -101,9 +101,7 @@ namespace Quartz
         [XuiXmlBinding("hasengine")]
         private bool HasEngine()
         {
-            return localPlayer != null
-                && !localPlayer.IsDead()
-                && vehicle != null
+            return IsInVehicle()
                 && vehicle.GetVehicle().HasEnginePart();
         }
 
@@ -117,9 +115,7 @@ namespace Quartz
         [XuiXmlBinding("isdriver")]
         private bool IsDriver()
         {
-            return localPlayer != null 
-                && !localPlayer.IsDead() 
-                && vehicle != null 
+            return IsInVehicle()
                 && vehicle.HasDriver 
                 && vehicle.AttachedMainEntity == localPlayer;
         }
@@ -127,8 +123,7 @@ namespace Quartz
         [XuiXmlBinding("hasheadlight")]
         private bool HasHeadLights()
         {
-            return localPlayer != null
-                   && !localPlayer.IsDead()
+            return IsInVehicle()
                    && headlight != null;
         }
 
@@ -142,9 +137,7 @@ namespace Quartz
         [XuiXmlBinding("isturboon")]
         private bool IsTurboOn()
         {
-            return localPlayer != null
-                && !localPlayer.IsDead()
-                && vehicle != null
+            return IsInVehicle()
                 && vehicle.vehicle.IsTurbo;
         }
     }

@@ -71,7 +71,7 @@ namespace Quartz
             return false;
         }
 
-        [XuiXmlBinding("currendspeed")]
+        [XuiXmlBinding("currentspeed")]
         private float GetCurrentSpeed()
         {
             float speed = 0f;
@@ -83,7 +83,7 @@ namespace Quartz
             return speed;
         }
 
-        [XuiXmlBinding("currendforwardspeed")]
+        [XuiXmlBinding("currentforwardspeed")]
         private float GetCurrentForwardSpeed()
         {
             float speed = 0f;

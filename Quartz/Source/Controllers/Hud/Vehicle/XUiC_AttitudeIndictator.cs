@@ -81,10 +81,10 @@ namespace Quartz
         [XuiXmlBinding("pitchangle")]
         private int GetPitchAngle()
         {
-            int value = 0;
+            int angle = 0;
             if (isInFlyingVehicle)
             {
-                int angle = (int)vehicle.transform.eulerAngles.x;
+                angle = (int)vehicle.transform.eulerAngles.x;
                 //Changes the 0 - 360 range to - 180 to 180 and flips the angle. So 180 to 360 is 0 to 180 and 0 to 180 is 0 to -180 
                 //Postive is the nose pointing up
                 //Negative is the nose pointing down
@@ -94,16 +94,16 @@ namespace Quartz
                 angle *= -1;
             }
 
-            return value;
+            return angle;
         }
 
         [XuiXmlBinding("rollangle")]
         private int GetRollAngle()
         {
-            int value = 0;
+            int angle = 0;
             if (isInFlyingVehicle)
             {
-                int angle = (int)vehicle.transform.eulerAngles.z;
+                angle = (int)vehicle.transform.eulerAngles.z;
                 //Changes the 0 - 360 range to - 180 to 180 and flips the angle. So 180 to 360 is 0 to 180 and 0 to 180 is 0 to -180 
                 //Postive the roll is the right
                 //Negative the roll is to the left
@@ -113,7 +113,7 @@ namespace Quartz
                 angle *= -1;
             }
 
-            return value;
+            return angle;
         }
     }
 }
