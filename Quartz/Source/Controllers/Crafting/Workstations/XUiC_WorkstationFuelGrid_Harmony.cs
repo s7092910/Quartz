@@ -82,7 +82,7 @@ public static class TileEntityWorkstationPatch
     {
         Block block = __instance.blockValue.Block;
 
-        string requiredFuels = block.Properties.GetString("Workstation.RequiredFuels");
+        string requiredFuels = block.Properties.GetString("Workstation","RequiredFuels");
 
         if(string.IsNullOrEmpty(requiredFuels))
         {

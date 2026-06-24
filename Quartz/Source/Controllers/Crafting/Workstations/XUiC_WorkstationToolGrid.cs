@@ -34,7 +34,7 @@ namespace Quartz
                 {
                     Block block = te.blockValue.Block;
 
-                    requiredTools = block.Properties.GetString("Workstation.RequiredTools");
+                    requiredTools = block.Properties.GetString("Workstation","RequiredTools");
 
                     string[] toolNames = requiredTools.Split(',');
                     for (int i = 0; i < itemControllers.Length; i++)
