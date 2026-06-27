@@ -154,7 +154,7 @@ namespace Quartz.Hud
             int current = 0;
             if (localPlayer != null)
             {
-                current = (int)GetCurrentStat();
+                current = Mathf.RoundToInt(GetCurrentStat());
             }
 
             return current;
@@ -166,7 +166,7 @@ namespace Quartz.Hud
             int max = 0;
             if (localPlayer != null)
             {
-                max = (int)GetMaxStat();
+                max = Mathf.RoundToInt(GetMaxStat());
             }
 
             return max;
@@ -184,7 +184,7 @@ namespace Quartz.Hud
             string value = "0";
             if (localPlayer != null)
             {
-                value = statcurrentWMaxFormatterAOfB.Format((int)GetCurrentStat(), (int)GetMaxStat());
+                value = statcurrentWMaxFormatterAOfB.Format(Mathf.RoundToInt(GetCurrentStat()), Mathf.RoundToInt(GetMaxStat()));
             }
 
             return value;

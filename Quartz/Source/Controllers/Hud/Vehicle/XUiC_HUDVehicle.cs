@@ -134,7 +134,7 @@ namespace Quartz
                 && headlight.IsOn();
         }
 
-        [XuiXmlBinding("isturboon")]
+        [XuiXmlBinding("turboactive")]
         private bool IsTurboOn()
         {
             return IsInVehicle()
