@@ -24,6 +24,35 @@ namespace Quartz
         private string selectedBackground = "ui_game_select_row";
         private string nonSelectedBackground = "menu_empty";
 
+        [XuiXmlAttribute("selectedcolor")]
+        public Color32 SelectedColor 
+        { 
+            get => selectedColor; 
+            set => selectedColor = value; 
+        }
+
+        [XuiXmlAttribute("nonselectedcolor")]
+        public Color32 NonSelectedColor 
+        { 
+            get => nonSelectedColor; 
+            set => nonSelectedColor = value; 
+        }
+
+        [XuiXmlAttribute("selectedbackground")]
+        public string SelectedBackground 
+        { 
+            get => selectedBackground; 
+            set => selectedBackground = value; 
+        
+        }
+
+        [XuiXmlAttribute("nonselectedbackground")]
+        public string NonSelectedBackground 
+        { 
+            get => nonSelectedBackground; 
+            set => nonSelectedBackground = value; 
+        }
+
         public override void Init()
         {
             base.Init();
@@ -33,39 +62,6 @@ namespace Quartz
                 background = backgroundController.ViewComponent as XUiV_Sprite;
             }
         }
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
-        {
-            switch(bindingName)
-            {
-                case "workstationname":
-                    value = Recipe != null ? Localization.Get(Recipe.craftingArea): "";
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
-            }
-        }
-
-        public override bool ParseAttribute(string name, string value, XUiController parent)
-        {
-            switch(name)
-            {
-                case "selectedcolor":
-                    selectedColor = StringParsers.ParseColor32(value);
-                    return true;
-                case "nonselectedcolor":
-                    nonSelectedColor = StringParsers.ParseColor32(value);
-                    return true;
-                case "selectedbackground":
-                    selectedBackground = value;
-                    return true;
-                case "nonselectedbackground":
-                    nonSelectedBackground = value;
-                    return true;
-                default:
-                    return base.ParseAttribute(name, value, parent);
-            }
-           
-        }
 
         public override void SelectedChanged(bool isSelected)
         {
@@ -74,6 +70,12 @@ namespace Quartz
                 background.Color = isSelected ? selectedColor : nonSelectedColor;
                 background.SpriteName = isSelected ? selectedBackground : nonSelectedBackground;
             }
+        }
+
+        [XuiXmlBinding("workstationname")]
+        private string BindingWorkStationName()
+        {
+            return Recipe != null ? Localization.Get(Recipe.craftingArea) : "";
         }
     }
 }

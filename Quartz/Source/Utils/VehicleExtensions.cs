@@ -31,7 +31,7 @@ namespace Quartz.Utils
                 return true;
             }
 
-            var properties = vehicle.GetVehicle().Properties.Classes.Dict
+            var properties = vehicle.GetVehicle().Properties.Classes
                 .Where(entry => entry.Key.Contains("force"))
                 .Select(item => item.Value);
             

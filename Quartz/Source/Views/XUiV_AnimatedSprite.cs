@@ -30,6 +30,9 @@ namespace Quartz
 
         private bool resetAnimation = false;
 
+        private bool initialized = false;
+
+        [XuiXmlAttribute("spriteprefix")]
         public string SpriteNamePrefix
         {
             get
@@ -48,6 +51,7 @@ namespace Quartz
             }
         }
 
+        [XuiXmlAttribute("loop")]
         public bool Loop
         {
             get { return loop; }
@@ -62,6 +66,7 @@ namespace Quartz
             }
         }
 
+        [XuiXmlAttribute("framerate")]
         public int FrameRate
         {
             get { return frameRate; }
@@ -75,22 +80,24 @@ namespace Quartz
             }
         }
 
-        public XUiV_AnimatedSprite(string id) : base(id)
+        public XUiV_AnimatedSprite(XUi _xui, string _id)
+        : base(_xui, _id)
         {
         }
 
-        public override void CreateComponents(GameObject go)
+        public override void createComponents(GameObject go)
         {
-            base.CreateComponents(go);
+            base.createComponents(go);
             go.AddComponent<UISpriteAnimation>();
         }
 
-        public override void UpdateData()
+        public override void updateData()
         {
             if(animation == null && !initialized)
             {
                 animation = uiTransform.GetComponent<UISpriteAnimation>();
                 Traverse.Create(animation).Field("mSnap").SetValue(false);
+                initialized = true;
             }
 
             if (!string.IsNullOrEmpty(sprite.spriteName))
@@ -98,7 +105,7 @@ namespace Quartz
                 spriteName = sprite.spriteName;
             }
 
-            base.UpdateData();
+            base.updateData();
 
             animation.namePrefix = prefix;
             animation.framesPerSecond = frameRate;
@@ -110,28 +117,6 @@ namespace Quartz
                 animation.Play();
                 resetAnimation = false;
             }
-        }
-
-        public override bool ParseAttribute(string attribute, string value, XUiController parent)
-        {
-            if (attribute != null)
-            {
-                switch (attribute)
-                {
-                    case "spriteprefix":
-                        SpriteNamePrefix = value;
-                        return true;
-                    case "loop":
-                        Loop = StringParsers.ParseBool(value);
-                        return true;
-                    case "framerate":
-                        FrameRate = int.Parse(value);
-                        return true;
-                    default:
-                        return base.ParseAttribute(attribute, value, parent);
-                }
-            }
-            return false;
         }
 
         public void PlayAnimation()

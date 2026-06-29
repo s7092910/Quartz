@@ -18,13 +18,16 @@ namespace Quartz
 {
     public class XUiC_ComboBoxInt : global::XUiC_ComboBoxInt
     {
-        public override void setRelativeValue(double _value)
+        public override double RelativeValue
         {
-            long oldValue = Value;
-            long value = (long)((double)(Max - Min) * _value) + Min;
-            value = ((long)Math.Round(value / (double)IncrementSize)) * IncrementSize;
-            Value = value;
-            TriggerValueChangedEvent(oldValue);
+            set
+            {
+                long oldValue = Value;
+                long newValue = (long)((double)(Max - Min) * value) + Min;
+                newValue = ((long)Math.Round(newValue / (double)incrementSize)) * incrementSize;
+                Value = newValue;
+                TriggerValueChangedEvent(oldValue);
+            }
         }
 
         [PublicizedFrom(EAccessModifier.Protected)]
@@ -35,11 +38,11 @@ namespace Quartz
             long num = 0;
             if (_value > 0)
             {
-                num = IncrementSize;
+                num = incrementSize;
             }
             else if (_value < 0)
             {
-                num = -IncrementSize;
+                num = -incrementSize;
             }
 
             long value = Value + num;

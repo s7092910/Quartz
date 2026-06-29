@@ -18,6 +18,31 @@ namespace Quartz
 {
     public class XUiC_HUDStamina : XUiC_HUDStatbar
     {
+        private bool isSprinting;
+
+        [XuiXmlBinding("sprintactive")]
+        public bool IsSprinting
+        {
+            get => isSprinting;
+        }
+
+        public override void Update(float _dt)
+        {
+            base.Update(_dt);
+            if (!XUi.IsGameRunning() || LocalPlayer == null)
+            {
+                return;
+            }
+
+            bool sprinting = localPlayer.MovementRunning || localPlayer.MoveController.RunToggleActive;
+            if (isSprinting != sprinting)
+            {
+                isSprinting = sprinting;
+                IsDirty = true;
+            }
+
+        }
+
         protected override float GetCurrentStat()
         {
             return XUiM_Player.GetStamina(LocalPlayer);

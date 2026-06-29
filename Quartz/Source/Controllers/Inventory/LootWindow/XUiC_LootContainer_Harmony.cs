@@ -20,8 +20,8 @@ public class XUiC_LootContainerPatch
     private const string TAG = "XUiC_LootContainerPatch";
 
     [HarmonyPostfix]
-    [HarmonyPatch("SetSlots")]
-    public static void SetSlots(XUiC_LootContainer __instance, ITileEntityLootable lootContainer, ItemStack[] stackList)
+    [HarmonyPatch(nameof(XUiC_LootContainer.SetSlots))]
+    public static void SetSlots(XUiC_LootContainer __instance, ITileEntityLootable _lootContainer, ItemStack[] _stackList)
     {
         if (__instance is Quartz.XUiC_LootContainer instance)
         {
@@ -30,7 +30,7 @@ public class XUiC_LootContainerPatch
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch("OnTileEntityChanged")]
+    [HarmonyPatch(nameof(XUiC_LootContainer.OnTileEntityChanged))]
     public static void OnTileEntityChanged(XUiC_LootContainer __instance, ITileEntity _te)
     {
         if (__instance is Quartz.XUiC_LootContainer instance)

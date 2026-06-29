@@ -16,25 +16,13 @@ namespace Quartz
 {
     public class XUiC_ChallengeEntryDescriptionWindow : global::XUiC_ChallengeEntryDescriptionWindow
     {
+        [XuiBindComponent(true)]
         private XUiC_ChallengeEntryObjectiveEntry[] objectiveControllers;
 
-        public override void Init()
+        [XuiXmlBinding("objectivecount")]
+        public int GetObjectiveCount()
         {
-            base.Init();
-
-            objectiveControllers = GetChildrenByType<XUiC_ChallengeEntryObjectiveEntry>();
-        }
-
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
-        {
-            switch (bindingName)
-            {
-                case "objectivecount":
-                    value = currentChallenge != null ? currentChallenge.ObjectiveList.Count.ToString() : "0";
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
-            }
+            return currentChallenge != null ? currentChallenge.ObjectiveList.Count: 0;
         }
 
         public void SetObjectives()

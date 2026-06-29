@@ -23,7 +23,9 @@ namespace Quartz
         private EntityVehicle vehicle;
         private bool isInFlyingVehicle;
 
+        [XuiBindComponent("bankIndicator", false)]
         private XUiController bankIndicator;
+        [XuiBindComponent("horizon", false)]
         private XUiController horizonIndicator;
 
         public EntityVehicle Vehicle 
@@ -37,13 +39,6 @@ namespace Quartz
                     isInFlyingVehicle = vehicle.IsFlyingVehicle();
                 }          
             }
-        }
-
-        public override void Init()
-        {
-            base.Init();
-            bankIndicator = GetChildById("bankIndicator");
-            horizonIndicator = GetChildById("horizon");
         }
 
         public override void Update(float _dt)
@@ -67,55 +62,58 @@ namespace Quartz
                     {
                         horizonIndicator.ViewComponent.UiTransform.localEulerAngles = new Vector3(0f, 0f, 360 - vehicle.transform.eulerAngles.z);
                     }
-                    RefreshBindings(false);
+                    RefreshBindings();
                 }
             }
         }
 
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
+        [XuiXmlBinding("angles")]
+        private string GetAngles()
         {
-            switch (bindingName)
+            string value = "";
+            if (isInFlyingVehicle)
             {
-                case "angles":
-                    value = "";
-                    if(isInFlyingVehicle)
-                    {
-                        value = "x{" + vehicle.transform.eulerAngles.x + "}, y{" + vehicle.transform.eulerAngles.y + "}, z{" + (360 - vehicle.transform.eulerAngles.z) + "}";
-                    }
-                    return true;
-                case "pitchangle":
-                    value = "0";
-                    if (isInFlyingVehicle)
-                    {
-                        int angle = (int)(vehicle.transform.eulerAngles.x);
-                        //Changes the 0 - 360 range to - 180 to 180 and flips the angle. So 180 to 360 is 0 to 180 and 0 to 180 is 0 to -180 
-                        //Postive is the nose pointing up
-                        //Negative is the nose pointing down
-                        angle += 180;
-                        angle %= 360;
-                        angle -= 180;
-                        angle *= -1;
-                        value = angle.ToString();
-                    }
-                    return true;
-                case "rollangle":
-                    value = "0";
-                    if(isInFlyingVehicle)
-                    {
-                        int angle = (int)(vehicle.transform.eulerAngles.z);
-                        //Changes the 0 - 360 range to - 180 to 180 and flips the angle. So 180 to 360 is 0 to 180 and 0 to 180 is 0 to -180 
-                        //Postive the roll is the right
-                        //Negative the roll is to the left
-                        angle += 180;
-                        angle %= 360;
-                        angle -= 180;
-                        angle *= -1;
-                        value = angle.ToString();
-                    }
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
+                value = "x{" + vehicle.transform.eulerAngles.x + "}, y{" + vehicle.transform.eulerAngles.y + "}, z{" + (360 - vehicle.transform.eulerAngles.z) + "}";
             }
+            return value;
+        }
+
+        [XuiXmlBinding("pitchangle")]
+        private int GetPitchAngle()
+        {
+            int angle = 0;
+            if (isInFlyingVehicle)
+            {
+                angle = (int)vehicle.transform.eulerAngles.x;
+                //Changes the 0 - 360 range to - 180 to 180 and flips the angle. So 180 to 360 is 0 to 180 and 0 to 180 is 0 to -180 
+                //Postive is the nose pointing up
+                //Negative is the nose pointing down
+                angle += 180;
+                angle %= 360;
+                angle -= 180;
+                angle *= -1;
+            }
+
+            return angle;
+        }
+
+        [XuiXmlBinding("rollangle")]
+        private int GetRollAngle()
+        {
+            int angle = 0;
+            if (isInFlyingVehicle)
+            {
+                angle = (int)vehicle.transform.eulerAngles.z;
+                //Changes the 0 - 360 range to - 180 to 180 and flips the angle. So 180 to 360 is 0 to 180 and 0 to 180 is 0 to -180 
+                //Postive the roll is the right
+                //Negative the roll is to the left
+                angle += 180;
+                angle %= 360;
+                angle -= 180;
+                angle *= -1;
+            }
+
+            return angle;
         }
     }
 }

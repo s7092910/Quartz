@@ -67,19 +67,16 @@ namespace Quartz
             }
         }
 
-        public override bool ParseAttribute(string name, string value, XUiController parent)
+        [XuiXmlAttribute("location")]
+        private void ParseLocation(string location)
         {
-            switch (name)
-            {
-                case "location":
-                    location = EnumUtils.Parse<Location>(value, true);
-                    return true;
-                case "itemname":
-                    itemValue = ItemClass.GetItem(value, true);
-                    return true;
-                default:
-                    return base.ParseAttribute(name, value, parent);
-            }
+            this.location = EnumUtils.Parse<Location>(location, true);
+        }
+
+        [XuiXmlAttribute("itemname")]
+        private void ParseItemName(string itemName)
+        {
+            itemValue = ItemClass.GetItem(itemName, true);
         }
 
     }

@@ -49,7 +49,7 @@ namespace Quartz
             {
                 if (Time.time - openTime >= duration)
                 {
-                    xui.playerUI.windowManager.CloseIfOpen("SubtitlesDisplay");
+                    xui.playerUI.windowManager.Close("SubtitlesDisplay");
                     XUiC_SubtitlesDisplay.IsDisplaying = false;
                 }
             }

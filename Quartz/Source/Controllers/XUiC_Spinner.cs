@@ -20,8 +20,20 @@ namespace Quartz
     {
         private const string TAG = "Spinner";
 
-        private bool isSpinning;
-        private int spinSpeedAngle;
+        [XuiXmlAttribute("spin")]
+        public bool isSpinning
+        {
+            get;
+            set;
+        }
+
+        [XuiXmlAttribute("angle_per_second")]
+        public int SpinSpeedAngle
+        {
+            get;
+            set;
+        }
+
         private float rotation;
 
         public override void Update(float _dt)
@@ -29,7 +41,7 @@ namespace Quartz
             base.Update(_dt);
             if (viewComponent.IsVisible && isSpinning)
             {
-                float deltaAngle = _dt * spinSpeedAngle;
+                float deltaAngle = _dt * SpinSpeedAngle;
                 rotation = (rotation + deltaAngle) % 360;
                 if (rotation < 0)
                 {
@@ -38,25 +50,6 @@ namespace Quartz
                 viewComponent.UiTransform.localEulerAngles = new Vector3(0f, 0f, rotation);
             }
 
-        }
-
-        public override bool ParseAttribute(string attribute, string value, XUiController _parent)
-        {
-            if (attribute != null)
-            {
-                switch (attribute)
-                {
-                    case "spin":
-                        isSpinning = StringParsers.ParseBool(value, 0, -1, true);
-                        return true;
-                    case "angle_per_second":
-                        int.TryParse(value, out spinSpeedAngle);
-                        return true;
-                    default:
-                        return base.ParseAttribute(attribute, value, _parent);
-                }
-            }
-            return false;
         }
     }
 }

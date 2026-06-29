@@ -20,11 +20,26 @@ namespace Quartz
         protected EntityPlayer localPlayer;
 
         //cached values
-        protected bool isMinimapEnabled;
-        protected bool followPlayerView;
-        protected float viewRotation;
-        protected float iconOpacity;
-        protected float textureOpacity;
+        private bool isMinimapEnabled;
+        private bool followPlayerView;
+        private float viewRotation;
+        private float iconOpacity;
+        private float textureOpacity;
+
+        [XuiXmlBinding("isminimapenabled")]
+        public bool IsMinimapEnabled { get => isMinimapEnabled; }
+
+        [XuiXmlBinding("isfollowingplayerview")]
+        public bool FollowPlayerView { get => followPlayerView; }
+
+        [XuiXmlBinding("viewrotation")]
+        public float ViewRotation { get => viewRotation; }
+
+        [XuiXmlBinding("iconopacity")]
+        public float IconOpacity { get => iconOpacity; }
+
+        [XuiXmlBinding("textureopacity")]
+        public float TextureOpacity { get => textureOpacity; }
 
         public override void Update(float dt)
         {
@@ -82,30 +97,6 @@ namespace Quartz
         {
             base.OnOpen();
             RefreshBindings();
-        }
-
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
-        {
-            switch (bindingName)
-            {
-                case "isminimapenabled":
-                    value = isMinimapEnabled.ToString();
-                    return true;
-                case "isfollowingplayerview":
-                    value = followPlayerView.ToString();
-                    return true;
-                case "viewrotation":
-                    value = viewRotation.ToString();
-                    return true;
-                case "iconopacity":
-                    value = iconOpacity.ToString();
-                    return true;
-                case "textureopacity":
-                    value = textureOpacity.ToString();
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
-            }
         }
     }
 }

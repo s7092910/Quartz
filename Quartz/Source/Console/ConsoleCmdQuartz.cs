@@ -97,8 +97,8 @@ public class ConsoleCmdQuartz : ConsoleCmdAbstract
             return;
         }
 
-        xuiInstance.playerUI.windowManager.CloseIfOpen(XUiC_MainMenu.ID);
-        xuiInstance.playerUI.windowManager.OpenIfNotOpen(XUiC_UiAtlasList.ID, true, false, false);
+        xuiInstance.playerUI.windowManager.Close(XUiC_MainMenu.ID);
+        xuiInstance.playerUI.windowManager.Open(XUiC_UiAtlasList.ID, true, false);
     }
 
     private void ExecuteDebug(List<string> _params)

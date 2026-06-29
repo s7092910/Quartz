@@ -24,7 +24,7 @@ public class XUiC_MapAreaPatch
     private const string TAG = "XUiC_MapAreaPatch";
 
     [HarmonyPrefix]
-    [HarmonyPatch("initMap")]
+    [HarmonyPatch(nameof(XUiC_MapArea.initMap))]
     private static bool initMap(XUiC_MapArea __instance)
     {
         if (__instance.xui.playerUI.entityPlayer == null)
@@ -39,7 +39,7 @@ public class XUiC_MapAreaPatch
     }
 
     [HarmonyPrefix]
-    [HarmonyPatch("OnPreRender")]
+    [HarmonyPatch(nameof(XUiC_MapArea.OnPreRender))]
     private static bool OnPreRender(LocalPlayerCamera _localPlayerCamera, XUiV_Texture ___xuiTexture, float ___mapScale,
     Vector2 ___mapBGPos, Vector2 ___mapPos)
     {
@@ -52,7 +52,7 @@ public class XUiC_MapAreaPatch
     }
 
     [HarmonyPrefix]
-    [HarmonyPatch("positionMap")]
+    [HarmonyPatch(nameof(XUiC_MapArea.positionMap))]
     private static bool positionMap(XUiV_Texture ___xuiTexture, ref float ___mapScale, ref float ___zoomScale,
         ref Vector2 ___mapBGPos, ref Vector2 ___mapPos, Vector2 ___mapMiddlePosPixel, Vector2 ___mapScrollTextureOffset, Vector2 ___mapMiddlePosChunks)
     {
@@ -73,7 +73,7 @@ public class XUiC_MapAreaPatch
     }
 
     [HarmonyPrefix]
-    [HarmonyPatch("onMapScrolled")]
+    [HarmonyPatch(nameof(XUiC_MapArea.onMapScrolled))]
     private static bool onMapScrolled(XUiController _sender, float _delta, XUiC_MapArea __instance, XUiV_Texture ___xuiTexture,
         ref float ___zoomScale, ref float ___targetZoomScale)
     {
@@ -104,12 +104,12 @@ public class XUiC_MapAreaPatch
     }
 
     [HarmonyPrefix]
-    [HarmonyPatch("mousePosToWindowPos")]
+    [HarmonyPatch(nameof(XUiC_MapArea.mousePosToWindowPos))]
     private static bool mousePosToWindowPos(ref Vector3 __result, XUiC_MapArea __instance, XUiV_Texture ___xuiTexture, Vector3 _mousePos)
     {
         int x = ___xuiTexture.Position.x;
         float y = ___xuiTexture.Position.y;
-        Vector2i mouseXUIPosition = __instance.xui.GetMouseXUIPosition();
+        Vector2i mouseXUIPosition = __instance.xui.GetMouseXUiPosition();
         Vector3 windowPos = new Vector3(mouseXUIPosition.x, mouseXUIPosition.y, 0f);
         windowPos.x += 217f - x;
         windowPos.y -= 362f + y;
@@ -120,7 +120,7 @@ public class XUiC_MapAreaPatch
     }
 
     [HarmonyPrefix]
-    [HarmonyPatch("screenPosToWorldPos")]
+    [HarmonyPatch(nameof(XUiC_MapArea.screenPosToWorldPos))]
     private static bool screenPosToWorldPos(ref Vector3 __result, XUiC_MapArea __instance, Vector3 _mousePos,
         XUiV_Texture ___xuiTexture, Vector2 ___mapMiddlePosPixel, float ___zoomScale,
         bool needY = false)
@@ -133,7 +133,7 @@ public class XUiC_MapAreaPatch
         mousePos.x -= textureScreenPosition.x;
         mousePos.y -= textureScreenPosition.y;
         mousePos.y *= -1f;
-        Bounds xUIWindowScreenBounds = __instance.xui.GetXUIWindowScreenBounds(___xuiTexture.UiTransform, false);
+        Bounds xUIWindowScreenBounds = __instance.xui.GetXUiWindowScreenBounds(___xuiTexture.UiTransform, false);
         Vector3 mapScreenBounds = xUIWindowScreenBounds.max - xUIWindowScreenBounds.min;
 
         float blockScaleX = mapScreenBounds.x / (336f * xScale);
@@ -163,7 +163,7 @@ public class XUiC_MapAreaPatch
     //}
 
     [HarmonyPrefix]
-    [HarmonyPatch("updateNavObjectList")]
+    [HarmonyPatch(nameof(XUiC_MapArea.updateNavObjectList))]
     public static bool updateNavObjectList(XUiC_MapArea __instance)
     {
         bool flag = true;
@@ -226,7 +226,7 @@ public class XUiC_MapAreaPatch
         if (flag && !flag2 && __instance.bMapCursorSet)
         {
             __instance.SetMapCursor(false);
-            __instance.xui.currentToolTip.ToolTip = string.Empty;
+            __instance.xui.ToolTipWindow.ToolTip = string.Empty;
         }
 
         return false;

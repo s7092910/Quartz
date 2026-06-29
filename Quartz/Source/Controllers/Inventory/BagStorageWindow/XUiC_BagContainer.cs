@@ -13,15 +13,16 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using Audio;
+using Platform;
 using Quartz.Inputs;
 using Quartz.Inventory;
 using System;
 
 namespace Quartz
 {
-    public class XUiC_VehicleContainer : global::XUiC_VehicleContainer, ILockableInventory
+    public class XUiC_BagContainer : global::XUiC_BagContainer, ILockableInventory
     {
-        private const string TAG = "VehicleContainer";
+        private const string TAG = "BagContainer";
 
         private string searchResult;
 
@@ -59,9 +60,8 @@ namespace Quartz
 
             if (IsDirty)
             {
-                hasStorage = xui.vehicle.GetVehicle().HasStorage();
-                ViewComponent.IsVisible = hasStorage;
-                RefreshBindings(false);
+                ViewComponent.IsVisible = Bag != null;
+                RefreshBindings();
                 IsDirty = false;
             }
 
@@ -88,11 +88,11 @@ namespace Quartz
                 {
                     activeKeyDown = false;
                     OnClose();
-                    xui.playerUI.windowManager.CloseAllOpenWindows();
+                    xui.playerUI.windowManager.CloseAllOpenModalWindows();
                 }
             }
 
-            if (!isClosing && ViewComponent != null && ViewComponent.IsVisible && items != null && !xui.playerUI.windowManager.IsInputActive()
+            if (!isClosing && ViewComponent != null && ViewComponent.IsVisible && items != null && (PlatformManager.NativePlatform.Input.CurrentInputStyle != PlayerInputManager.InputStyle.Keyboard || !xui.playerUI.windowManager.IsInputActive())
                 && (xui.playerUI.playerInput.GUIActions.LeftStick.WasPressed || xui.playerUI.playerInput.PermanentActions.Reload.WasPressed))
             {
                 if (standardControls is XUiC_ContainerStandardControls controls)
@@ -104,16 +104,8 @@ namespace Quartz
                     standardControls.MoveAll();
                 }
             }
-        }
 
-        public override void UpdateInput()
-        {
-            base.UpdateInput();
-            PlayerActionsLocal playerInput = xui.playerUI.playerInput;
-            if (UserLockMode && (playerInput.GUIActions.Cancel.WasPressed || playerInput.PermanentActions.Cancel.WasPressed))
-            {
-                UserLockMode = false;
-            }
+            UpdateInput();
         }
 
         public override void OnOpen()
@@ -127,7 +119,6 @@ namespace Quartz
         {
             base.OnClose();
             QuartzInputManager.inventoryActions.Enabled = false;
-            UserLockMode = false;
         }
 
         public int TotalLockedSlotsCount()
@@ -174,10 +165,10 @@ namespace Quartz
 
         public bool HasLockSlotSupport()
         {
-            return currentVehicleEntity.bag.LockedSlots != null;
+            return Bag != null;
         }
 
-        public override void HandleSlotChangedEvent(int slotNumber, ItemStack stack)
+        public void HandleBagSlotChangedEventPost(int slotNumber, ItemStack stack)
         {
             if (slotNumber < itemControllers.Length)
             {

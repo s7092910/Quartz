@@ -20,13 +20,13 @@ using UnityEngine;
 
 namespace Quartz.Debugging
 {
-    public class XUiC_UiAtlasList : XUiC_List<XUiC_UiAtlasList.ListEntry>
+    public class XUiC_UiAtlasList : XUiC_List<XUiC_UiAtlasList.SpriteDataEntry>
     {
         public const string TAG = "UIAtlastList";
 
         public static string ID = "";
 
-        private UIAtlas uiAtlas;
+        private INGUIAtlas uiAtlas;
         private List<UISpriteData> spriteList;
 
         private XUiC_SimpleButton btnBack;
@@ -41,7 +41,7 @@ namespace Quartz.Debugging
         public override void Init()
         {
             base.Init();
-            XUiC_UiAtlasList.ID = WindowGroup.ID;
+            XUiC_UiAtlasList.ID = WindowGroup.Id;
 
             btnBack = GetChildById("btnBack") as XUiC_SimpleButton;
             if (btnBack != null )
@@ -106,28 +106,18 @@ namespace Quartz.Debugging
             RebuildListInternal();
             base.RebuildList(_resetFilter);
             XUiV_ScrollView scrollView = GetChildById("scrollview")?.ViewComponent as XUiV_ScrollView;
-
-            if (scrollView != null)
-            {
-                scrollView.ForceResetPosition();
-            }
+            scrollView.ResetPositionDelayed();
         }
 
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
+        [XuiXmlBinding("spriteCount")]
+        private int GetSpriteCount()
         {
-            switch (bindingName)
+            if (spriteList == null)
             {
-                case "spriteCount":
-                    if (spriteList == null)
-                    {
-                        LoadSpriteData();
-                    }
-                    value = spriteList.Count.ToString();
-                    Logging.Out(TAG, "Sprite Count = " + value);
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
+                LoadSpriteData();
             }
+            Logging.Out(TAG, "Sprite Count = " + spriteList.Count);
+            return spriteList.Count;
         }
 
         private void RebuildListInternal()
@@ -139,7 +129,7 @@ namespace Quartz.Debugging
 
             foreach (UISpriteData spriteData in spriteList)
             {
-                allEntries.Add(new ListEntry(spriteData));
+                allEntries.Add(new SpriteDataEntry(spriteData));
             }
         }
 
@@ -162,7 +152,7 @@ namespace Quartz.Debugging
             xui.playerUI.windowManager.Close(ID);
             if (GameStats.GetInt(EnumGameStats.GameState) == 0)
             {
-                xui.playerUI.windowManager.Open(XUiC_MainMenu.ID, true, false, true);
+                xui.playerUI.windowManager.Open(XUiC_MainMenu.ID, true);
             }
             XUi.InGameMenuOpen = false;
         }
@@ -279,61 +269,48 @@ namespace Quartz.Debugging
         }
 
 
-        public class ListEntry : XUiListEntry<ListEntry>
+        public class SpriteDataEntry : XUiListEntry<SpriteDataEntry>
         {
-            private UISpriteData spriteData;
+            protected UISpriteData spriteData;
 
-            public ListEntry(UISpriteData spriteData)
+            public SpriteDataEntry(UISpriteData spriteData)
             {
                 this.spriteData = spriteData;
             }
 
-            public override int CompareTo(ListEntry otherEntry)
+            public override int CompareTo(SpriteDataEntry otherEntry)
             {
-                if (otherEntry is ListEntry entry)
+                if (otherEntry is SpriteDataEntry entry)
                 {
                     return string.Compare(spriteData.name, entry.spriteData.name);
                 }
 
                 return 1;
             }
-            public override bool GetBindingValue(ref string value, string bindingName)
-            {
-                switch (bindingName)
-                {
-                    case "sprite":
-                        value = spriteData.name;
-                        return true;
-                    case "spriteName":
-                        value = spriteData.name;
-                        return true;
-                    case "hasentry":
-                        value = "True";
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-
-            public static bool GetNullBindingValues(ref string value, string bindingName)
-            {
-                switch (bindingName)
-                {
-                    case "sprite":
-                    case "spriteName":
-                        value = "";
-                        return true;
-                    case "hasentry":
-                        value = "False";
-                        return true;
-                    default:
-                        return false;
-                }
-            }
 
             public override bool MatchesSearch(string searchString)
             {
                 return spriteData.name.Contains(searchString);
+            }
+
+            public string GetSpriteName()
+            {
+                return spriteData.name;
+            }
+        }
+
+        public class EntryController : XUiC_ListEntry 
+        {
+            [XuiXmlBinding("sprite")]
+            public string bindingSprite()
+            {
+                return entryData != null ? entryData.GetSpriteName() : "";
+            }
+
+            [XuiXmlBinding("spriteName")]
+            public string bindingSpriteName()
+            {
+                return entryData != null ? entryData.GetSpriteName() : "";
             }
         }
     }

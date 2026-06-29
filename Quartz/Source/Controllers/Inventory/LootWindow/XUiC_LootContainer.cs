@@ -61,16 +61,6 @@ namespace Quartz
             }
         }
 
-        public override void UpdateInput()
-        {
-            base.UpdateInput();
-            PlayerActionsLocal playerInput = xui.playerUI.playerInput;
-            if (lootWindow.UserLockMode && (playerInput.GUIActions.Cancel.WasPressed || playerInput.PermanentActions.Cancel.WasPressed))
-            {
-                lootWindow.UserLockMode = false;
-            }
-        }
-
         public override void OnOpen()
         {
             base.OnOpen();

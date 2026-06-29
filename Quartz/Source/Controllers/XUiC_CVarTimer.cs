@@ -19,6 +19,9 @@ namespace Quartz
         private float timer;
         private float deltaTime;
 
+        [XuiXmlAttribute("timer")]
+        public float Timer { get => timer; set => timer = value; }
+
         public override void Update(float dt)
         {
             base.Update(dt);
@@ -40,18 +43,6 @@ namespace Quartz
         {
             base.OnOpen();
             RefreshBindings();
-        }
-
-        public override bool ParseAttribute(string name, string value, XUiController parent)
-        {
-            switch(name)
-            {
-                case "timer":
-                    float.TryParse(value, out timer);
-                    return true;
-                default:
-                    return base.ParseAttribute(name, value, parent);
-            }
         }
     }
 }
