@@ -19,48 +19,37 @@ using UnityEngine.Networking;
 
 namespace Quartz
 {
-    public class XUiV_MaskedPanel : XUiView
+    public class XUiV_MaskedPanel : XUiV_Panel
     {
-        protected UIPanel panel;
-
-        protected Vector2 clippingSize = Vector2.negativeInfinity;
-        protected Vector2 clippingCenter = Vector2.negativeInfinity;
-
         protected string maskPathName;
         protected Texture2D mask;
 
-        protected UnityWebRequest wwwMask;
-        protected bool wwwAssignedMask;
+        protected bool isExternalMask;
 
-        public Vector2 ClippingSize
+        [XuiXmlAttribute("mask")]
+        public string MaskPath
         {
             get
             {
-                return clippingSize;
+                return maskPathName;
             }
-            set
-            {
-                if (value != clippingSize)
-                {
-                    clippingSize = value;
-                    isDirty = true;
-                }
-            }
-        }
 
-        public Vector2 ClippingCenter
-        {
-            get
-            {
-                return clippingCenter;
-            }
             set
             {
-                if (value != clippingCenter)
+                if (maskPathName == value)
                 {
-                    clippingCenter = value;
-                    isDirty = true;
+                    return;
                 }
+
+                if (string.IsNullOrEmpty(value))
+                {
+                    maskPathName = null;
+                    Mask = null;
+                    base.SetDirty();
+                    return;
+                }
+                maskPathName = value;
+                LoadTexture(maskPathName);
             }
         }
 
@@ -80,173 +69,90 @@ namespace Quartz
             }
         }
 
-        public XUiV_MaskedPanel(string id) : base(id)
+        public XUiV_MaskedPanel(XUi _xui, string _id)
+        : base(_xui, _id)
         {
-        }
-
-        public override void CreateComponents(GameObject go)
-        {
-            go.AddComponent<UIPanel>();
         }
 
         public override void InitView()
         {
+            clipping = UIDrawCall.Clipping.TextureMask;
             base.InitView();
-            panel = uiTransform.gameObject.GetComponent<UIPanel>();
-            panel.clipping = UIDrawCall.Clipping.TextureMask;
-
-            BoxCollider collider = this.collider;
-            if (collider != null)
-            {
-                float centerX = size.x * 0.5f;
-                float centerY = size.y * 0.5f;
-                collider.center = new Vector3(centerX, -centerY, 0f);
-                collider.size = new Vector3(size.x * colliderScale, size.y * colliderScale, 0f);
-            }
-
-            if (clippingSize == Vector2.negativeInfinity)
-            {
-                clippingSize.x = size.x;
-                clippingSize.y = size.y;
-            }
-
-            if(clippingCenter == Vector2.negativeInfinity)
-            {
-                clippingCenter.x = size.x / 2f;
-                clippingCenter.y = -size.y / 2f;
-            }
-
-            isDirty = true;
         }
 
-        public override void UpdateData()
+        public override void updateData()
         {
-            if (!wwwAssignedMask && !string.IsNullOrEmpty(maskPathName) && maskPathName.Contains("@"))
+            panel.clipTexture = mask;
+            base.updateData();
+        }
+
+        private void LoadTexture(string path)
+        {
+            try
             {
-                if (!wwwMask.isDone)
+                string text = ModManager.PatchModPathString(path);
+                if (text != null)
                 {
-                    return;
+                    fetchWwwTexture("file://" + text);
                 }
+                else if (path[0] == '@')
+                {
+                    string text2 = path.Substring(1);
+                    if (text2.StartsWith("file:", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string text3 = text2.Substring(5);
+                        if (text3[0] != '/' && text3[0] != '\\')
+                        {
+                            text2 = new Uri(((Application.platform == RuntimePlatform.OSXPlayer) ? (Application.dataPath + "/../../") : (Application.dataPath + "/../")) + text3).AbsoluteUri;
+                        }
+                    }
 
-                Texture2D texture2D = ((DownloadHandlerTexture)wwwMask.downloadHandler).texture;
-                texture2D.wrapMode = TextureWrapMode.Clamp;
-                texture2D.requestedMipmapLevel = 0;
-                Mask = texture2D;
-                wwwAssignedMask = true;
+                    fetchWwwTexture(text2);
+                }
+                else
+                {
+                    xui.LoadData(path, delegate (Texture2D o)
+                    {
+                        Mask = o;
+                        isExternalMask = false;
+                    });
+                }
             }
-
-
-            if (isDirty)
+            catch (Exception e)
             {
-                panel.depth = depth;
-                updateClipping();
-            }
-            base.UpdateData();
-        }
-
-        private void updateClipping()
-        {
-
-            if(mask != null && panel.clipTexture != mask)
-            {
-                panel.clipTexture = mask;
-            }
-
-            if (clippingSize.x < 0f)
-            {
-                clippingSize.x = size.x;
-            }
-            if (clippingSize.y < 0f)
-            {
-                clippingSize.y = size.y;
-            }
-
-            Vector4 vector = new Vector4(clippingCenter.x, clippingCenter.y, clippingSize.x, clippingSize.y);
-            if (panel.baseClipRegion != vector)
-            {
-                panel.baseClipRegion = vector;
+                Log.Error("[XUi] Could not load texture: " + path);
+                Log.Exception(e);
             }
         }
 
-        public override bool ParseAttribute(string attribute, string value, XUiController _parent)
-        {
-            switch (attribute)
-            {
-                case "mask":
-                    if (maskPathName == value)
-                    {
-                        return true;
-                    }
-
-                    maskPathName = value;
-                    try
-                    {
-                        wwwAssignedMask = false;
-                        string text = ModManager.PatchModPathString(maskPathName);
-                        if (text != null)
-                        {
-                            fetchWwwMask("file://" + text);
-                        }
-                        else if (maskPathName[0] == '@')
-                        {
-                            string text2 = maskPathName.Substring(1);
-                            if (text2.StartsWith("file:", StringComparison.OrdinalIgnoreCase))
-                            {
-                                string text3 = text2.Substring(5);
-                                if (text3[0] != '/' && text3[0] != '\\')
-                                {
-                                    text2 = new Uri(((Application.platform == RuntimePlatform.OSXPlayer) ? (Application.dataPath + "/../../") : (Application.dataPath + "/../")) + text3).AbsoluteUri;
-                                }
-                            }
-
-                            fetchWwwMask(text2);
-                        }
-                        else
-                        {
-                            xui.LoadData(maskPathName, delegate (Texture2D o)
-                            {
-                                Mask = o;
-                            });
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error("[XUi] Could not load mask texture: " + maskPathName);
-                        Log.Exception(e);
-                    }
-
-                    return true;
-                case "clippingsize":
-                    clippingSize = StringParsers.ParseVector2(value);
-                    return true;
-                case "clippingcenter":
-                    clippingCenter = StringParsers.ParseVector2(value);
-                    return true;
-
-                default:
-                    return base.ParseAttribute(attribute, value, _parent);
-            }
-        }
-
-        private void fetchWwwMask(string _uri)
+        private void fetchWwwTexture(string _uri)
         {
             _uri = _uri.Replace("#", "%23").Replace("+", "%2B");
-            wwwMask = UnityWebRequestTexture.GetTexture(_uri);
-            wwwMask.SendWebRequest();
-            ThreadManager.StartCoroutine(waitForWwwMaskData());
+            UnityWebRequest texture = UnityWebRequestTexture.GetTexture(_uri);
+            texture.SendWebRequest();
+            ThreadManager.StartCoroutine(waitForWwwData(texture, _uri));
         }
 
-        private IEnumerator waitForWwwMaskData()
+        private IEnumerator waitForWwwData(UnityWebRequest _www, string _fetchUri)
         {
-            while (wwwMask != null && !wwwMask.isDone)
+            while (!_www.isDone)
             {
                 yield return null;
             }
-
-            if (wwwMask != null)
+            if (_www.result != UnityWebRequest.Result.Success)
             {
-                isDirty = true;
+                Logging.Warning("[XUiV_MaskedPanel]", "Retrieving texture file from '" + _fetchUri + "' failed (" + _www.error + ").");
+                yield break;
             }
+            Texture2D texture = ((DownloadHandlerTexture)_www.downloadHandler).texture;
+            texture.wrapMode = TextureWrapMode.Clamp;
+
+            Mask = TextureUtils.CloneTexture(texture, false, false, true);
+            isExternalMask = true;
+
+            global::UnityEngine.Object.DestroyImmediate(texture);
+            _www.Dispose();
+            yield break;
         }
     }
 }

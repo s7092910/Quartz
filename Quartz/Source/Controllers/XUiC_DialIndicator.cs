@@ -21,7 +21,7 @@ namespace Quartz
     {
         private const string TAG = "DialIndicator";
 
-        private bool ClampValue = true;
+        private bool clampValue = true;
 
         private float velocity = 0f;
         private float duration = 0.1f;
@@ -39,6 +39,79 @@ namespace Quartz
         private float indicatorAngle;
 
 
+        [XuiXmlAttribute("animation_duration")]
+        public float Duration 
+        { 
+            get => duration; 
+            set => duration = value; 
+        }
+
+        [XuiXmlAttribute("indicator_value")]
+        public float IndicatorValue 
+        { 
+            get => indicatorValue;
+            set
+            {
+                IsDirty |= indicatorValue != value;
+                indicatorValue = value;
+            }
+        }
+
+        [XuiXmlAttribute("range_max")]
+        public float RangeMax 
+        { 
+            get => rangeMax;
+            set
+            {
+                IsDirty |= rangeMax != value;
+                rangeMax = value;
+            }
+        }
+
+        [XuiXmlAttribute("range_min")]
+        public float RangeMin 
+        { 
+            get => rangeMin;
+            set
+            {
+                IsDirty |= rangeMin != value;
+                rangeMin = value;
+            }
+        }
+
+        [XuiXmlAttribute("start_angle")]
+        public float StartAngle 
+        { 
+            get => startAngle;
+            set
+            {
+                IsDirty |= startAngle != value;
+                startAngle = value;
+            }
+        }
+
+        [XuiXmlAttribute("end_angle")]
+        public float EndAngle 
+        {
+            get => endAngle;
+            set
+            {
+                IsDirty |= endAngle != value;
+                endAngle = value;
+            }
+        }
+
+        [XuiXmlAttribute("limit_indicator_to_range")]
+        public bool ClampValue 
+        { 
+            get => clampValue;
+            set
+            {
+                IsDirty |= clampValue != value;
+                clampValue = value;
+            }
+        }
+
         public override void Update(float _dt)
         {
             base.Update(_dt);
@@ -50,7 +123,7 @@ namespace Quartz
                 lastValue = getLastValue(lastValue + 1, indicatorValue + 1) - 1;
 
                 float iV = lastValue;
-                if (ClampValue)
+                if (clampValue)
                 {
                     iV = Mathf.Clamp(iV, rangeMin, rangeMax);
                 }
@@ -63,54 +136,6 @@ namespace Quartz
                 IsDirty = false;
             }
 
-        }
-
-        public override bool ParseAttribute(string attribute, string value, XUiController _parent)
-        {
-            float temp = 0;
-            if (attribute != null)
-            {
-                switch (attribute)
-                {
-                    case "indicator_value":
-                        temp = indicatorValue;
-                        float.TryParse(value, out indicatorValue);
-                        IsDirty |= temp != indicatorValue;
-                        return true;
-                    case "range_max":
-                        temp = rangeMax;
-                        float.TryParse(value, out rangeMax);
-                        IsDirty |= temp != rangeMax;
-                        return true;
-                    case "range_min":
-                        temp = rangeMin;
-                        float.TryParse(value, out rangeMin);
-                        IsDirty |= temp != rangeMin;
-                        return true;
-                    case "start_angle":
-                        temp = startAngle;
-                        float.TryParse(value, out startAngle);
-                        IsDirty |= temp != startAngle;
-                        return true;
-                    case "end_angle":
-                        temp = endAngle;
-                        float.TryParse(value, out endAngle);
-                        IsDirty |= temp != endAngle;
-                        return true;
-                    case "limit_indicator_to_range":
-                        bool b = ClampValue;
-                        ClampValue = StringParsers.ParseBool(value, 0, -1, true);
-                        IsDirty |= b != ClampValue;
-                        return true;
-                    case "animation_duration":
-                        float.TryParse(value, out duration);
-                        return true;
-                    default:
-                        return base.ParseAttribute(attribute, value, _parent);
-                }
-            }
-
-            return false;
         }
 
         public override void OnOpen()

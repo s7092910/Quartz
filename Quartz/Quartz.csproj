@@ -142,7 +142,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Source\Bindings\BindingInfo_Harmony.cs" />
     <Compile Include="Source\Console\ConsoleCmdQuartz.cs" />
     <Compile Include="Source\Controllers\Challenges\XUiC_ChallengeEntryDescriptionWindow.cs" />
     <Compile Include="Source\Controllers\Challenges\XUiC_ChallengeEntryDescriptionWindow_Harmony.cs" />
@@ -200,8 +199,8 @@
     <Compile Include="Source\Controllers\Inventory\LootWindow\XUiC_LootContainer_Harmony.cs" />
     <Compile Include="Source\Controllers\Inventory\LootWindow\XUiC_LootWindow_Harmony.cs" />
     <Compile Include="Source\Controllers\Inventory\SearchUtil.cs" />
-    <Compile Include="Source\Controllers\Inventory\VehicleStorageWindow\XUiC_VehicleContainer.cs" />
-    <Compile Include="Source\Controllers\Inventory\VehicleStorageWindow\XUiC_VehicleContainer_Harmony.cs" />
+    <Compile Include="Source\Controllers\Inventory\BagStorageWindow\XUiC_BagContainer.cs" />
+    <Compile Include="Source\Controllers\Inventory\BagStorageWindow\XUiC_BagContainer_Harmony.cs" />
     <Compile Include="Source\Controllers\PlayerStats\XUiC_PlayerStats.cs" />
     <Compile Include="Source\Controllers\XUiC_RandomTexture.cs" />
     <Compile Include="Source\Controllers\Map\XUiC_MapInvitesListEntry.cs" />
@@ -220,61 +219,42 @@
     <Compile Include="Source\Utils\TextureExtensions.cs" />
     <Compile Include="Source\Utils\VehicleExtensions.cs" />
     <Compile Include="Source\Utils\XUiM_WorkstationExtensions.cs" />
+    <Compile Include="Source\Views\Extensions\ScrollViewExtensions.cs" />
     <Compile Include="Source\Views\Harmony\QuartzResourcesAPI.cs" />
     <Compile Include="Source\Views\Harmony\ResourcesAPI_Harmony.cs" />
     <Compile Include="Source\Views\MaskedTextures\UIMaskedTexture.cs" />
     <Compile Include="Source\Views\MaskedTextures\XUiV_MaskedPanel.cs" />
     <Compile Include="Source\Views\MaskedTextures\XUiV_MaskedTexture.cs" />
     <Compile Include="Source\Views\Harmony\UIDrawCall_Harmony.cs" />
-    <Compile Include="Source\Views\ScrollView\UIScrollView.cs" />
-    <Compile Include="Source\Views\ScrollView\UIScrollView_Harmony.cs" />
     <Compile Include="Source\Views\XUiV_AnimatedSprite.cs" />
     <Compile Include="Source\XUI\XUi_Harmony.cs" />
     <Compile Include="Source\Managers\FontManager.cs" />
-    <Compile Include="Source\Views\XUiV_VideoPlayer.cs" />
     <Compile Include="Source\Controllers\XUiController_Harmony.cs" />
     <Compile Include="Source\Inputs\InventoryActions.cs" />
     <Compile Include="Source\Inputs\PlayerActionsBaseExtensions.cs" />
     <Compile Include="Source\Inputs\QuartzInputManager.cs" />
     <Compile Include="Source\Logging\Logging.cs" />
-    <Compile Include="Source\Overhaul\Controllers\Extensions\XuiExtensions.cs" />
-    <Compile Include="Source\Overhaul\Controllers\InfoWindow\InfoWindow.cs" />
-    <Compile Include="Source\Overhaul\Controllers\ItemStacks\ItemInfoWindow.cs" />
-    <Compile Include="Source\Overhaul\Controllers\ItemStacks\InventoryItemStack.cs" />
-    <Compile Include="Source\Overhaul\Controllers\ItemStacks\ItemStackBase.cs" />
-    <Compile Include="Source\Overhaul\Controllers\ItemStacks\ItemStackGrid.cs" />
-    <Compile Include="Source\Overhaul\Controllers\ItemStacks\SelectableEntry.cs" />
-    <Compile Include="Source\Overhaul\Controllers\XUiBaseController.cs" />
     <Compile Include="Source\QuartzMod.cs" />
     <Compile Include="Source\Settings\DebuggingSettings.cs" />
     <Compile Include="Source\Settings\GlobalSettings.cs" />
     <Compile Include="Source\Utils\ColorExtensions.cs" />
     <Compile Include="Source\Views\XUiV_CurvedLabel.cs" />
-    <Compile Include="Source\Views\ScrollView\XUiV_ScrollBar.cs" />
-    <Compile Include="Source\Views\ScrollView\ScrollBar\XUiC_ScrollBar_Button.cs" />
-    <Compile Include="Source\Views\ScrollView\ScrollBar\XUiC_Scrollbar_Sprite.cs" />
-    <Compile Include="Source\Views\ScrollView\ScrollBar\UIScrollBar.cs" />
-    <Compile Include="Source\Views\ScrollView\XUiV_ScrollView.cs" />
-    <Compile Include="Source\Views\ScrollView\XUiV_ScrollViewContainer.cs" />
     <Compile Include="Source\XUI\XUiFromXml_Harmony.cs" />
     <Compile Include="Source\Views\Harmony\XUiV_Label_Harmony.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Source\Overhaul\Controllers\Hud\" />
-    <Folder Include="Source\Overhaul\Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="News\clquartz.png" />
     <Content Include="News\clquartz.xml" />
     <Content Include="News\noquartz.xml" />
     <Content Include="Quartz Mod Folder\Config\blocks.xml" />
-    <Content Include="Quartz Mod Folder\Config\Localization.txt" />
+    <None Include="Quartz Mod Folder\Config\Localization.csv" />
     <Content Include="Quartz Mod Folder\Textures\Q_logo_icon.png" />
     <Content Include="Quartz Mod Folder\Textures\Q_logo_subtle_shadow.png" />
     <Content Include="Quartz Mod Folder\UIAtlases\UIAtlas\quartz_scrollbar_background.png" />
     <Content Include="Quartz Mod Folder\UIAtlases\UIAtlas\quartz_scrollbar_handler.png" />
-    <Content Include="Quartz Mod Folder\Config\XUi\windows.xml" />
-    <Content Include="Quartz Mod Folder\Config\XUi_Common\controls.xml" />
+    <Content Include="Quartz Mod Folder\Config\XUi_InGame\windows.xml" />
+    <Content Include="Quartz Mod Folder\Config\XUi_Common\templates.xml" />
     <Content Include="Quartz Mod Folder\Config\XUi_Common\styles.xml" />
     <Content Include="Quartz Mod Folder\Config\XUi_Menu\windows.xml" />
     <Content Include="Quartz Mod Folder\Config\XUi_Menu\xui.xml" />

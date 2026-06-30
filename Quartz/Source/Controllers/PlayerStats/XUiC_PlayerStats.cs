@@ -50,7 +50,7 @@ namespace Quartz
                 {
                     return;
                 }
-                base.RefreshBindings(isDirty);
+                base.RefreshBindings();
                 isDirty = false;
             }
         }

@@ -22,7 +22,7 @@ public static class XUiControllerPatch
     private const string TAG = "Error Reverse Patching XUiController method: ";
 
     [HarmonyReversePatch]
-    [HarmonyPatch("Update")]
+    [HarmonyPatch(nameof(XUiController.Update))]
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void Update(XUiController instance, float _dt)
     {
@@ -31,7 +31,7 @@ public static class XUiControllerPatch
     }
 
     [HarmonyReversePatch]
-    [HarmonyPatch("OnHovered")]
+    [HarmonyPatch(nameof(XUiController.OnHovered))]
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void OnHovered(XUiController instance, bool _isOver)
     {

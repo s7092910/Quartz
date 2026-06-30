@@ -21,8 +21,6 @@ namespace Quartz
 {
     public class XUiC_ContainerStandardControls : global::XUiC_ContainerStandardControls
     {
-        protected static float lastStashTime;
-
         protected XUiC_ComboBoxInt comboBox;
 
         protected ILockableInventory inventory;
@@ -79,25 +77,6 @@ namespace Quartz
             MoveAll(this, 0);
         }
 
-
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
-        {
-            switch(bindingName)
-            {
-                case "totallockedslotscount":
-                    value = inventory != null && inventory.HasLockSlotSupport() ? inventory.TotalLockedSlotsCount().ToString() : "";
-                    return true;
-                case "individuallockedslotscount":
-                    value = inventory != null && inventory.HasLockSlotSupport() ? inventory.IndividualLockedSlotsCount().ToString() : "";
-                    return true;
-                case "unlockedslotscount":
-                    value = inventory != null && inventory.HasLockSlotSupport() ? inventory.UnlockedSlotCount().ToString() : "";
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
-            }
-        }
-
         public void ChangeLockedSlots(long newValue)
         {
             RefreshBindings();
@@ -122,6 +101,25 @@ namespace Quartz
         protected virtual void MoveAll(XUiController sender, int mouseButton)
         {
             base.MoveAll();
+        }
+
+
+        [XuiXmlBinding("totallockedslotcount")]
+        private int GetTotalLockedSlotsCount()
+        {
+            return inventory != null && inventory.HasLockSlotSupport() ? inventory.IndividualLockedSlotsCount() : 0;
+        }
+
+        [XuiXmlBinding("individuallockedslotcount")]
+        private int GetIndividualLockedSlotsCount()
+        {
+            return inventory != null && inventory.HasLockSlotSupport() ? inventory.IndividualLockedSlotsCount() : 0;
+        }
+
+        [XuiXmlBinding("unlockedslotscount")]
+        private int GetUnlockedSlotCount()
+        {
+            return inventory != null && inventory.HasLockSlotSupport() ? inventory.UnlockedSlotCount() : 0;
         }
 
         private void ClearEventHandlers(XUiController controller, string eventName)

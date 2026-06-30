@@ -55,7 +55,8 @@ namespace Quartz
         {
             return base.IsStatVisible()
                 && vehicle != null
-                && vehicle.GetVehicle().HasEnginePart();
+                && vehicle.GetVehicle().HasEnginePart()
+                && EntityVehicle.VehicleFuelUsageModifier > 0.0;
         }
 
         protected override float GetStatUIPercentage()

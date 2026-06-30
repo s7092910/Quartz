@@ -15,10 +15,10 @@ See the License for the specific language governing permissions and
 limitations under the License.*/-->
 
 	<!-- Crispness Fix -->
-	<setattribute xpath="/controls/textfield[@crispness='Never']" name="crispness">OnDesktop</setattribute>
+	<setattribute xpath="/templates/textfield[@crispness='Never']" name="crispness">OnDesktop</setattribute>
 
 	<!-- UiAtlas Entry-->
-	<append xpath="/controls">
+	<append xpath="/templates">
 		<Quartz_UiAtlas_Entry>
 			<rect depth="1" height="${height}" width="${width}" style="hover" disabled_font_color="[disabledLabelColor]" enabled_font_color="[labelColor]" controller="${controller}" visible="{hasentry}">
 				<sprite depth="3" name="backgroundMain" sprite="menu_empty2px" height="${1+height}" pos="2,0" width="${width-4}" color="[black]" type="sliced" fillcenter="false" />

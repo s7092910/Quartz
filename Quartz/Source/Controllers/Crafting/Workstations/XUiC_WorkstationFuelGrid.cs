@@ -105,7 +105,7 @@ namespace Quartz
                 {
                     Block block = te.blockValue.Block;
 
-                    requiredFuels = block.Properties.GetString("Workstation.RequiredFuels");
+                    requiredFuels = block.Properties.GetString("Workstation","RequiredFuels");
                     string[] fuelNames = requiredFuels.Split(',');
                     for (int i = 0; i < itemControllers.Length; i++)
                     {

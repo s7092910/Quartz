@@ -35,7 +35,7 @@ namespace Quartz.PlayerStats
 
         public override string GetCurrentValue(EntityPlayer player)
         {
-            return MathUtils.Min(player.bag.MaxItemCount, player.bag.SlotCount).ToString();
+            return MathUtils.Min(player.CarryCapacity, player.bag.SlotCount).ToString();
         }
     }
 
@@ -47,7 +47,7 @@ namespace Quartz.PlayerStats
 
         public override string GetCurrentValue(EntityPlayer player)
         {
-            return player.bag.MaxItemCount.ToString();
+            return player.CarryCapacity.ToString();
         }
     }
 

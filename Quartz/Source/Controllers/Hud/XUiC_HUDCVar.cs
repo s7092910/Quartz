@@ -21,28 +21,26 @@ namespace Quartz
         private string cvarName;
         private float maxValue;
 
-        public override bool ParseAttribute(string attribute, string value, XUiController _parent)
+        [XuiXmlAttribute("cvar_name")]
+        public string CvarName 
         {
-            if (attribute != null)
+            get => cvarName; 
+            set 
             {
-                switch (attribute)
-                {
-                    case "cvar_name":
-                        string tempString = cvarName;
-                        cvarName = value;
-                        IsDirty |= !tempString.EqualsCaseInsensitive(cvarName);
-                        return true;
-                    case "max_value":
-                        float tempFloat = maxValue;
-                        float.TryParse(value, out maxValue);
-                        IsDirty |= tempFloat != maxValue;
-                        return true;
-                    default:
-                        return base.ParseAttribute(attribute, value, _parent);
-                }
+                IsDirty |= !cvarName.EqualsCaseInsensitive(value);
+                cvarName = value;
             }
+        }
 
-            return false;
+        [XuiXmlAttribute("max_value")]
+        public float MaxValue 
+        { 
+            get => maxValue;
+            set
+            {
+                IsDirty |= maxValue != value;
+                maxValue = value;
+            }
         }
 
         protected override float GetCurrentStat()

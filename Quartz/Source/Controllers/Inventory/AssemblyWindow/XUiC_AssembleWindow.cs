@@ -25,37 +25,37 @@ namespace Quartz
             itemStatControllers = GetChildrenByType<XUiC_AssembleItemStatEntry>();
         }
 
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
-        {
-            if (bindingName.StartsWith("itemstat") && bindingName.Contains("-"))
-            {
-                string[] split = bindingName.Split('-');
-                int index = 0;
-                if (split.Length == 2)
-                {
-                    if (int.TryParse(split[1], out index))
-                    {
-                        index--;
-                    }
-                }
-                switch (split[0])
-                {
-                    case "itemstattitle":
-                        value = GetStatTitle(index);
-                        return true;
-                    case "itemstaticon":
-                        value = GetStatIcon(index);
-                        return true;
-                    case "itemstat":
-                        value = GetStatValue(index);
-                        return true;
-                    default:
-                        return base.GetBindingValueInternal(ref value, bindingName);
-                }
-            }
+        //public override bool GetBindingValueInternal(ref string value, string bindingName)
+        //{
+        //    if (bindingName.StartsWith("itemstat") && bindingName.Contains("-"))
+        //    {
+        //        string[] split = bindingName.Split('-');
+        //        int index = 0;
+        //        if (split.Length == 2)
+        //        {
+        //            if (int.TryParse(split[1], out index))
+        //            {
+        //                index--;
+        //            }
+        //        }
+        //        switch (split[0])
+        //        {
+        //            case "itemstattitle":
+        //                value = GetStatTitle(index);
+        //                return true;
+        //            case "itemstaticon":
+        //                value = GetStatIcon(index);
+        //                return true;
+        //            case "itemstat":
+        //                value = GetStatValue(index);
+        //                return true;
+        //            default:
+        //                return base.GetBindingValueInternal(ref value, bindingName);
+        //        }
+        //    }
 
-            return base.GetBindingValueInternal(ref value, bindingName);
-        }
+        //    return base.GetBindingValueInternal(ref value, bindingName);
+        //}
 
         public void SetItemStats()
         {
@@ -77,18 +77,18 @@ namespace Quartz
             }
         }
 
-        private string GetStatIcon(int index)
-        {
-            if (itemDisplayEntry == null || itemDisplayEntry.DisplayStats.Count <= index)
-            {
-                return string.Empty;
-            }
+        //private string GetStatIcon(int index)
+        //{
+        //    if (itemDisplayEntry == null || itemDisplayEntry.DisplayStats.Count <= index)
+        //    {
+        //        return string.Empty;
+        //    }
 
-            if (itemDisplayEntry.DisplayStats[index] is Models.DisplayInfoEntry displayInfoEntry)
-            {
-                return displayInfoEntry.icon;
-            }
-            return string.Empty;
-        }
+        //    if (itemDisplayEntry.DisplayStats[index] is Models.DisplayInfoEntry displayInfoEntry)
+        //    {
+        //        return displayInfoEntry.icon;
+        //    }
+        //    return string.Empty;
+        //}
     }
 }

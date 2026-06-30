@@ -24,30 +24,18 @@ namespace Quartz
         private string emptyVendingMachine = Localization.Get("xuiEmptyVendingMachine");
         private string ownedVendingMachine = Localization.Get("xuiVendingWithOwner");
 
+        [XuiXmlBinding("selectedcategoryname")]
+        public string CategoryDisplayName { get => categoryDisplayName; }
+
+        [XuiXmlBinding("selectedcategorysprite")]
+        public string CategorySpriteName { get => categorySpriteName; }
+
         public override void Init()
         {
             base.Init();
             categoryList = windowGroup.Controller.GetChildByType<XUiC_CategoryList>();
             categoryList.CategoryChanged += HandleCategoryChanged;
 
-        }
-
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
-        {
-            switch (bindingName)
-            {
-                case "selectedcategoryname":
-                    value = categoryDisplayName;
-                    return true;
-                case "selectedcategorysprite":
-                    value = categorySpriteName;
-                    return true;
-                case "headername":
-                    value = GetHeaderText();
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
-            }
         }
 
         public new void HandleCategoryChanged(XUiC_CategoryEntry categoryEntry)
@@ -69,15 +57,17 @@ namespace Quartz
             RefreshBindings();
         }
 
+        [XuiXmlBinding("headername")]
         private string GetHeaderText()
         {
-            if (xui.Trader.TraderTileEntity is TileEntityVendingMachine tileEntityVendingMachine)
+            if (IsVending)
             {
-                if (tileEntityVendingMachine.IsRentable || tileEntityVendingMachine.TraderData.TraderInfo.PlayerOwned)
+                if (IsRentable || IsPlayerOwned)
                 {
-                    if (tileEntityVendingMachine.GetOwner() != null)
+                    PlatformUserIdentifierAbs owner = CurrentVending.GetOwner();
+                    if (owner != null)
                     {
-                        string playerName = GameManager.Instance.persistentPlayers.GetPlayerData(tileEntityVendingMachine.GetOwner()).PlayerName.DisplayName;
+                        string playerName = GameManager.Instance.persistentPlayers.GetPlayerData(owner).PlayerName.DisplayName;
                         return string.Format(ownedVendingMachine, playerName);
                     }
                     else

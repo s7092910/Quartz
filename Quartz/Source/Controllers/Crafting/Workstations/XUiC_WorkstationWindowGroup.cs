@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 using Quartz.Utils;
+using System;
 
 namespace Quartz
 {
@@ -26,24 +27,30 @@ namespace Quartz
 
         private XUiV_Label smeltTimeLeft;
 
+        [XuiXmlAttribute("fueltimeinhours")]
+        public bool ShowHoursInBurnTime { get => showHoursInBurnTime; set => showHoursInBurnTime = value; }
+
+        [XuiXmlAttribute("smelttimeinhours")]
+        public bool ShowHoursInSmeltTimes { get => showHoursInSmeltTimes; set => showHoursInSmeltTimes = value; }
+
         public override void Init()
         {
             base.Init();
-            string showHours;
+            object showHours;
 
             XUiController childById = GetChildById("smeltTimeLeft");
             if (childById != null)
             {
-                if(childById.CustomAttributes.TryGetValue("smelttimeinhours",out showHours))
+                if(childById.CustomAttributes.TryGetValue("smelttimeinhours",out showHours) && showHours is bool)
                 {
-                    showHoursInSmeltTimes = StringParsers.ParseBool(showHours);
+                    showHoursInSmeltTimes = (bool)showHours;
                 }
                 smeltTimeLeft = childById.ViewComponent as XUiV_Label;
             }
 
-            if (burnTimeLeft != null && burnTimeLeft.Controller.CustomAttributes.TryGetValue("fueltimeinhours", out showHours))
+            if (burnTimeLeft != null && burnTimeLeft.Controller.CustomAttributes.TryGetValue("fueltimeinhours", out showHours) && showHours is bool)
             {
-                showHoursInBurnTime = StringParsers.ParseBool(showHours);
+                showHoursInBurnTime = (bool)showHours;
             }
 
             showTotalBurnTime = fuelWindow != null && burnTimeLeft != null;
@@ -67,21 +74,6 @@ namespace Quartz
             {
                 float maxSmeltTime = WorkstationData.GetMaxSmeltTime();
                 smeltTimeLeft.Text = showHoursInSmeltTimes ? FormatTimerWithHours(maxSmeltTime): FormatTimerWithoutHours(maxSmeltTime);
-            }
-        }
-
-        public override bool ParseAttribute(string name, string value, XUiController parent)
-        {
-            switch (name)
-            {
-                case "fueltimeinhours":
-                    showHoursInBurnTime = StringParsers.ParseBool(value);
-                    return true;
-                case "smelttimeinhours":
-                    showHoursInSmeltTimes = StringParsers.ParseBool(value);
-                    return true;
-                default:
-                    return base.ParseAttribute(name, value, parent);
             }
         }
 

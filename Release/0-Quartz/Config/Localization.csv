@@ -1,0 +1,46 @@
+﻿Key,File,Type,UsedInMainMenu,NoTranslate,english,Context / Alternate Text,german,latam,french,italian,japanese,koreana,polish,brazilian,russian,turkish,schinese,tchinese,spanish
+
+quartzSettingGeneral,UI,Menu,x,,General
+quartzSettingGeneralTooltip,UI,Menu,x,,General settings for Quartz
+quartzSettingDebug,UI,Menu,x,,Debug
+quartzSettingDebugTooltip,UI,Menu,x,,Debugging settings for Quartz
+quartzSettingTextResolution,UI,Menu,x,,Text Resolution
+quartzSettingTextResolutionTooltip,UI,Menu,x,,"Sets the Text resolution. If set to high, may cause flickering of the UI every so often"
+quartzSettingDebugMode,UI,Menu,x,,Debug Mode
+quartzSettingDebugModeTooltip,UI,Menu,x,,Enables or disable Quartz debug mode
+quartzSettingKeybinding,UI,Menu,x,,Key Bindings
+quartzSettingInputInventoryKeybindingTooltip,UI,Menu,x,,Inventory Player Key Bindings
+quartzSettingInputLockedSlots,UI,Menu,x,,Lock Slots
+quartzSettingInputLockedSlotsTooltip,UI,Menu,x,,Locks or Unlocks inventory slot when the slot is clicked on
+quartzSettingInputMinimapKeybindingTooltip,UI,Menu,x,,Minimap Player Key Bindings
+quartzSettingInputMinimapToggle,UI,Menu,x,,Toggle Minimap
+quartzSettingInputMinimapToggleTooltip,UI,Menu,x,,Toggle the minimap on or off
+quartzSettingInputMinimapZoomIn,UI,Menu,x,,Zoom In
+quartzSettingInputMinimapZoomIn2,UI,Menu,x,,Minimap Zoom In
+quartzSettingInputMinimapZoomInTooltip,UI,Menu,x,,Zooms in on the minimap
+quartzSettingInputMinimapZoomOut,UI,Menu,x,,Zoom Out
+quartzSettingInputMinimapZoomOut2,UI,Menu,x,,Minimap Zoom Out
+quartzSettingInputMinimapZoomOutTooltip,UI,Menu,x,,Zooms out on the minimap
+quartzSettingMinimap,UI,Menu,x,,Minimap
+quartzSettingMinimapTooltip,UI,Menu,x,,Settings related to the minimap. Only applies for UI mods that use's Quartz' minimap backend
+quartzSettingMinimapShow,UI,Menu,x,,Show Minimap
+quartzSettingMinimapShowTooltip,UI,Menu,x,,Shows or hides the minimap if there is a minimap in the ingame UI
+quartzSettingMinimapIconsShow,UI,Menu,x,,Show Minimap Icons
+quartzSettingMinimapIconsShowTooltip,UI,Menu,x,,Show or hide the minimap icons
+quartzSettingMinimapTextShow,UI,Menu,x,,Show Icon Names
+quartzSettingMinimapTextShowTooltip,UI,Menu,x,,Show or Hide the icons Names on the minimap
+quartzSettingMinimapIconsOnlyShow,UI,Menu,x,,Show Minimap Only Icons
+quartzSettingMinimapIconsOnlyShowTooltip,UI,Menu,x,,Show or Hide minimap only icons, these icons only show up on the minimap and not on the main map
+quartzSettingMinimapRotateWithPlayer,UI,Menu,x,,Rotate With View
+quartzSettingMinimapRotateWithPlayerTooltip,UI,Menu,x,,Rotates the minimap to follow the player's view, so the player is always facing to the top of the minimap
+quartzSettingMinimapIconScale,UI,Menu,x,,Minimap Icons Scale
+quartzSettingMinimapIconScaleTooltip,UI,Menu,x,,Adjusts the scale of the icons on the minimap
+quartzSettingMinimapIconOpacity,UI,Menu,x,,Minimap Icon Opacity
+quartzSettingMinimapIconOpacityTooltip,UI,Menu,x,,Adjusts the opacity of the icons on the minimap
+quartzSettingMinimapTextureOpacity,UI,Menu,x,,Minimap Texture Opacity
+quartzSettingMinimapTextureOpacityTooltip,UI,Menu,x,,Adjusts the minimap texture opacity
+quartzUiSpriteWindowHeader,UI,Menu,x,,UIAtlas Sprites
+quartzXuiExport,UI,Menu,x,,Export Sprites
+quartzXuiExplorer,UI,Menu,x,,Open Export Folder
+quartzTooltipShowModSprites,UI,Menu,x,,Switch to show modded UIAtlas sprites
+quartzMaxLevel,UI,,x,,Max Level

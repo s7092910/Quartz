@@ -1,4 +1,4 @@
-﻿/*Copyright 2022 Christopher Beda
+﻿/*Copyright 2026 Christopher Beda
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,20 +12,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
-using Audio;
-using InControl;
-using QuartzOverhaul.ItemStacks;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
-namespace QuartzOverhaul
+namespace Quartz.Views
 {
-    public class InventoryItemStack : ItemStackBase
+    public static class ScrollViewExtensions
     {
+        public static void ResetPositionDelayed(this XUiV_ScrollView scrollview, int inFrames = 3)
+        {
+            if(scrollview == null)
+            {
+                return;
+            }
 
+            ThreadManager.RunTaskAfterFrames(new Action(scrollview.ResetPosition), inFrames);
+        }
     }
 }

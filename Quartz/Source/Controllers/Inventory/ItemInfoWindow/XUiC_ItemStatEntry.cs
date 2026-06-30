@@ -44,6 +44,12 @@ namespace Quartz
             }
         }
 
+        [XuiXmlBinding("stat")]
+        public string StatValue 
+        { 
+            get => statValue;
+        }
+
         public override void Update(float _dt)
         {
             base.Update(_dt);
@@ -52,36 +58,6 @@ namespace Quartz
                 statValue = GetStatValue();
                 RefreshBindings();
                 IsDirty = false;
-            }
-        }
-
-        public override bool GetBindingValueInternal(ref string value, string bindingName)
-        {
-            switch (bindingName)
-            {
-                case "title":
-                    value = GetStatTitle();
-                    return true;
-                case "icon":
-                    value = GetStatIcon();
-                    return true;
-                case "statmain":
-                    value = GetStatValueMain();
-                    return true;
-                case "statcompare":
-                    value = GetStatValueCompare();
-                    return true;
-                case "stat":
-                    value = statValue;
-                    return true;
-                case "isincrease":
-                    value = statValue.Contains("[00FF00]").ToString();
-                    return true;
-                case "hasentry":
-                    value = HasStatEntry().ToString();
-                    return true;
-                default:
-                    return base.GetBindingValueInternal(ref value, bindingName);
             }
         }
 
@@ -107,11 +83,19 @@ namespace Quartz
             IsDirty = true;
         }
 
+        [XuiXmlBinding("isincrease")]
+        private bool IsAnIncreaseFromCompare()
+        {
+            return statValue.Contains("[00FF00]");
+        }
+
+        [XuiXmlBinding("hasentry")]
         private bool HasStatEntry()
         {
             return itemStack != null && displayInfoEntry != null;
         }
 
+        [XuiXmlBinding("title")]
         private string GetStatTitle()
         {
             if (displayInfoEntry == null)
@@ -142,6 +126,7 @@ namespace Quartz
             return XUiM_ItemStack.GetStatItemValueTextWithCompareInfo(itemStack.itemValue, itemInfoWindow.CompareStack.itemValue, xui.playerUI.entityPlayer, displayInfoEntry, false, true);
         }
 
+        [XuiXmlBinding("icon")]
         private string GetStatIcon()
         {
             if (itemStack == null || displayInfoEntry == null)
@@ -152,6 +137,7 @@ namespace Quartz
             return displayInfoEntry.icon;
         }
 
+        [XuiXmlBinding("statmain")]
         private string GetStatValueMain()
         {
             if (itemStack == null || displayInfoEntry == null || itemInfoWindow.CompareStack.IsEmpty())
@@ -168,6 +154,7 @@ namespace Quartz
 
         }
 
+        [XuiXmlBinding("statcompare")]
         private string GetStatValueCompare()
         {
             if (itemStack == null || displayInfoEntry == null || itemInfoWindow.CompareStack.IsEmpty())
