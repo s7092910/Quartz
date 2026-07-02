@@ -185,12 +185,6 @@ namespace Quartz
                 {
                     UpdateFullMap();
                 }
-
-                //if(localPlayerCamera != null)
-                //{
-                //    localPlayerCamera.PreRender += OnPreRender;
-                //}
-
                 xuiTexture.widget.onRender += OnRenderDrawcall;
             }
         }
@@ -204,14 +198,6 @@ namespace Quartz
                 bShouldRedrawMap = false;
 
                 QuartzInputManager.minimapActions.Enabled = false;
-
-                LocalPlayerCamera localPlayerCamera = xui.playerUI.GetComponentInParent<LocalPlayerCamera>();
-
-                //if(localPlayerCamera != null)
-                //{
-                //    localPlayerCamera.PreRender -= OnPreRender;
-                //}
-
                 xuiTexture.widget.onRender -= OnRenderDrawcall;
             }
         }
@@ -332,11 +318,13 @@ namespace Quartz
                 if(xuiTexture is XUiV_Texture texture)
                 {
                     mapMaterial = texture.material;
+                    texture.Texture = mapTexture;
                 }
 
                 if (xuiTexture is XUiV_MaskedTexture maskedTexture)
                 {
                     mapMaterial = maskedTexture.Material;
+                    maskedTexture.Texture = mapTexture;
                 }
 
                 if (mapMaterial != null)
@@ -505,35 +493,8 @@ namespace Quartz
             mapPos = new Vector3(x, y, 0f);
         }
 
-        private void OnPreRender(LocalPlayerCamera _localPlayerCamera)
-        {
-
-            float yScale = xuiTexture.Size.y / (float)xuiTexture.Size.x;
-            float rotation = MinimapSettings.FollowPlayerView ? -localPlayer.rotation.y * Mathf.Deg2Rad : 0f;
-
-            UIDrawCall drawCall = null;
-            if (xuiTexture is XUiV_Texture texture)
-            {
-                drawCall = texture.uiTexture.drawCall;
-            }
-
-            if (xuiTexture is XUiV_MaskedTexture maskedTexture)
-            {
-                drawCall = maskedTexture.UITexture.drawCall;
-            }
-
-            if (drawCall != null)
-            {
-                drawCall.dynamicMaterial.SetVector("_MainMapPosAndScale", new Vector4(mapPos.x, mapPos.y, mapScale, mapScale * yScale));
-                drawCall.dynamicMaterial.SetFloat("_MapRotation", rotation);
-                drawCall.dynamicMaterial.SetFloat("_MapOpacity", MinimapSettings.TextureOpacity);
-            }
-
-        }
-
         private void OnRenderDrawcall(Material mat)
         {
-
             float yScale = xuiTexture.Size.y / (float)xuiTexture.Size.x;
             float rotation = MinimapSettings.FollowPlayerView ? -localPlayer.rotation.y * Mathf.Deg2Rad : 0f;
 

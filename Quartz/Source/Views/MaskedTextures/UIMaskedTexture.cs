@@ -27,7 +27,7 @@ namespace Quartz.Views
         private bool mFixedAspect = false;
 
         private Texture mMaskTexture;
-        private bool mRebuildMaterial = true;
+        private bool mRebuildMaterial = false;
         private bool mFixMaskUV = true;
 
         public override Texture mainTexture
@@ -120,7 +120,7 @@ namespace Quartz.Views
                 }
                 if (mShader == null)
                 {
-                    mShader = LoadShader();
+                    mShader = Shader.Find("Unlit/Transparent FixableMask");
                     UpdateMaterial();
                 }
                 return mShader;
@@ -422,7 +422,7 @@ namespace Quartz.Views
                     return;
                 }
 
-                mShader = LoadShader();
+                mShader = Shader.Find("Unlit/Transparent FixableMask");
             }
 
             if(mMat == null)

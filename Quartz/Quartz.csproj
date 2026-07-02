@@ -221,11 +221,9 @@
     <Compile Include="Source\Utils\XUiM_WorkstationExtensions.cs" />
     <Compile Include="Source\Views\Extensions\ScrollViewExtensions.cs" />
     <Compile Include="Source\Views\Harmony\QuartzResourcesAPI.cs" />
-    <Compile Include="Source\Views\Harmony\ResourcesAPI_Harmony.cs" />
     <Compile Include="Source\Views\MaskedTextures\UIMaskedTexture.cs" />
     <Compile Include="Source\Views\MaskedTextures\XUiV_MaskedPanel.cs" />
     <Compile Include="Source\Views\MaskedTextures\XUiV_MaskedTexture.cs" />
-    <Compile Include="Source\Views\Harmony\UIDrawCall_Harmony.cs" />
     <Compile Include="Source\Views\XUiV_AnimatedSprite.cs" />
     <Compile Include="Source\XUI\XUi_Harmony.cs" />
     <Compile Include="Source\Managers\FontManager.cs" />
