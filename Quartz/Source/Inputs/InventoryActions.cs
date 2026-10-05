@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 
+using GearsAPI.Attributes;
 using InControl;
 using Platform;
 
@@ -21,6 +22,9 @@ namespace Quartz.Inputs
     public class InventoryActions : PlayerActionsBase
     {
         public PlayerAction LockSlot;
+
+        [SettingPlayerAction("Inventory.KeyBindings.LockedSlots")]
+        public static PlayerAction LockSlotAction => QuartzInputManager.inventoryActions.LockSlot;
 
         public InventoryActions()
         {

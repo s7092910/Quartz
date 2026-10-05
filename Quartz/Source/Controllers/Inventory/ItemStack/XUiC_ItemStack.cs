@@ -100,7 +100,7 @@ namespace Quartz
             }
         }
 
-        public override string ItemIconColor
+        public override Color ItemIconColor
         {
             get
             {
@@ -109,7 +109,7 @@ namespace Quartz
                     return base.ItemIconColor;
                 }
 
-                return itemiconcolorFormatter.Format(noMatchTintColor);
+                return noMatchTintColor;
             }
         }
 

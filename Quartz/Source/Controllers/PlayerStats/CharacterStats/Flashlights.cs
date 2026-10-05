@@ -37,7 +37,7 @@ namespace Quartz.PlayerStats
             List<ItemValue> activatedableItemPool = player.GetActivatableItemPool();
             foreach (ItemValue item in activatedableItemPool)
             {
-                if (item.Activated > 0)
+                if (item.Activated)
                 {
                     int itemId = item.ItemClass.Id;
 

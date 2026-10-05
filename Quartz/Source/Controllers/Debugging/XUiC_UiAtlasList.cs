@@ -32,11 +32,16 @@ namespace Quartz.Debugging
         private XUiC_SimpleButton btnBack;
         private XUiC_SimpleButton btnExport;
         private XUiC_SimpleButton btnExplorer;
+
+        [XuiBindComponent("scrollview")]
+        private XUiV_ScrollView scrollView;
         private XUiController btnShowModSprites;
 
         private XUiController[] spriteControllers;
 
         private bool showModSprites = false;
+
+        private bool listRebuilt;
 
         public override void Init()
         {
@@ -82,6 +87,16 @@ namespace Quartz.Debugging
             {
                 ShowVanillaSprites();
             }
+
+            if (listRebuilt)
+            {
+                if (scrollView != null)
+                {
+                    scrollView.ResetPositionDelayed();
+                }
+
+                listRebuilt = false;
+            }
         }
 
         public override void OnOpen()
@@ -105,8 +120,8 @@ namespace Quartz.Debugging
             allEntries.Clear();
             RebuildListInternal();
             base.RebuildList(_resetFilter);
-            XUiV_ScrollView scrollView = GetChildById("scrollview")?.ViewComponent as XUiV_ScrollView;
-            scrollView.ResetPositionDelayed();
+            listRebuilt = true;
+            Logging.Inform("UIAtlasList rebuildList called");
         }
 
         [XuiXmlBinding("spriteCount")]

@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 
+using GearsAPI.Attributes;
 using InControl;
 using Platform;
 
@@ -24,6 +25,15 @@ namespace Quartz.Inputs
         public PlayerAction MinimapZoomOut;
 
         public PlayerAction MinimapToggle;
+
+        [SettingPlayerAction("Minimap.KeyBindings.ZoomInKeyBinding")]
+        public static PlayerAction MinimapZoomInAction => QuartzInputManager.minimapActions.MinimapZoomIn;
+
+        [SettingPlayerAction("Minimap.KeyBindings.ZoomOutKeyBinding")]
+        public static PlayerAction MinimapZoomOutAction => QuartzInputManager.minimapActions.MinimapZoomOut;
+
+        [SettingPlayerAction("Minimap.KeyBindings.EnabledKeyBinding")]
+        public static PlayerAction MinimapToggleAction => QuartzInputManager.minimapActions.MinimapToggle;
 
         public MinimapActions()
         {

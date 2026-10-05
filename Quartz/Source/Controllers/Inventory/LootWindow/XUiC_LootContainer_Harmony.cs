@@ -21,7 +21,7 @@ public class XUiC_LootContainerPatch
 
     [HarmonyPostfix]
     [HarmonyPatch(nameof(XUiC_LootContainer.SetSlots))]
-    public static void SetSlots(XUiC_LootContainer __instance, ITileEntityLootable _lootContainer, ItemStack[] _stackList)
+    public static void SetSlots(XUiC_LootContainer __instance, TEFeatureStorage _lootContainer)
     {
         if (__instance is Quartz.XUiC_LootContainer instance)
         {

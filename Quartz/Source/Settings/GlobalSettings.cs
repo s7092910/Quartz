@@ -12,24 +12,25 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
-using GearsAPI.Settings.Global;
+using GearsAPI.Attributes;
+using GearsAPI.Settings;
 
 namespace Quartz.Settings
 {
     public class GlobalSettings
     {
+        public enum TextResolution
+        {
+            Low,
+            High
+        }
+
         internal static UILabel.Crispness textCrispness = UILabel.Crispness.OnDesktop;
 
-        public static void SetTextResolution(IGlobalModSetting setting, string newValue)
+        [SettingOnValueChanged("General.General.TextResolution", true)]
+        public static void SetTextResolution(IValueModSetting<TextResolution> setting, TextResolution resolution)
         {
-            if(newValue == "High")
-            {
-                textCrispness = UILabel.Crispness.OnDesktop;
-            } 
-            else
-            {
-                textCrispness = UILabel.Crispness.Never;
-            }
+            textCrispness = (UILabel.Crispness)resolution;
         }
     }
 }

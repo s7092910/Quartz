@@ -12,6 +12,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
+using GearsAPI.Attributes;
+using GearsAPI.Settings.Global;
 using System.IO;
 
 namespace Quartz.Inputs
@@ -90,6 +92,15 @@ namespace Quartz.Inputs
             }
 
             //Increment currentVersion if more action sets have been added
+        }
+
+        [SettingOnApplied("Inventory.KeyBindings.LockedSlots")]
+        [SettingOnApplied("Minimap.KeyBindings.ZoomInKeyBinding")]
+        [SettingOnApplied("Minimap.KeyBindings.ZoomOutKeyBinding")]
+        [SettingOnApplied("Minimap.KeyBindings.EnabledKeyBinding")]
+        private static void ControlsSettingChanged(IGlobalModSetting setting)
+        {
+            SaveControls();
         }
 
         public static void SaveControls()

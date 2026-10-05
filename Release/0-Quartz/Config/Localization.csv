@@ -39,6 +39,14 @@ quartzSettingMinimapIconOpacity,UI,Menu,x,,Minimap Icon Opacity
 quartzSettingMinimapIconOpacityTooltip,UI,Menu,x,,Adjusts the opacity of the icons on the minimap
 quartzSettingMinimapTextureOpacity,UI,Menu,x,,Minimap Texture Opacity
 quartzSettingMinimapTextureOpacityTooltip,UI,Menu,x,,Adjusts the minimap texture opacity
+quartzSettingPrefixTextResLow,UI,Menu,x,,Low
+quartzSettingPrefixTextResHigh,UI,Menu,x,,High
+quartzSettingPrefixShowHideTrue,UI,Menu,x,,Show
+quartzSettingPrefixShowHideFalse,UI,Menu,x,,Hide
+quartzSettingPrefixRotateTrue,UI,Menu,x,,Follow
+quartzSettingPrefixRotateFalse,UI,Menu,x,,Static
+quartzSettingPrefixEnabledTrue,UI,Menu,x,,Enabled
+quartzSettingPrefixDisabledFalse,UI,Menu,x,,Disabled
 quartzUiSpriteWindowHeader,UI,Menu,x,,UIAtlas Sprites
 quartzXuiExport,UI,Menu,x,,Export Sprites
 quartzXuiExplorer,UI,Menu,x,,Open Export Folder

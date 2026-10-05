@@ -137,12 +137,12 @@ namespace Quartz
 
         public bool HasLockSlotSupport()
         {
-            return localTileEntity.HasSlotLocksSupport;
+            return localTileEntity.lockFeature != null;
         }
 
         protected virtual void OnItemStackPress(XUiController sender, int mouseButton)
         {
-            if (localTileEntity.HasSlotLocksSupport && sender is global::XUiC_ItemStack itemStack
+            if (HasLockSlotSupport() && sender is global::XUiC_ItemStack itemStack
                 && (QuartzInputManager.inventoryActions.LockSlot.IsPressed || lootWindow.UserLockMode))
             {
                 int index = Array.IndexOf(itemControllers, itemStack);

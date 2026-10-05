@@ -12,6 +12,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
+using GearsAPI.Attributes;
+using GearsAPI.Settings;
 using GearsAPI.Settings.Global;
 using UnityEngine;
 
@@ -19,7 +21,8 @@ namespace Quartz.Settings
 {
     public class MinimapSettings
     {
-        public static IGlobalValueSetting enableMinimapSetting;
+        [Setting("Minimap.Minimap.MinimapShowOrHide")]
+        public static IGlobalValueSetting<bool> enableMinimapSetting;
 
         private static bool enabled = true;
         public static bool Enabled
@@ -36,7 +39,8 @@ namespace Quartz.Settings
 
                     if(enableMinimapSetting != null)
                     {
-                        enableMinimapSetting.CurrentValue = enabled ? "Show" : "Hide";
+                        enableMinimapSetting.SettingValue = enabled;
+                        enableMinimapSetting.SelectedValue = enabled;
                         QuartzMod.SaveModSettings();
                     }
                 }
@@ -57,57 +61,53 @@ namespace Quartz.Settings
 
         public static float TextureOpacity { get; set; } = 1f;
 
-        public static void SetMinimapEnabled(IGlobalModSetting setting, string newValue)
+
+        [SettingOnValueChanged("Minimap.Minimap.MinimapShowOrHide", true)]
+        public static void SetMinimapEnabled(IValueModSetting<bool> setting, bool show)
         {
-            enabled = newValue == "Show";
+            enabled = show;
         }
 
-        public static void SetMinimapFollowsPlayerView(IGlobalModSetting setting, string newValue)
+        [SettingOnValueChanged("Minimap.Minimap.IconsShowOrHide", true)]
+        public static void SetIconsEnabled(IValueModSetting<bool> setting, bool show)
         {
-            FollowPlayerView = newValue == "On";
+            ShowIcons = show;
         }
 
-        public static void SetIconsEnabled(IGlobalModSetting setting, string newValue)
+        [SettingOnValueChanged("Minimap.Minimap.TextShowOrHide", true)]
+        public static void SetTextEnabled(IValueModSetting<bool> setting, bool show)
         {
-            ShowIcons = newValue == "Show";
+            ShowText = show;
         }
 
-        public static void SetMinimapOnlyIconsEnabled(IGlobalModSetting setting, string newValue)
+        [SettingOnValueChanged("Minimap.Minimap.MinimapIconsShowOrHide", true)]
+        public static void SetMinimapOnlyIconsEnabled(IValueModSetting<bool> setting, bool show)
         {
-            ShowMinimapOnlyIcons = newValue == "Show";
+            ShowMinimapOnlyIcons = show;
         }
 
-
-        public static void SetTextEnabled(IGlobalModSetting setting, string newValue)
+        [SettingOnValueChanged("Minimap.Minimap.RotateWithPlayer", true)]
+        public static void SetMinimapFollowsPlayerView(IValueModSetting<bool> setting, bool follow)
         {
-            ShowText = newValue == "Show";
+            FollowPlayerView = follow;
         }
 
-        public static void SetIconScaleModifer(IGlobalModSetting setting, string newValue)
+        [SettingOnValueChanged("Minimap.Minimap.IconScale", true)]
+        public static void SetIconScaleModifer(IValueModSetting<float> setting, float scale)
         {
-            if(int.TryParse(newValue, out int modifer))
-            {
-                float scale = modifer / 100f;
-                IconScaleModifer = Mathf.Clamp(scale, 0f, 2f);
-            }
+            IconScaleModifer = Mathf.Clamp(scale, 0f, 2f);
         }
 
-        public static void SetIconOpacity(IGlobalModSetting setting, string newValue)
+        [SettingOnValueChanged("Minimap.Minimap.IconOpacity", true)]
+        public static void SetIconOpacity(IValueModSetting<float> setting, float opacity)
         {
-            if (int.TryParse(newValue, out int modifer))
-            {
-                float opacity = modifer / 100f;
-                IconOpacity = Mathf.Clamp(opacity, 0f, 1f);
-            }
+            IconOpacity = Mathf.Clamp(opacity, 0f, 1f);
         }
 
-        public static void SetTextureOpacity(IGlobalModSetting setting, string newValue)
+        [SettingOnValueChanged("Minimap.Minimap.TextureOpacity", true)]
+        public static void SetTextureOpacity(IValueModSetting<float> setting, float opacity)
         {
-            if (int.TryParse(newValue, out int modifer))
-            {
-                float opacity = modifer / 100f;
-                TextureOpacity = Mathf.Clamp(opacity, 0f, 1f);
-            }
+            TextureOpacity = Mathf.Clamp(opacity, 0f, 1f);
         }
     }
 }
