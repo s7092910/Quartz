@@ -108,7 +108,7 @@ namespace Quartz
             set
             {
                 texture = value;
-                //isDirty = true;
+                isDirty = true;
                 if (value == null)
                 {
                     isExternalTexture = false;
@@ -125,7 +125,7 @@ namespace Quartz
             set
             {
                 mask = value;
-                //isDirty = true;
+                isDirty = true;
                 if (value == null)
                 {
                     isExternalMask = false;
@@ -237,7 +237,12 @@ namespace Quartz
             uiTexture.flip = flip;
             uiTexture.centerType = (fillCenter ? UIBasicSprite.AdvancedType.Sliced : UIBasicSprite.AdvancedType.Invisible);
             uiTexture.fillDirection = fillDirection;
-            uiTexture.material = material;
+            // UIMaskedTexture creates its own material when none is assigned. Assigning null (or the same
+            // material) again would remove the widget from its panel and rebuild the material every update.
+            if (material != null && uiTexture.material != material)
+            {
+                uiTexture.material = material;
+            }
 
             base.updateData();
         }
@@ -306,7 +311,7 @@ namespace Quartz
                 {
                     fetchWwwTexture("file://" + text, isMainTexture);
                 }
-                else if (path[0] == '@')
+                else if (path[0] == '@' && path[1] != ':')
                 {
                     string text2 = path.Substring(1);
                     if (text2.StartsWith("file:", StringComparison.OrdinalIgnoreCase))
