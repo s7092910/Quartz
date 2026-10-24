@@ -14,7 +14,6 @@ limitations under the License.*/
 
 using Audio;
 using Quartz.Inputs;
-using Quartz.Map;
 using Quartz.Settings;
 using System;
 using System.Collections;
@@ -42,7 +41,9 @@ namespace Quartz
         [XuiBindComponent("clippingPanel", true)]
         private XUiView clippingPanel;
 
-        public int bufferRowLength = MapDrawnSizeInChunks * 128;
+        public const int ChunkDataLength = 256;
+
+        public int bufferRowLength = MapDrawnSizeInChunks * ChunkDataLength;
         public int mapUpdateSizeRadius = 512;
 
         private int spriteSize = 50;
@@ -87,12 +88,16 @@ namespace Quartz
         private DictionarySave<int, MinimapMarker> keyToNavSprite = new DictionarySave<int, MinimapMarker>();
         private HashSetLong navObjectsOnMapAlive = new HashSetLong();
 
-        private uint[] emptyChunk = new uint[128];
-        private uint[] mapColorsData;
-        public NativeArray<uint> rawBuffer;
+        private ushort[] emptyChunk = new ushort[ChunkDataLength];
+        private ushort[] mapColorsData;
+        public NativeArray<ushort> rawBuffer;
+        private NativeArray<Color32> colorLut;
 
         private JobHandle jobHandle;
         private bool jobDispatched = false;
+        private bool isUpdating = false;
+        private bool bResetMapData = false;
+        private bool bFullTextureUpdate = false;
 
         private GameObject prefabMapSprite;
 
@@ -123,10 +128,22 @@ namespace Quartz
 
             if (mapColorsData == null)
             {
-                mapColorsData = new uint[MapDrawnSize * MapDrawnSize / 2];
+                mapColorsData = new ushort[MapDrawnSize * MapDrawnSize];
             }
 
-            rawBuffer = new NativeArray<uint>(MapDrawnSize * MapDrawnSize / 2, Allocator.Persistent);
+            if (!rawBuffer.IsCreated)
+            {
+                rawBuffer = new NativeArray<ushort>(MapDrawnSize * MapDrawnSize, Allocator.Persistent);
+            }
+
+            if (!colorLut.IsCreated)
+            {
+                colorLut = new NativeArray<Color32>(ushort.MaxValue + 1, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+                for (int i = 0; i < colorLut.Length; i++)
+                {
+                    colorLut[i] = MapJob.FromColor5To32((uint)i);
+                }
+            }
 
             xuiTexture.IsVisible = MinimapSettings.Enabled;
 
@@ -147,11 +164,10 @@ namespace Quartz
             InitMap();
             NavObjectManager.Instance.OnNavObjectRemoved += Instance_OnNavObjectRemoved;
 
-            ushort a = 1 << 15;
-            uint emptyBlocks = MapColorDatabase.PackShorts(a, a);
+            // The top bit marks a pixel as unexplored
             for (int i = 0; i < emptyChunk.Length; i++)
             {
-                emptyChunk[i] = emptyBlocks;
+                emptyChunk[i] = 1 << 15;
             }
 
             ResetMapColorsData();
@@ -183,7 +199,7 @@ namespace Quartz
                 InitMap();
                 if (MinimapSettings.Enabled)
                 {
-                    UpdateFullMap();
+                    UpdateFullMapNow();
                 }
                 xuiTexture.widget.onRender += OnRenderDrawcall;
             }
@@ -244,17 +260,18 @@ namespace Quartz
 
             if (jobDispatched && jobHandle.IsCompleted)
             {
+                jobHandle.Complete();
                 jobDispatched = false;
-                mapTexture.Apply();
+                mapTexture.Apply(false);
                 mapMiddlePosChunks = newMapMiddlePosChunks;
                 SendMapPositionToServer();
             }
 
-            if (bShouldRedrawMap)
+            // Only one update may be in flight, as the coroutine writes the buffers the job reads
+            if (bShouldRedrawMap && !isUpdating && !jobDispatched)
             {
-                //UpdateFullMap();
-                ThreadManager.StartCoroutine(UpdateFullMapCoroutine());
                 bShouldRedrawMap = false;
+                ThreadManager.StartCoroutine(UpdateFullMapCoroutine(true));
             }
 
             if (timeToRedrawMap >= 0f)
@@ -342,8 +359,28 @@ namespace Quartz
             }
         }
 
-        private void UpdateFullMap()
+        private void UpdateFullMapNow()
         {
+            if (isUpdating || jobDispatched)
+            {
+                bShouldRedrawMap = true;
+                return;
+            }
+
+            IEnumerator update = UpdateFullMapCoroutine(false);
+            while (update.MoveNext()) { }
+        }
+
+        private IEnumerator UpdateFullMapCoroutine(bool spreadOverFrames)
+        {
+            isUpdating = true;
+
+            if (bResetMapData)
+            {
+                bResetMapData = false;
+                ResetMapColorsData();
+            }
+
             Vector3 worldPos = localPlayer.GetPosition();
             int worldPosX = (int)worldPos.x;
             int worldPosY = (int)worldPos.z;
@@ -351,123 +388,110 @@ namespace Quartz
 
             newMapMiddlePosChunks = middlePosChunk;
 
-            int mapStartX = (int)newMapMiddlePosChunks.x - mapUpdateSizeRadius;
-            int mapEndX = (int)newMapMiddlePosChunks.x + mapUpdateSizeRadius;
-            int mapStartZ = (int)newMapMiddlePosChunks.y - mapUpdateSizeRadius;
-            int mapEndZ = (int)newMapMiddlePosChunks.y + mapUpdateSizeRadius;
+            int worldChunkStartX = World.toChunkXZ((int)newMapMiddlePosChunks.x - mapUpdateSizeRadius);
+            int worldChunkStartY = World.toChunkXZ((int)newMapMiddlePosChunks.y - mapUpdateSizeRadius);
+            int drawnChunkStart = ((MapDrawnSize / 2) - mapUpdateSizeRadius) / 16;
+            int chunkCount = Math.Min((2 * mapUpdateSizeRadius + 15) / 16, MapDrawnSizeInChunks - drawnChunkStart);
 
-            UpdateMapSection(mapStartX, mapStartZ, mapEndX, mapEndZ, (MapDrawnSize / 2) - mapUpdateSizeRadius, (MapDrawnSize / 2) - mapUpdateSizeRadius, 512, 512);
+            int dirtyMinX = int.MaxValue;
+            int dirtyMinY = int.MaxValue;
+            int dirtyMaxX = -1;
+            int dirtyMaxY = -1;
 
-            rawBuffer.CopyFrom(mapColorsData);
+            IMapChunkDatabase mapDatabase = localPlayer.ChunkObserver.mapDatabase;
+            for (int y = 0; y < chunkCount; y++)
+            {
+                int drawnChunkY = drawnChunkStart + y;
+                for (int x = 0; x < chunkCount; x++)
+                {
+                    int drawnChunkX = drawnChunkStart + x;
+                    int chunkX = worldChunkStartX + x;
+                    int chunkZ = worldChunkStartY + y;
+                    ushort[] mapColors = mapDatabase.GetMapColors(WorldChunkCache.MakeChunkKey(chunkX, chunkZ));
+                    if (mapColors == null)
+                    {
+                        mapColors = emptyChunk;
+                    }
+                    else if (localPlayer.world.GetChunkSync(chunkX, chunkZ) is Chunk chunk && chunk.bMapDirty && !chunk.NeedsDecoration)
+                    {
+                        // Vanilla only refreshes the map database when the player changes chunk,
+                        // so push block changes from loaded, already explored chunks here.
+                        // The database copies into its existing array, so mapColors stays current.
+                        mapDatabase.Add(chunkX, chunkZ, chunk.GetMapColors());
+                    }
+
+                    int indexBuffer = (drawnChunkY * bufferRowLength) + (drawnChunkX * ChunkDataLength);
+                    if (ChunkEquals(mapColors, mapColorsData, indexBuffer))
+                    {
+                        continue;
+                    }
+
+                    Array.Copy(mapColors, 0, mapColorsData, indexBuffer, ChunkDataLength);
+                    NativeArray<ushort>.Copy(mapColors, 0, rawBuffer, indexBuffer, ChunkDataLength);
+
+                    dirtyMinX = Math.Min(dirtyMinX, drawnChunkX);
+                    dirtyMaxX = Math.Max(dirtyMaxX, drawnChunkX);
+                    dirtyMinY = Math.Min(dirtyMinY, drawnChunkY);
+                    dirtyMaxY = Math.Max(dirtyMaxY, drawnChunkY);
+                }
+
+                if (spreadOverFrames)
+                {
+                    yield return null;
+
+                    if (!rawBuffer.IsCreated)
+                    {
+                        isUpdating = false;
+                        yield break;
+                    }
+                }
+            }
+
+            if (bFullTextureUpdate)
+            {
+                bFullTextureUpdate = false;
+                dirtyMinX = 0;
+                dirtyMinY = 0;
+                dirtyMaxX = MapDrawnSizeInChunks - 1;
+                dirtyMaxY = MapDrawnSizeInChunks - 1;
+            }
+
+            if (dirtyMaxX < 0)
+            {
+                // Nothing changed, so skip the texture conversion and upload
+                mapMiddlePosChunks = newMapMiddlePosChunks;
+                SendMapPositionToServer();
+                isUpdating = false;
+                yield break;
+            }
 
             MapJob job = new MapJob
             {
                 data = rawBuffer,
-                texture = mapTexture.GetRawTextureData<Color32>()
+                lut = colorLut,
+                texture = mapTexture.GetRawTextureData<Color32>(),
+                startChunkX = dirtyMinX,
+                endChunkX = dirtyMaxX + 1,
+                startChunkY = dirtyMinY
             };
 
-            jobHandle = job.ScheduleParallelByRef(MapDrawnSizeInChunks, 8, default);
+            jobHandle = job.ScheduleParallelByRef(dirtyMaxY - dirtyMinY + 1, 1, default);
+            JobHandle.ScheduleBatchedJobs();
             jobDispatched = true;
+            isUpdating = false;
         }
 
-        private IEnumerator UpdateFullMapCoroutine()
+        private static bool ChunkEquals(ushort[] chunk, ushort[] data, int dataIndex)
         {
-            Vector3 worldPos = localPlayer.GetPosition();
-            int worldPosX = (int)worldPos.x;
-            int worldPosY = (int)worldPos.z;
-            Vector2 middlePosChunk = new Vector2(World.toChunkXZ(worldPosX - 1024) * 16 + 1024, World.toChunkXZ(worldPosY - 1024) * 16 + 1024);
-
-            newMapMiddlePosChunks = middlePosChunk;
-
-            int mapStartX = (int)newMapMiddlePosChunks.x - mapUpdateSizeRadius;
-            int mapEndX = (int)newMapMiddlePosChunks.x + mapUpdateSizeRadius;
-            int mapStartY = (int)newMapMiddlePosChunks.y - mapUpdateSizeRadius;
-            int mapEndY = (int)newMapMiddlePosChunks.y + mapUpdateSizeRadius;
-            int drawnMapStartX = (MapDrawnSize / 2) - mapUpdateSizeRadius;
-            int drawnMapStartY = (MapDrawnSize / 2) - mapUpdateSizeRadius;
-
-            IMapChunkDatabase mapDatabase = localPlayer.ChunkObserver.mapDatabase;
-            int num = mapStartY;
-            int y = drawnMapStartY;
-            while (num < mapEndY)
+            for (int i = 0; i < ChunkDataLength; i++)
             {
-                int num3 = mapStartX;
-                int x = drawnMapStartX;
-                while (num3 < mapEndX)
+                if (chunk[i] != data[dataIndex + i])
                 {
-                    int chunkX = World.toChunkXZ(num3);
-                    int chunkZ = World.toChunkXZ(num);
-
-                    uint[] mapColors = mapDatabase.GetPackedMapColors(chunkX, chunkZ);
-
-                    int indexBuffer = ((y / 16) * bufferRowLength) + ((x / 16) * 128);
-                    if (mapColors != null)
-                    {
-                        Array.Copy(mapColors, 0, mapColorsData, indexBuffer, 128);
-                    }
-                    else
-                    {
-                        Array.Copy(emptyChunk, 0, mapColorsData, indexBuffer, 128);
-                    }
-
-                    num3 += 16;
-                    x = (x + 16) % MapDrawnSize;
+                    return false;
                 }
-
-                num += 16;
-                y = (y + 16) % MapDrawnSize;
-
-                yield return null;
             }
 
-            rawBuffer.CopyFrom(mapColorsData);
-
-            yield return null;
-
-            MapJob job = new MapJob
-            {
-                data = rawBuffer,
-                texture = mapTexture.GetRawTextureData<Color32>()
-            };
-
-            jobHandle = job.ScheduleParallelByRef(MapDrawnSizeInChunks, 8, default);
-            jobDispatched = true;
-        }
-
-        private void UpdateMapSection(int mapStartX, int mapStartY, int mapEndX, int mapEndY, int drawnMapStartX, int drawnMapStartY, int drawnMapEndX, int drawnMapEndY)
-        {
-            IMapChunkDatabase mapDatabase = localPlayer.ChunkObserver.mapDatabase;
-            int num = mapStartY;
-            int y = drawnMapStartY;
-            while (num < mapEndY)
-            {
-                int num3 = mapStartX;
-                int x = drawnMapStartX;
-                while (num3 < mapEndX)
-                {
-                    int chunkX = World.toChunkXZ(num3);
-                    int chunkZ = World.toChunkXZ(num);
-
-                    uint[] mapColors = mapDatabase.GetPackedMapColors(chunkX, chunkZ);
-
-                    int indexBuffer = ((y / 16) * bufferRowLength) + ((x / 16) * 128);
-                    if (mapColors != null)
-                    {
-                        Array.Copy(mapColors, 0, mapColorsData, indexBuffer, 128);
-                    }
-                    else
-                    {
-                        Array.Copy(emptyChunk, 0, mapColorsData, indexBuffer, 128);
-                    }
-
-                    num3 += 16;
-                    x = (x + 16) % MapDrawnSize;
-                }
-
-                num += 16;
-                y = (y + 16) % MapDrawnSize;
-            }
-
+            return true;
         }
 
         private void SendMapPositionToServer()
@@ -541,7 +565,9 @@ namespace Quartz
                 zoomScale = targetZoomScale;
                 velocity = 0;
 
-                ResetMapColorsData();
+                // Deferred to the next update, as the buffers can't be touched while an update is in flight
+                bResetMapData = true;
+                bShouldRedrawMap = true;
                 UpdateMapUpdateRadius(zoomScale);
             }
             screenToMapScale = new Vector2(xuiTexture.Size.x / MapDefaultZoom / zoomScale, xuiTexture.Size.y / MapDefaultZoom / zoomScale);
@@ -560,7 +586,7 @@ namespace Quartz
                 newMapUpdateSizeRadius = MapDrawnSize / 2;
             }
 
-            bShouldRedrawMap = newMapUpdateSizeRadius != mapUpdateSizeRadius;
+            bShouldRedrawMap |= newMapUpdateSizeRadius != mapUpdateSizeRadius;
             mapUpdateSizeRadius = newMapUpdateSizeRadius;
         }
 
@@ -696,17 +722,34 @@ namespace Quartz
 
         private void ResetMapColorsData()
         {
-            for (int i = 0; i < mapColorsData.Length; i += 128)
+            for (int i = 0; i < mapColorsData.Length; i += ChunkDataLength)
             {
-                Array.Copy(emptyChunk, 0, mapColorsData, i, 128);
+                Array.Copy(emptyChunk, 0, mapColorsData, i, ChunkDataLength);
             }
+
+            rawBuffer.CopyFrom(mapColorsData);
+            bFullTextureUpdate = true;
         }
 
         public override void Cleanup()
         {
             base.Cleanup();
 
-        }
+            if (jobDispatched)
+            {
+                jobHandle.Complete();
+                jobDispatched = false;
+            }
+
+            if (rawBuffer.IsCreated)
+            {
+                rawBuffer.Dispose();
+            }
+
+            if (colorLut.IsCreated)
+            {
+                colorLut.Dispose();
+            }        }
 
         private Shader LoadMinimapShader()
         {
@@ -747,30 +790,39 @@ namespace Quartz
         public struct MapJob : IJobFor
         {
             [ReadOnly]
-            public NativeArray<uint> data;
+            public NativeArray<ushort> data;
+
+            [ReadOnly]
+            public NativeArray<Color32> lut;
 
             [NativeDisableParallelForRestriction]
             public NativeArray<Color32> texture;
+
+            public int startChunkX;
+            public int endChunkX;
+            public int startChunkY;
+
+            // Each index is one row of chunks, so reads and writes stay contiguous
             public void Execute(int index)
             {
+                int chunkY = startChunkY + index;
+                int rowPixel = chunkY * 16 * MapDrawnSize;
 
-                for (int y = 0; y < MapDrawnSizeInChunks; y++)
+                for (int chunkX = startChunkX; chunkX < endChunkX; chunkX++)
                 {
-                    int dataIndex = (y * 128 * MapDrawnSizeInChunks) + (index * 128);
-                    for (int z = 0; z < 128; z++)
+                    int dataIndex = ((chunkY * MapDrawnSizeInChunks) + chunkX) * ChunkDataLength;
+                    int pixel = rowPixel + (chunkX * 16);
+                    for (int py = 0; py < 16; py++, pixel += MapDrawnSize)
                     {
-                        int num = ((y * 16) + z * 2 / 16) * MapDrawnSize;
-                        int num2 = (index * 16) + (z * 2 % 16) + num;
-                        Color32 first = FromColor5To32(data[dataIndex + z] >> 16);
-                        Color32 second = FromColor5To32(data[dataIndex + z] & 0xffff);
-                        texture[num2] = first;
-                        texture[num2 + 1] = second;
+                        for (int px = 0; px < 16; px++)
+                        {
+                            texture[pixel + px] = lut[data[dataIndex++]];
+                        }
                     }
                 }
-
             }
 
-            public Color32 FromColor5To32(uint col)
+            public static Color32 FromColor5To32(uint col)
             {
                 if (col >> 15 == 0)
                 {
